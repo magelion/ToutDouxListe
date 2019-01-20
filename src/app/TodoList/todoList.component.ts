@@ -1,15 +1,14 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import {TodoItem, TodoList} from "./model/model";
-import {Observable} from "rxjs/Observable";
+import {TodoList} from "./model/model";
 import {TodoServiceProvider} from './services/todo-service'
 
 @Component({
-    selector: 'todo',
+    selector: 'todoList',
     templateUrl: './todoList.component.html'
 })
 export class TodoComponent implements OnInit, OnDestroy {
 
-    items: TodoList[];
+    lists: TodoList[];
 
     constructor(
         private todoService: TodoServiceProvider
@@ -18,10 +17,22 @@ export class TodoComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.items = this.todoService.getList().toArray();
+        this.todoService.getList().subscribe(value => {
+          this.lists = value;
+        });
     }
 
     ngOnDestroy() {
 
     }
+
+    selectList (list: TodoList) {
+
+    }
+
+  nbUnfinishedItems(list: TodoList) : number {
+    return list.items.filter(value => {
+      return !value.complete;
+    }).length;
+  }
 }

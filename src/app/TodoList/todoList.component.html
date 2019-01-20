@@ -1,6 +1,6 @@
-<h2>COUCOU</h2>
+<h2>COUCOU2</h2>
 <ion-list>
-    <button ion-item *ngFor="let item of items" (click)="itemSelected(item)">
-      {{ item }}
+    <button ion-item *ngFor="let list of lists" (click)="selectList(list)">
+      {{ list.name }} : {{nbUnfinishedItems(list)}}
     </button>
 </ion-list>
