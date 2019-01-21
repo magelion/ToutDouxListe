@@ -9,7 +9,7 @@ import {Constants} from "../../utilities/Constants";
 })
 export class TodoComponent implements OnInit, OnDestroy {
 
-  @Input() todoListId: string;
+  @Input("todoListId") todoListId: string;
   @Input() items: TodoItem[];
 
   constructor(private todoService: TodoServiceProvider) {
