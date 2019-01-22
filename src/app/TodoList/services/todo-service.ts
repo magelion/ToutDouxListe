@@ -59,6 +59,7 @@ export class TodoServiceProvider {
   }
 
   public getTodos(uuid:String) : Observable<TodoItem[]> {
+    console.log('get todo ' + uuid);
     return Observable.of(this.data.find(d => d.uuid == uuid).items)
   }
 

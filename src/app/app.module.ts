@@ -15,6 +15,7 @@ import { TodoComponent } from './TodoList/todoList.component';
 import { TodoServiceProvider } from './TodoList/services/todo-service';
 import { UtilitiesService } from './utilities/UtilitiesService';
 import {TodoItemsPage} from "../pages/todo-items/todo-items";
+import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
 
 @NgModule({
   declarations: [
@@ -24,6 +25,7 @@ import {TodoItemsPage} from "../pages/todo-items/todo-items";
     HomePage,
     TabsPage,
     TodoComponent,
+    TodoListItem,
     TodoItemsPage
   ],
   imports: [
@@ -38,6 +40,7 @@ import {TodoItemsPage} from "../pages/todo-items/todo-items";
     HomePage,
     TabsPage,
     TodoComponent,
+    TodoListItem,
     TodoItemsPage
   ],
   providers: [
