@@ -16,6 +16,8 @@ import { TodoServiceProvider } from './TodoList/services/todo-service';
 import { UtilitiesService } from './utilities/UtilitiesService';
 import {TodoItemsPage} from "../pages/todo-items/todo-items";
 import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
+import { TodoListItemCreationPageModule } from '../pages/todo-list-item-creation/todo-list-item-creation.module';
+import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-list-item-creation';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,8 @@ import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
   ],
   imports: [
     BrowserModule,
-    IonicModule.forRoot(MyApp)
+    IonicModule.forRoot(MyApp),
+    TodoListItemCreationPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -41,7 +44,8 @@ import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
     TabsPage,
     TodoComponent,
     TodoListItem,
-    TodoItemsPage
+    TodoItemsPage,
+    TodoListItemCreationPage
   ],
   providers: [
     StatusBar,

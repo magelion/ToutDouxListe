@@ -8,6 +8,8 @@
 
 
 <ion-content padding>
-  <h2>ITEMS</h2>
   <todoListItem [todoListId]="listId"></todoListItem>
+  <button ion-button color="secondary" (click)="createListItemCommand()">
+      <ion-icon name="add"></ion-icon>
+  </button>
 </ion-content>

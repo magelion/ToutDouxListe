@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {TodoItem, TodoList} from "../model/model";
 import {Observable} from "rxjs/Observable";
 import 'rxjs/Rx';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class TodoServiceProvider {
@@ -80,5 +81,32 @@ export class TodoServiceProvider {
     if (index != -1) {
       items.splice(index,1);
     }
+  }
+
+  public deleteList(listUuid: String) {
+    let index = this.data.findIndex(value => value.uuid == listUuid);
+    console.log("list to delete index : " + index);
+    if(index != -1) {
+      this.data.splice(index, 1);
+    }
+  }
+
+  public createList(name: string) {
+    
+    const newUuid = uuid();
+    let newList = {
+      uuid : newUuid,
+      name : name,
+      items : []
+    } as TodoList;
+
+    console.log("new uuid created : " + newUuid + ";name=" + name);
+    this.data.push(newList);
+  }
+
+  public createItem(listUuid:string, item:TodoItem) {
+
+    let list = this.data.find(d => d.uuid == listUuid);
+    list.items.push(item);
   }
 }

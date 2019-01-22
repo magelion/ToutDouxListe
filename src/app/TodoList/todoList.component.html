@@ -1,6 +1,16 @@
-<h2>COUCOU2</h2>
 <ion-list>
-    <button ion-item *ngFor="let list of lists" (click)="selectList(list)">
+  <ion-item-sliding *ngFor="let list of lists">
+    <button ion-item (click)="selectList(list)">
       {{ list.name }} : {{nbUnfinishedItems(list)}}
     </button>
+    <ion-item-options side="left">
+        <button ion-button color="danger" (click)="deleteList(list)">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+  </ion-item-sliding>
+
+  <button ion-button color="secondary" (click)="createListCommand()">
+      <ion-icon name="add"></ion-icon>
+  </button>
 </ion-list>

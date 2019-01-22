@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Constants} from "../../app/utilities/Constants";
+import { TodoListItemCreationPage } from '../todo-list-item-creation/todo-list-item-creation';
 
 @IonicPage()
 @Component({
@@ -20,4 +21,9 @@ export class TodoItemsPage {
     console.log('ionViewDidLoad TodoItemsPage id=' + this.listId);
   }
 
+  createListItemCommand() {
+    this.navCtrl.push(TodoListItemCreationPage, {
+      uuid: this.listId
+    });
+  }
 }
