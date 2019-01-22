@@ -1,7 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import {TodoList} from "./model/model";
 import {TodoServiceProvider} from './services/todo-service'
-import {Constants} from "../utilities/Constants";
 import {NavController} from "ionic-angular";
 import {TodoItemsPage} from "../../pages/todo-items/todo-items";
 
@@ -21,7 +20,7 @@ export class TodoComponent implements OnInit, OnDestroy {
     }
 
     ngOnInit() {
-        this.todoService.getList().subscribe(value => {
+        this.todoService.getLists().subscribe(value => {
           this.lists = value;
         });
     }

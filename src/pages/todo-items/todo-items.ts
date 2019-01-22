@@ -1,7 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Constants} from "../../app/utilities/Constants";
-import { TodoListItem } from "../../app/TodoList/TodoListItem/todoListItem.component"
 
 @IonicPage()
 @Component({

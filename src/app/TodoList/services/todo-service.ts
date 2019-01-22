@@ -14,6 +14,7 @@ export class TodoServiceProvider {
         {
           uuid : "7dc94eb4-d4e9-441b-b06b-0ca29738c8d2",
           name : "Item 1-1",
+          desc : "Description for 1",
           complete : false
         },
         {
@@ -54,13 +55,16 @@ export class TodoServiceProvider {
     console.log('Hello TodoServiceProvider Provider');
   }
 
-  public getList(): Observable<TodoList[]> {
+  public getLists(): Observable<TodoList[]> {
     return Observable.of(this.data);
   }
 
+  public getList(uuid:String): Observable<TodoList>{
+    return Observable.of(this.data.find(d => d.uuid == uuid));
+  }
+
   public getTodos(uuid:String) : Observable<TodoItem[]> {
-    console.log('get todo ' + uuid);
-    return Observable.of(this.data.find(d => d.uuid == uuid).items)
+    return Observable.of(this.data.find(d => d.uuid == uuid).items);
   }
 
 

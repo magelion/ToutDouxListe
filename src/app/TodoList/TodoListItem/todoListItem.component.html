@@ -1,9 +1,15 @@
-<h2>ListNameHERE</h2>
+<h2>{{list?.name}}</h2>
 <ion-list>
-  <ion-item *ngFor="let item of items">
-      <input type="checkbox" [checked]=item?.complete value="Completed" />
-      <button ion-item (click)="selectItem(item)">
-          {{ item?.name }}
+  <ion-item-sliding *ngFor="let item of items">
+      <ion-item  text-wrap>
+        <ion-checkbox item-start type="checkbox" [checked]=item?.complete value="Completed"></ion-checkbox>
+        <ion-label stacked>{{ item?.name }}</ion-label>
+        <ion-label *ngIf="item?.desc" readonly="true">{{ item?.desc }}</ion-label>
+      </ion-item>
+      <ion-item-options>
+        <button ion-button color="danger" (click)="deleteItem(item)">
+            <ion-icon name="trash"></ion-icon>
         </button>
-  </ion-item>
+      </ion-item-options>
+  </ion-item-sliding>
 </ion-list>

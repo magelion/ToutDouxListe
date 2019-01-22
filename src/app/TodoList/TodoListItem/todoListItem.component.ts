@@ -1,5 +1,5 @@
 import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core'
-import {TodoItem} from "../model/model";
+import {TodoItem, TodoList} from "../model/model";
 import {TodoServiceProvider} from '../services/todo-service';
 
 @Component({
@@ -9,7 +9,9 @@ import {TodoServiceProvider} from '../services/todo-service';
 export class TodoListItem implements OnInit, OnDestroy, OnChanges {
 
   @Input('todoListId') todoListId?: string;
-  @Input() items?: TodoItem[];
+
+  list?: TodoList;
+  items?: TodoItem[];
 
   constructor(private todoService: TodoServiceProvider) {
   }
@@ -28,16 +30,25 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
   }
 
   selectItem (item: TodoItem) {
-    console.log(item);
+    console.log("item:" + item.name + ";desc=" + item.desc);
+  }
+  
+  deleteItem (item: TodoItem) {
+
+    if(this.todoListId != null && this.todoListId != undefined) {
+      this.todoService.deleteTodo(this.todoListId, item.uuid);
+    }
   }
 
   updateList() {
 
-    console.log('todoListItem, id=' + this.todoListId)
+    console.log('todoListItem, id=' + this.todoListId);
 
     if(this.todoListId != null && this.todoListId != undefined) {
-      this.todoService.getTodos(this.todoListId).subscribe(value => {
-        this.items = value;
+
+      this.todoService.getList(this.todoListId).subscribe(value => {
+        this.list = value;
+        this.items = value.items;
       });
     }
   }
