@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { TodoList } from "./model/model";
+import { TodoList, TodoItem } from "./model/model";
 import { TodoServiceProvider } from './services/todo-service'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
@@ -72,6 +72,37 @@ export class TodoComponent implements OnInit, OnDestroy {
           handler: data => {
             console.log('Saved clicked');
             this.createList(data.name);
+          }
+        }
+      ]
+    });
+    prompt.present();
+  }
+
+
+
+  editListCommand(list: TodoList) {
+    const prompt = this.alertCtrl.create({
+      title: 'Edit List',
+      message: 'Enter list name',
+      inputs: [
+        {
+          name : 'name',
+          placeholder : 'My awsome list'
+        },
+      ],
+      buttons: [
+        {
+          text: 'Cancel',
+          handler: data => {
+            console.log('Cancel clicked');
+          }
+        },
+        {
+          text: 'Save',
+          handler: data => {
+            console.log('Saved clicked');
+            list.name = data.name;
           }
         }
       ]

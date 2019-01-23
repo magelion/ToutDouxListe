@@ -1,6 +1,8 @@
 {
   "name": "ToutDouxListe",
-  "integrations": {},
+  "integrations": {
+    "cordova": {}
+  },
   "type": "ionic-angular",
   "id": "046891ea"
 }
