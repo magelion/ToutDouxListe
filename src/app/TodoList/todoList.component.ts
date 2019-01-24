@@ -1,5 +1,5 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
-import { TodoList, TodoItem } from "./model/model";
+import { TodoList } from "./model/model";
 import { TodoServiceProvider } from './services/todo-service'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
