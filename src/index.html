@@ -28,9 +28,43 @@
   </script>-->
   <!-- External libraries -->
   <script src="external/myLibrary.ts"></script>
+  <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+  <script>
+    // Initialize Firebase
+    var config = {
+      apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
+      authDomain: "toutdouxliste-1759c.firebaseapp.com",
+      databaseURL: "https://toutdouxliste-1759c.firebaseio.com",
+      projectId: "toutdouxliste-1759c",
+      storageBucket: "toutdouxliste-1759c.appspot.com",
+      messagingSenderId: "262426639490"
+    };
+    firebase.initializeApp(config);
+  </script>
+
+  <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '307918099858578',
+        cookie     : true,
+        xfbml      : true,
+        version    : '{api-version}'
+      });
+        
+      FB.AppEvents.logPageView();   
+        
+    };
+
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script>
 
   <link href="build/main.css" rel="stylesheet">
-
 </head>
 <body>
 

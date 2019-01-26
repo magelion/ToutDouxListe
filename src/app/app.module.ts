@@ -18,6 +18,7 @@ import {TodoItemsPage} from "../pages/todo-items/todo-items";
 import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
 import { TodoListItemCreationPageModule } from '../pages/todo-list-item-creation/todo-list-item-creation.module';
 import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-list-item-creation';
+import { AuthenticationPageModule } from '../pages/authentication/authentication.module';
 
 @NgModule({
   declarations: [
@@ -33,7 +34,8 @@ import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-
   imports: [
     BrowserModule,
     IonicModule.forRoot(ToutDouxListeApp),
-    TodoListItemCreationPageModule
+    TodoListItemCreationPageModule,
+    AuthenticationPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
