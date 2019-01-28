@@ -6,7 +6,8 @@ import firebase from 'firebase';
 
 @Component({
   selector: 'page-home',
-  templateUrl: 'home.html'
+  templateUrl: 'home.html',
+  providers: [GooglePlus]
 })
 export class HomePage {
 
@@ -25,9 +26,10 @@ export class HomePage {
 	
   loginUser(): void {
 
+    console.log(this.googlePlus);
     this.googlePlus.login({
-      'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
-      'offline': true
+      /*'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
+      'offline': true*/
     }).then( res => console.log(res))
       .catch(err => console.error(err));
   }
