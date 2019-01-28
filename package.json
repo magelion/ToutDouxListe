@@ -11,14 +11,21 @@
     "lint": "ionic-app-scripts lint"
   },
   "dependencies": {
+    "@angular/common": "^7.2.2",
+    "@angular/compiler": "^7.2.2",
+    "@angular/core": "^7.2.2",
+    "@angular/platform-browser": "^7.2.2",
+    "@angular/platform-browser-dynamic": "^7.2.2",
     "@ionic-native/core": "^5.0.0",
     "@ionic-native/google-plus": "^5.0.0",
+    "angularfire2": "^5.1.1",
     "cordova": "^8.1.2",
     "firebase": "^5.8.1",
     "ionic": "^4.9.0",
     "rxjs": "^6.3.3",
     "save": "^2.3.3",
-    "stable": "^0.1.8"
+    "stable": "^0.1.8",
+    "zone.js": "^0.8.29"
   },
   "devDependencies": {
     "@ionic/app-scripts": "3.2.1",

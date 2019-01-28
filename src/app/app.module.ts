@@ -21,12 +21,12 @@ import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-
 import { AuthenticationPageModule } from '../pages/authentication/authentication.module';
 
 import { HttpModule } from '@angular/http';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
 import { FirebaseProvider } from '../providers/firebase/firebase';
 
 import { GooglePlus } from '@ionic-native/google-plus/ngx';      
 import firebase from 'firebase';
 import { AngularFireModule } from '@angular/fire';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
