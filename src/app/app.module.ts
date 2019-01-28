@@ -20,6 +20,20 @@ import { TodoListItemCreationPageModule } from '../pages/todo-list-item-creation
 import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-list-item-creation';
 import { AuthenticationPageModule } from '../pages/authentication/authentication.module';
 
+import { HttpModule } from '@angular/http';
+import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFireModule } from 'angularfire2';
+import { FirebaseProvider } from '../providers/firebase/firebase';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
+  authDomain: "toutdouxliste-1759c.firebaseapp.com",
+  databaseURL: "https://toutdouxliste-1759c.firebaseio.com",
+  projectId: "toutdouxliste-1759c",
+  storageBucket: "toutdouxliste-1759c.appspot.com",
+  messagingSenderId: "262426639490"
+};
+
 @NgModule({
   declarations: [
     ToutDouxListeApp,
@@ -33,6 +47,9 @@ import { AuthenticationPageModule } from '../pages/authentication/authentication
   ],
   imports: [
     BrowserModule,
+    HttpModule,
+    AngularFireDatabaseModule,
+    AngularFireModule.initializeApp(firebaseConfig),
     IonicModule.forRoot(ToutDouxListeApp),
     TodoListItemCreationPageModule,
     AuthenticationPageModule
@@ -52,9 +69,11 @@ import { AuthenticationPageModule } from '../pages/authentication/authentication
   providers: [
     StatusBar,
     SplashScreen,
+    FirebaseProvider,
     TodoServiceProvider,
     UtilitiesService,
-    {provide: ErrorHandler, useClass: IonicErrorHandler}
+    {provide: ErrorHandler, useClass: IonicErrorHandler},
+    FirebaseProvider
   ]
 })
 export class AppModule {}
