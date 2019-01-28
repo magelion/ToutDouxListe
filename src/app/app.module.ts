@@ -14,7 +14,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 import { TodoComponent } from './TodoList/todoList.component';
 import { TodoServiceProvider } from './TodoList/services/todo-service';
 import { UtilitiesService } from './utilities/UtilitiesService';
-import {TodoItemsPage} from "../pages/todo-items/todo-items";
+import { TodoItemsPage } from "../pages/todo-items/todo-items";
 import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
 import { TodoListItemCreationPageModule } from '../pages/todo-list-item-creation/todo-list-item-creation.module';
 import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-list-item-creation';
@@ -22,10 +22,13 @@ import { AuthenticationPageModule } from '../pages/authentication/authentication
 
 import { HttpModule } from '@angular/http';
 import { AngularFireDatabaseModule } from 'angularfire2/database';
-import { AngularFireModule } from 'angularfire2';
 import { FirebaseProvider } from '../providers/firebase/firebase';
 
-const firebaseConfig = {
+import { GooglePlus } from '@ionic-native/google-plus/ngx';      
+import firebase from 'firebase';
+import { AngularFireModule } from '@angular/fire';
+
+export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
   authDomain: "toutdouxliste-1759c.firebaseapp.com",
   databaseURL: "https://toutdouxliste-1759c.firebaseio.com",
@@ -33,6 +36,7 @@ const firebaseConfig = {
   storageBucket: "toutdouxliste-1759c.appspot.com",
   messagingSenderId: "262426639490"
 };
+firebase.initializeApp(firebaseConfig);
 
 @NgModule({
   declarations: [
@@ -72,8 +76,8 @@ const firebaseConfig = {
     FirebaseProvider,
     TodoServiceProvider,
     UtilitiesService,
+    GooglePlus,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-    FirebaseProvider
   ]
 })
 export class AppModule {}

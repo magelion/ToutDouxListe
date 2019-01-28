@@ -5,6 +5,7 @@ import { SplashScreen } from '@ionic-native/splash-screen';
 
 import { TabsPage } from '../pages/tabs/tabs';
 
+
 @Component({
   templateUrl: 'app.html'
 })
@@ -15,6 +16,7 @@ export class ToutDouxListeApp {
     platform.ready().then(() => {
       // Okay, so the platform is ready and our plugins are available.
       // Here you can do any higher level native things you might need.
+
       statusBar.styleDefault();
       splashScreen.hide();
     });
