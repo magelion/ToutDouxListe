@@ -3,9 +3,13 @@ import {TodoItem, TodoList} from "../model/model";
 import {Observable} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
+import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
+import { map } from 'rxjs/operators';
 
 @Injectable()
 export class TodoServiceProvider {
+
+  private static readonly TODO_LIST_DB_NAME:string = "TodoLists";
 
   data:TodoList[] = [
     {
@@ -52,12 +56,29 @@ export class TodoServiceProvider {
     }
   ];
 
-  constructor() {
+  private todoListsRef:AngularFireList<TodoList[]>;
+  private todoLists:Observable<TodoList[]>
+
+  constructor(private afd: AngularFireDatabase) {
     console.log('Hello TodoServiceProvider Provider');
+    this.todoListsRef = afd.list(TodoServiceProvider.TODO_LIST_DB_NAME);
+    
+    /*this.todoLists = this.todoListsRef.snapshotChanges().pipe(
+      map(changes => 
+        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+      )
+    );*/
+    
+    this.todoLists = this.todoListsRef.valueChanges();
+    this.todoLists.subscribe(value => {
+      console.log('value=' + JSON.stringify(value));
+      console.log('value[0]=' + JSON.stringify(value[0]));
+      console.log('value[0][0].name=' + JSON.stringify(value[0][0].name));
+    })
   }
 
   public getLists(): Observable<TodoList[]> {
-    return Observable.of(this.data);
+    return this.todoLists;
   }
 
   public getList(uuid:String): Observable<TodoList>{
