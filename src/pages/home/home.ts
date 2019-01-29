@@ -23,14 +23,30 @@ export class HomePage {
       }
     });
   }
+
+  public canLoginUser(): boolean {
+    return this.userProfile === null && this.googlePlus !== null;
+  }
 	
-  loginUser(): void {
+  public loginUser(): void {
 
     console.log(this.googlePlus);
-    this.googlePlus.login({
-      /*'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
-      'offline': true*/
-    }).then( res => console.log(res))
-      .catch(err => console.error(err));
+    console.log(this.googlePlus.login);
+
+    // Check if plug in available
+    if (this.canLoginUser()) {
+      this.googlePlus.login({
+        'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
+        'offline': true
+      }).then( res => {
+        const googleCredential = firebase.auth.GoogleAuthProvider
+              .credential(res.idToken);
+ 
+        firebase.auth().signInWithCredential(googleCredential)
+        .then( response => {
+            console.log("Firebase success: " + JSON.stringify(response));});
+      })
+        .catch(err => console.error(err));
+    }
   }
 }

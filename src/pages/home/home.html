@@ -6,7 +6,7 @@
 
 <ion-content padding>
 
-  <button ion-button block color="danger" (click)="loginUser()" *ngIf="!userProfile">
+  <button ion-button block color="danger" (click)="loginUser()" *ngIf="canLoginUser()">
     <ion-icon name="logo-googleplus"></ion-icon>
     Login with Google
   </button>
