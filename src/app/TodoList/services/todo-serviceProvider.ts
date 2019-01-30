@@ -3,14 +3,12 @@ import {TodoItem, TodoList} from "../model/model";
 import {Observable} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
-import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
-import { map } from 'rxjs/operators';
+import { AngularFireDatabase } from 'angularfire2/database';
 
 @Injectable()
 export class TodoServiceProvider {
 
-  private static readonly TODO_LIST_DB_NAME:string = "TodoLists";
-
+  public static readonly TODO_LISTS_DB_NAME:string = 'TodoLists' 
   data:TodoList[] = [
     {
       uuid : "a351e558-29ce-4689-943c-c3e97be0df8b",
@@ -56,29 +54,13 @@ export class TodoServiceProvider {
     }
   ];
 
-  private todoListsRef:AngularFireList<TodoList>;
-  private todoLists:Observable<TodoList[]>
-
-  constructor(private afd: AngularFireDatabase) {
+  constructor(public afd: AngularFireDatabase) {
     console.log('Hello TodoServiceProvider Provider');
-    this.todoListsRef = afd.list(TodoServiceProvider.TODO_LIST_DB_NAME);
-    
-    /*this.todoLists = this.todoListsRef.snapshotChanges().pipe(
-      map(changes => 
-        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
-      )
-    );*/
-    
-    this.todoLists = this.todoListsRef.valueChanges();
-    this.todoLists.subscribe(value => {
-      console.log('value=' + JSON.stringify(value));
-      console.log('value[0]=' + JSON.stringify(value[0]));
-      console.log('value[0][0].name=' + JSON.stringify(value[0][0].name));
-    })
+    //this.data = this.afd.list(TodoServiceProvider.TODO_LISTS_DB_NAME);
   }
 
   public getLists(): Observable<TodoList[]> {
-    return this.todoLists;
+    return Observable.of(this.data);
   }
 
   public getList(uuid:String): Observable<TodoList>{
