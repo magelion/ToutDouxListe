@@ -1,5 +1,5 @@
 <ion-list>
-  <ion-item-sliding *ngFor="let list of lists">
+  <ion-item-sliding *ngFor="let list of (lists | async)">
     <button ion-item (click)="selectList(list)">
       {{ list.name }} : {{nbUnfinishedItems(list)}}
     </button>

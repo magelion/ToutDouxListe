@@ -15,12 +15,12 @@
       </ion-item-options>
   </ion-item-sliding>
 </ion-list> -->
-<ion-card *ngFor="let item of items">
+<ion-card *ngFor="let item of items" >
   <ion-card-header>
-      <ion-input type="text" stacked [(ngModel)]=item.name >{{ item?.name }}</ion-input>
+      <ion-input type="text" stacked [(ngModel)]=item.name ng-model-options="{updateOn: 'blur'}" (ngModelChange)="dataChanged(item)">{{ item?.name }}</ion-input>
   </ion-card-header>
   <ion-card-content>
-    <ion-checkbox type="checkbox" [checked]=item?.complete value="Completed"></ion-checkbox>
-    <ion-textarea text-wrap placeholder="Description" [(ngModel)]=item.desc>{{ item?.desc }}</ion-textarea>
+    <ion-checkbox type="checkbox" [checked]=item?.complete value="Completed" (ngModelChange)="dataChanged(item)"></ion-checkbox>
+    <ion-textarea text-wrap placeholder="Description" [(ngModel)]=item.desc (ngModelChange)="dataChanged(item)">{{ item?.desc }}</ion-textarea>
   </ion-card-content>
 </ion-card>

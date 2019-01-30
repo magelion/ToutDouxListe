@@ -40,6 +40,11 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
     }
   }
 
+  dataChanged(newObj) {
+    console.log('changed : ' + JSON.stringify(newObj));
+    this.todoService.editTodoList(this.list);
+  }
+
   updateList() {
 
     console.log('todoListItem, id=' + this.todoListId);

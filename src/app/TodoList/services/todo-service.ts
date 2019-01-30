@@ -9,7 +9,7 @@ import { map } from 'rxjs/operators';
 @Injectable()
 export class TodoServiceProvider {
 
-  private static readonly TODO_LIST_DB_NAME:string = "TodoLists";
+  private static readonly TODO_LIST_DB_NAME:string = "/TodoLists";
 
   data:TodoList[] = [
     {
@@ -63,58 +63,72 @@ export class TodoServiceProvider {
     console.log('Hello TodoServiceProvider Provider');
     this.todoListsRef = afd.list(TodoServiceProvider.TODO_LIST_DB_NAME);
     
-    /*this.todoLists = this.todoListsRef.snapshotChanges().pipe(
+    this.todoLists = this.todoListsRef.snapshotChanges().pipe(
       map(changes => 
         changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
       )
-    );*/
-    
-    this.todoLists = this.todoListsRef.valueChanges();
+    );
+
     this.todoLists.subscribe(value => {
-      console.log('value=' + JSON.stringify(value));
-      console.log('value[0]=' + JSON.stringify(value[0]));
-      console.log('value[0][0].name=' + JSON.stringify(value[0][0].name));
-    })
+
+      console.log(JSON.stringify(value));
+    });
   }
 
-  public getLists(): Observable<TodoList[]> {
+  public getListsObservable(): Observable<TodoList[]> {
     return this.todoLists;
   }
 
   public getList(uuid:String): Observable<TodoList>{
-    return Observable.of(this.data.find(d => d.uuid == uuid));
+
+    return this.todoLists.pipe(
+      map(lists => lists.find(list => list.uuid === uuid))
+    );
   }
 
-  public getTodos(uuid:String) : Observable<TodoItem[]> {
-    return Observable.of(this.data.find(d => d.uuid == uuid).items);
+  public getTodos(listUuid:String) : Observable<TodoItem[]> {
+    //return Observable.of(this.thisTodoLists.find(d => d.uuid == uuid).items);
+    return this.getList(listUuid).pipe(
+      map(list => list.items)
+    );
   }
 
+  public editTodoList(list: TodoList) : Promise<void> {
 
-  public editTodo(listUuid : String, editedItem: TodoItem) {
-    let items = this.data.find(d => d.uuid == listUuid).items;
+    return this.todoListsRef.update(list.key, list);
+  }
+
+  public editTodo(listUuid : String, editedItem: TodoItem)/*: Observable<TodoItem>*/ {
+    /*let items = this.thisTodoLists.find(d => d.uuid == listUuid).items;
     let index = items.findIndex(value => value.uuid == editedItem.uuid);
-    items[index] = editedItem;
+    items[index] = editedItem;*/
+
+    /*this.getList(listUuid).pipe(
+      map(items => {
+        items.items.find(item => item.uuid === editedItem.uuid) = editedItem
+      })
+    )*/
   }
 
   public deleteTodo(listUuid: String, uuid: String) {
-    let items = this.data.find(d => d.uuid == listUuid).items;
+    /*let items = this.thisTodoLists.find(d => d.uuid == listUuid).items;
     let index = items.findIndex(value => value.uuid == uuid);
     if (index != -1) {
       items.splice(index,1);
-    }
+    }*/
   }
 
   public deleteList(listUuid: String) {
-    let index = this.data.findIndex(value => value.uuid == listUuid);
+    /*let index = this.thisTodoLists.findIndex(value => value.uuid == listUuid);
     console.log("list to delete index : " + index);
     if(index != -1) {
-      this.data.splice(index, 1);
-    }
+      this.thisTodoLists.splice(index, 1);
+    }*/
   }
 
   public createList(name: string) {
     
-    const newUuid = uuid();
+    /*const newUuid = uuid();
     let newList = {
       uuid : newUuid,
       name : name,
@@ -122,12 +136,13 @@ export class TodoServiceProvider {
     } as TodoList;
 
     console.log("new uuid created : " + newUuid + ";name=" + name);
-    this.data.push(newList);
+    this.thisTodoLists.push(newList);
+    return this.thisTodoLists;*/
   }
 
   public createItem(listUuid:string, item:TodoItem) {
 
-    let list = this.data.find(d => d.uuid == listUuid);
-    list.items.push(item);
+    /*let list = this.thisTodoLists.find(d => d.uuid == listUuid);
+    list.items.push(item);*/
   }
 }
