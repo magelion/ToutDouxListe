@@ -6,6 +6,12 @@ import { v4 as uuid } from 'uuid';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { map, tap } from 'rxjs/operators';
 
+/**
+ * DEPRECATED
+ * Real Time Database version.
+ * DO NOT USE THIS.
+ * Instead go check out todo-serviceProvider.ts
+ */
 @Injectable()
 export class TodoServiceProvider {
 

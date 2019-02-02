@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TodoList } from "./model/model";
-import { TodoServiceProvider } from './services/todo-service'
+import { TodoServiceProvider } from './services/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
 import { Observable } from 'rxjs';
@@ -22,7 +22,7 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lists = this.todoService.getListsObservable();
+    this.lists = this.todoService.getLists();
   }
 
   ngOnDestroy() {
@@ -36,7 +36,7 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   deleteList(list: TodoList) {
-    this.todoService.deleteList(list.uuid).subscribe();
+    this.todoService.deleteList(list.key);
   }
 
   nbUnfinishedItems(list: TodoList): number {

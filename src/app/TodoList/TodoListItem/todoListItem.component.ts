@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core'
 import {TodoItem, TodoList} from "../model/model";
-import {TodoServiceProvider} from '../services/todo-service';
+import {TodoServiceProvider} from '../services/todo-serviceProvider';
 
 @Component({
   selector: 'todoListItem',
@@ -51,7 +51,16 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
 
     if(this.todoListId != null && this.todoListId != undefined) {
 
+      console.log('todoListItem2, id=' + this.todoListId);
+
+      /*this.todoService.getLists().subscribe(lists => {
+
+        console.log('todoListItem3, value=' + JSON.stringify(lists));
+      });*/
+
       this.todoService.getList(this.todoListId).subscribe(value => {
+
+        console.log('todoListItem3, value=' + JSON.stringify(value));
 
         if (value) {
           this.list = value;
