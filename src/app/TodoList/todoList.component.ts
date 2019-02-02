@@ -36,7 +36,7 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   deleteList(list: TodoList) {
-    this.todoService.deleteList(list.uuid);
+    this.todoService.deleteList(list.uuid).subscribe();
   }
 
   nbUnfinishedItems(list: TodoList): number {
@@ -45,6 +45,9 @@ export class TodoComponent implements OnInit, OnDestroy {
       return list.items.filter(value => {
         return !value.complete;
       }).length;
+    }
+    else {
+      return 0;
     }
   }
 

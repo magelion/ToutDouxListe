@@ -36,7 +36,7 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
   deleteItem (item: TodoItem) {
 
     if(this.todoListId != null && this.todoListId != undefined) {
-      this.todoService.deleteTodo(this.todoListId, item.uuid);
+      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe();
     }
   }
 
@@ -52,8 +52,11 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
     if(this.todoListId != null && this.todoListId != undefined) {
 
       this.todoService.getList(this.todoListId).subscribe(value => {
-        this.list = value;
-        this.items = value.items;
+
+        if (value) {
+          this.list = value;
+          this.items = value.items;
+        }
       });
     }
   }
