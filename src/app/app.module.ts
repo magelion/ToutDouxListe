@@ -21,12 +21,11 @@ import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-
 import { AuthenticationPageModule } from '../pages/authentication/authentication.module';
 
 import { HttpModule } from '@angular/http';
-import { FirebaseProvider } from '../providers/firebase/firebase';
 
 import { GooglePlus } from '@ionic-native/google-plus/ngx';      
 import firebase from 'firebase';
 import { AngularFireModule } from '@angular/fire';
-import { AngularFireDatabaseModule } from 'angularfire2/database';
+import { AngularFirestoreModule } from 'angularfire2/firestore';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -34,7 +33,7 @@ export const firebaseConfig = {
   databaseURL: "https://toutdouxliste-1759c.firebaseio.com",
   projectId: "toutdouxliste-1759c",
   storageBucket: "toutdouxliste-1759c.appspot.com",
-  messagingSenderId: "262426639490"
+  messagingSenderId: "262426639490",
 };
 firebase.initializeApp(firebaseConfig);
 
@@ -52,8 +51,9 @@ firebase.initializeApp(firebaseConfig);
   imports: [
     BrowserModule,
     HttpModule,
-    AngularFireDatabaseModule,
     AngularFireModule.initializeApp(firebaseConfig),
+    AngularFirestoreModule,
+    //AngularFirestoreModule.enablePersistence(), // Caching for offline use
     IonicModule.forRoot(ToutDouxListeApp),
     TodoListItemCreationPageModule,
     AuthenticationPageModule
@@ -73,7 +73,6 @@ firebase.initializeApp(firebaseConfig);
   providers: [
     StatusBar,
     SplashScreen,
-    FirebaseProvider,
     TodoServiceProvider,
     UtilitiesService,
     GooglePlus,

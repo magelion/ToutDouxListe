@@ -3,6 +3,7 @@ import { TodoList } from "./model/model";
 import { TodoServiceProvider } from './services/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'todoList',
@@ -10,10 +11,10 @@ import { TodoItemsPage } from "../../pages/todo-items/todo-items";
 })
 export class TodoComponent implements OnInit, OnDestroy {
 
-  lists: TodoList[];
+  lists: Observable<TodoList[]>;
 
   constructor(
-    private todoService: TodoServiceProvider,
+    public todoService: TodoServiceProvider,
     private navController: NavController,
     private alertCtrl: AlertController
   ) {
@@ -21,9 +22,7 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.todoService.getLists().subscribe(value => {
-      this.lists = value;
-    });
+    this.lists = this.todoService.getLists();
   }
 
   ngOnDestroy() {
@@ -37,13 +36,19 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   deleteList(list: TodoList) {
-    this.todoService.deleteList(list.uuid);
+    this.todoService.deleteList(list.key);
   }
 
   nbUnfinishedItems(list: TodoList): number {
-    return list.items.filter(value => {
-      return !value.complete;
-    }).length;
+
+    if(list.items) {
+      return list.items.filter(value => {
+        return !value.complete;
+      }).length;
+    }
+    else {
+      return 0;
+    }
   }
 
   createList(name: string) {
@@ -103,6 +108,7 @@ export class TodoComponent implements OnInit, OnDestroy {
           handler: data => {
             console.log('Saved clicked');
             list.name = data.name;
+            this.todoService.editTodoList(list);
           }
         }
       ]

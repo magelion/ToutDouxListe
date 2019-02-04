@@ -1,7 +1,7 @@
 import { Component, OnChanges } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { TodoList } from '../../app/TodoList/model/model';
-import { TodoServiceProvider } from '../../app/TodoList/services/todo-service';
+import { TodoServiceProvider } from '../../app/TodoList/services/todo-serviceProvider';
 import { v4 as uuid } from 'uuid';
 
 @IonicPage()
@@ -34,15 +34,21 @@ export class TodoListItemCreationPage implements OnChanges {
 
     if(this.todoListId != null && this.todoListId != undefined) {
 
-      this.todoService.getList(this.todoListId).subscribe(value => {
-        this.list = value;
-      });
+      this.todoService.getList(this.todoListId).subscribe(
+        value => {
+          this.list = value;
+          console.log("Item creation page : list get : " + JSON.stringify(this.list));
+        },
+        err => {
+          console.log("Item creation page : error on getting list : " + err);
+        }
+      );
     }
   }
 
   createTodoItemCommand() {
 
-    if(this.todoListId != null && this.todoListId != undefined) {
+    if(this.todoListId != null && this.todoListId != undefined && this.list) {
       
       let item = {
         uuid: uuid(),
@@ -50,7 +56,7 @@ export class TodoListItemCreationPage implements OnChanges {
         desc: this.desc,
         complete: false,
       };
-      this.todoService.createItem(this.list.uuid, item);
+      this.todoService.createItem(this.list.key, item).subscribe();
 
       this.viewCtrl.dismiss();
     }
