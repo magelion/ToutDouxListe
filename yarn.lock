@@ -2742,10 +2742,10 @@ ionic-angular@^3.9.2:
   resolved "https://registry.yarnpkg.com/ionic-angular/-/ionic-angular-3.9.2.tgz#75053e4a422aaae7d7cd668cc92cfd5cb29d38cc"
   integrity sha512-BEZ6magY1i5GwM9ki/MOpszUz62+g518HsGICtw9TE1D4v9Eb6n/o7e+X0vtvpK4TdouFjQ8r5XA9VPAKW9/+Q==
 
-ionic@^4.9.0:
-  version "4.9.0"
-  resolved "https://registry.yarnpkg.com/ionic/-/ionic-4.9.0.tgz#56f329774e159df36f2fc39e8e8889b7f1cfb37d"
-  integrity sha512-XK5XWQqTxPPtH27694kXBbC0rsh8NMA+1ZrhuY9HOuSTpRBzLkZMHlTqd4WCEFm3qi5Ll3Ehq6+DakBDknQsRA==
+ionic@^4.10.1:
+  version "4.10.1"
+  resolved "https://registry.yarnpkg.com/ionic/-/ionic-4.10.1.tgz#d389b655f5c67c4af6d0195f04fe0db23d38d987"
+  integrity sha512-nqwFQ1Ec3Dtg9EqMQGXO003bNlVZuH+/hKU+asmX+DO5V6Am6E+KHrgBRRzSKqmuF+l5Wk81EvMD8L5tg2sLRw==
   dependencies:
     "@ionic/cli-framework" "1.6.0"
     "@ionic/discover" "1.0.11"
