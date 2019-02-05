@@ -26,6 +26,8 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import firebase from 'firebase';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
+import { AngularFireAuth } from 'angularfire2/auth';
+import { AuthenticationProvider } from '../providers/authentication/authentication';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -46,7 +48,7 @@ firebase.initializeApp(firebaseConfig);
     TabsPage,
     TodoComponent,
     TodoListItem,
-    TodoItemsPage
+    TodoItemsPage,
   ],
   imports: [
     BrowserModule,
@@ -76,7 +78,9 @@ firebase.initializeApp(firebaseConfig);
     TodoServiceProvider,
     UtilitiesService,
     GooglePlus,
+    AngularFireAuth,
+    AuthenticationProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
-  ]
+  ],
 })
 export class AppModule {}

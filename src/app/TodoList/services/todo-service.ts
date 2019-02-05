@@ -5,6 +5,7 @@ import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { map, tap } from 'rxjs/operators';
+import { AuthenticationProvider } from '../../../providers/authentication/authentication';
 
 /**
  * DEPRECATED
@@ -20,27 +21,30 @@ export class TodoServiceProvider {
   private todoListsRef:AngularFireList<TodoList>;
   private todoLists:Observable<TodoList[]>
 
-  constructor(private afd: AngularFireDatabase) {
+  constructor(afd: AngularFireDatabase, authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
-    this.todoListsRef = afd.list(TodoServiceProvider.TODO_LIST_DB_NAME);
 
-    this.todoLists = this.todoListsRef.snapshotChanges().pipe(
-      map(changes => 
-        changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
-      )
-    );
+    authProvider.getUser().subscribe(user => {
 
-    this.todoLists.subscribe(value => {
-
-      value.forEach(list => {
-        
-      // Initilize any empty list
-        if(!list.items) {
-          list.items = new Array();
-        }
+      this.todoListsRef = afd.list(user.uid + '/' + TodoServiceProvider.TODO_LIST_DB_NAME);
+      this.todoLists = this.todoListsRef.snapshotChanges().pipe(
+        map(changes => 
+          changes.map(c => ({ key: c.payload.key, ...c.payload.val() }))
+        )
+      );
+  
+      this.todoLists.subscribe(value => {
+  
+        value.forEach(list => {
+          
+        // Initilize any empty list
+          if(!list.items) {
+            list.items = new Array();
+          }
+        });
+        console.log(JSON.stringify(value));
       });
-      console.log(JSON.stringify(value));
-    });
+    })
   }
 
   public getListsObservable(): Observable<TodoList[]> {

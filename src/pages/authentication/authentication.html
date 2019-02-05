@@ -1,12 +1,13 @@
-<ion-header>
+<button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!user">
+  <ion-icon name="logo-googleplus"></ion-icon>
+  Login with Google
+</button>
 
-  <ion-navbar>
-    <ion-title>Authentication</ion-title>
-  </ion-navbar>
-
-</ion-header>
-
-
-<ion-content padding>
-
-</ion-content>
+<ion-item *ngIf="user">
+  <ion-avatar item-left>
+    <img [src]="user.photoURL">
+  </ion-avatar>
+  <h2>{{ user.displayName}}</h2>
+  <h3>{{ user.email}}</h3>
+  <button ion-button (click)="logout()">Log out</button>
+</ion-item>

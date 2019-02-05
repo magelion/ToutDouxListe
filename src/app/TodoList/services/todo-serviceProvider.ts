@@ -5,6 +5,7 @@ import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { map, tap, take } from 'rxjs/operators';
+import { AuthenticationProvider } from '../../../providers/authentication/authentication';
 
 @Injectable()
 export class TodoServiceProvider {
@@ -14,17 +15,22 @@ export class TodoServiceProvider {
   private todoListsRef: AngularFirestoreCollection<TodoList>;
   private todoLists:Observable<TodoList[]>;
 
-  constructor(public afs: AngularFirestore) {
+  constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
-    this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
-    
-    this.updateLists();
+
+    if(authProvider.isConnected()) {
+      authProvider.getUser().subscribe(user => {
+        this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
+        this.updateLists();
+      });
+    }
   }
 
   private updateLists() : Observable<TodoList[]> {
     this.todoLists = this.todoListsRef.snapshotChanges().pipe(
 
       map(actions => actions.map(a => {
+
         const data = a.payload.doc.data() as TodoList;
         const key = a.payload.doc.id;
 
@@ -103,11 +109,15 @@ export class TodoServiceProvider {
       items : new Array()
     } as TodoList;
 
-    return this.todoListsRef.add(newList).then(newListRef => {
+    return this.todoListsRef.add(newList)
+    .then(newListRef => {
       
       newList.uuid = newListRef.id;
       newList.key = newListRef.id;
       this.editTodoList(newList);
+    })
+    .catch(error => {
+      console.log("CreateList error : " + JSON.stringify(error));
     });
   }
 
