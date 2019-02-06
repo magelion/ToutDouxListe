@@ -1,3 +1,5 @@
+<ion-content>
+
 <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!user">
   <ion-icon name="logo-googleplus"></ion-icon>
   Login with Google
@@ -11,3 +13,4 @@
   <h3>{{ user.email}}</h3>
   <button ion-button (click)="logout()">Log out</button>
 </ion-item>
+</ion-content>

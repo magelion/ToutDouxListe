@@ -18,12 +18,12 @@ export class TodoServiceProvider {
   constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
 
-    if(authProvider.isConnected()) {
-      authProvider.getUser().subscribe(user => {
+    //if(authProvider.isConnected()) {
+      //authProvider.getUser().subscribe(user => {
         this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
         this.updateLists();
-      });
-    }
+      //});
+    //}
   }
 
   private updateLists() : Observable<TodoList[]> {

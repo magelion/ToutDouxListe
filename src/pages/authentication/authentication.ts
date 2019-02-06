@@ -1,7 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage } from 'ionic-angular';
+import { IonicPage, NavController } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { Observable } from 'rxjs';
+import { HomePage } from '../home/home';
+import { TabsPage } from '../tabs/tabs';
 
 @IonicPage()
 @Component({
@@ -13,7 +15,9 @@ export class AuthenticationPage {
   private userObs: Observable<firebase.User>
   public user: firebase.User
 
-  constructor(private authProvider: AuthenticationProvider) {
+  constructor(
+    private authProvider: AuthenticationProvider,
+    private navController: NavController) {
 
     this.userObs = this.authProvider.getUser();
     this.updateUser();
@@ -23,6 +27,7 @@ export class AuthenticationPage {
     this.userObs.subscribe(user => {
       
       this.user = user;
+      this.navController.setRoot(TabsPage);
     });
   }
 
