@@ -2,7 +2,7 @@ import { Injectable } from '@angular/core';
 import { Platform } from 'ionic-angular';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
-import { Observable } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import firebase from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { User } from '../../app/TodoList/model/model';
@@ -10,21 +10,24 @@ import { User } from '../../app/TodoList/model/model';
 @Injectable()
 export class AuthenticationProvider {
 
-  private user: Observable<firebase.User>
+  private user: BehaviorSubject<User>;
+  private userObs: Observable<User>;
 
   constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
 
-    this.user = fireBasesAuth.authState;
+    this.userObs = fireBasesAuth.authState;
+    this.user = new BehaviorSubject(null);
   }
 
   public canLoginUser(): boolean {
-    return this.user === null && this.googlePlus !== null && !this.isConnected();
+    return this.userObs === null && this.googlePlus !== null && !this.isConnected();
   }
 
   public googleLogin(): Promise<User> {
 
     var result: Promise<firebase.User>;
 
+    // Actually, those promises are useless as they login synchronously
     if (this.platform.is('cordova')) {
       console.log("Platform : Cordova");
       result = this.loginUserGoogleNative();
@@ -39,6 +42,8 @@ export class AuthenticationProvider {
     result = result.then(user => {
       console.log("google login -> then");
       this.addUserInDbIfNotExist(user);
+
+      this.user.next(user);
       return user;
     });
 
@@ -48,14 +53,12 @@ export class AuthenticationProvider {
   private addUserInDbIfNotExist(user: firebase.User) {
 
     console.log("addUserInDbIfNotExist");
-    const users: AngularFirestoreCollection<User> = this.db.collection('Users/');
+    const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
     console.log("user collection = " + users);
 
-    const userDoc = users.doc(user.uid);
-    userDoc.snapshotChanges().map(action => {
+    users.snapshotChanges().map(action => {
 
-      if(!action.payload.exists) {
-
+      if(action.length === 0) {
         const data : User = {
           uid: user.uid,
           displayName: user.displayName,
@@ -108,8 +111,8 @@ export class AuthenticationProvider {
     }
   }
 
-  public getUser(): Observable<firebase.User> {
-    return this.user;
+  public getUser(): Observable<User> {
+    return this.user.asObservable();
   }
 
   public isConnected(): boolean {
