@@ -4,7 +4,8 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable } from 'rxjs';
 import firebase from 'firebase';
-import { AngularFirestore } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { User } from '../../app/TodoList/model/model';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -20,9 +21,10 @@ export class AuthenticationProvider {
     return this.user === null && this.googlePlus !== null && !this.isConnected();
   }
 
-  public googleLogin(): Promise<firebase.User> {
+  public googleLogin(): Promise<User> {
 
     var result: Promise<firebase.User>;
+
     if (this.platform.is('cordova')) {
       console.log("Platform : Cordova");
       result = this.loginUserGoogleNative();
@@ -31,9 +33,13 @@ export class AuthenticationProvider {
       result = this.loginUserGoogleWeb();
     }
 
+    console.log("result = " + JSON.stringify(result));
+
     // Insert user in db if first connection
-    result.then(user => {
+    result = result.then(user => {
+      console.log("google login -> then");
       this.addUserInDbIfNotExist(user);
+      return user;
     });
 
     return result;
@@ -41,17 +47,24 @@ export class AuthenticationProvider {
 
   private addUserInDbIfNotExist(user: firebase.User) {
 
-    const users = this.db.collection('Users/');
-    users.doc(user.uid).snapshotChanges().map(action => {
+    console.log("addUserInDbIfNotExist");
+    const users: AngularFirestoreCollection<User> = this.db.collection('Users/');
+    console.log("user collection = " + users);
+
+    const userDoc = users.doc(user.uid);
+    userDoc.snapshotChanges().map(action => {
+
       if(!action.payload.exists) {
-        const data = {
+
+        const data : User = {
           uid: user.uid,
-          name: user.displayName,
-          email: user.email
+          displayName: user.displayName,
+          email: user.email,
+          photoURL : user.photoURL
         }
         users.add(data);
       }
-    })
+    }).subscribe();
   }
 
 
@@ -70,12 +83,12 @@ export class AuthenticationProvider {
           'webClientId': 'your-webClientId-XYZ.apps.googleusercontent.com',
           'offline': true,
           'scopes': 'profile email'
-        })
+        });
 
-        return await this.fireBasesAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken))
+        return this.fireBasesAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken));
 
       } catch (err) {
-        console.log(err)
+        console.log(err);
       }
     }
   }
@@ -89,9 +102,9 @@ export class AuthenticationProvider {
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      return new Promise<firebase.User>(resolve => this.fireBasesAuth.auth.signInWithPopup(provider));
+      return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => userCredential.user);
     } catch (err) {
-      console.log(err)
+      console.log(err);
     }
   }
 
