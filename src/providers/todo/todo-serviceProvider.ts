@@ -1,11 +1,11 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList} from "../model/model";
+import {TodoItem, TodoList} from "../../app/TodoList/model/model";
 import {Observable} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { map, tap, take } from 'rxjs/operators';
-import { AuthenticationProvider } from '../../../providers/authentication/authentication';
+import { AuthenticationProvider } from '../authentication/authentication';
 
 @Injectable()
 export class TodoServiceProvider {

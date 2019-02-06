@@ -12,7 +12,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 import { TodoComponent } from './TodoList/todoList.component';
-import { TodoServiceProvider } from './TodoList/services/todo-serviceProvider';
+import { TodoServiceProvider } from '../providers/todo/todo-serviceProvider';
 import { UtilitiesService } from './utilities/UtilitiesService';
 import { TodoItemsPage } from "../pages/todo-items/todo-items";
 import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';

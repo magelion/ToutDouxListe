@@ -1,6 +1,6 @@
 import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core'
 import {TodoItem, TodoList} from "../model/model";
-import {TodoServiceProvider} from '../services/todo-serviceProvider';
+import { TodoServiceProvider } from '../../../providers/todo/todo-serviceProvider';
 
 @Component({
   selector: 'todoListItem',

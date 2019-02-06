@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core'
 import { TodoList } from "./model/model";
-import { TodoServiceProvider } from './services/todo-serviceProvider'
+import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
 import { Observable } from 'rxjs';

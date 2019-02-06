@@ -1,7 +1,7 @@
 import { Component, OnChanges } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
 import { TodoList } from '../../app/TodoList/model/model';
-import { TodoServiceProvider } from '../../app/TodoList/services/todo-serviceProvider';
+import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { v4 as uuid } from 'uuid';
 
 @IonicPage()
