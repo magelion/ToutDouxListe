@@ -28,6 +28,7 @@ import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { AuthenticationProvider } from '../providers/authentication/authentication';
+import { AcountPage } from '../pages/acount/acount';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -49,6 +50,7 @@ firebase.initializeApp(firebaseConfig);
     TodoComponent,
     TodoListItem,
     TodoItemsPage,
+    AcountPage,
   ],
   imports: [
     BrowserModule,
@@ -70,7 +72,8 @@ firebase.initializeApp(firebaseConfig);
     TodoComponent,
     TodoListItem,
     TodoItemsPage,
-    TodoListItemCreationPage
+    TodoListItemCreationPage,
+    AcountPage,
   ],
   providers: [
     StatusBar,
