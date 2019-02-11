@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
-import {Observable} from "rxjs";
+import {Observable, BehaviorSubject} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
@@ -14,26 +14,35 @@ export class TodoServiceProvider {
 
   private todoListsRef: AngularFirestoreCollection<TodoList>;
   private todoLists:Observable<TodoList[]>;
+  private todoListsSub$: BehaviorSubject<Observable<TodoList[]>>;
   private user:User;
 
   constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
 
-    this.todoListsRef = afs.collection("NOT_EXISTING_COL");
+    this.todoListsRef = afs.collection('NOT_EXISTING_COL');
+    this.todoListsSub$ = new BehaviorSubject(null);
     authProvider.getUser().subscribe(user => {
-        
+      
       if(user != null) {
         this.user = user;
         console.log('TodoService : user = ' + JSON.stringify(user));
+        this.todoListsRef = null;
         this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
           ref => ref.where('owner', '==', user.uid));
-  
-        this.updateLists();
+
+        this.todoListsSub$.next(this.updateLists());
       }
     });
   }
 
+  public getTodoListsSub() : Observable<Observable<TodoList[]>> {
+    return this.todoListsSub$.asObservable();
+  }
+
   private updateLists() : Observable<TodoList[]> {
+
+    console.log('updateList called');
     this.todoLists = this.todoListsRef.snapshotChanges().pipe(
 
       map(actions => actions.map(a => {

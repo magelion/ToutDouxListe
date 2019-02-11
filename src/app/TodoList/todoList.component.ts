@@ -22,7 +22,10 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.lists = this.todoService.getLists();
+    this.todoService.getTodoListsSub().subscribe(obs => {
+
+      this.lists = obs;
+    })
   }
 
   ngOnDestroy() {
@@ -30,13 +33,14 @@ export class TodoComponent implements OnInit, OnDestroy {
   }
 
   selectList(list: TodoList) {
+    console.log('selectList: uuid=', list.uuid);
     this.navController.push(TodoItemsPage, {
       uuid: list.uuid
     });
   }
 
   deleteList(list: TodoList) {
-    this.todoService.deleteList(list.key);
+    this.todoService.deleteList(list.uuid);
   }
 
   nbUnfinishedItems(list: TodoList): number {

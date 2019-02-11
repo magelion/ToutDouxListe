@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { Observable } from 'rxjs';
+import { User } from '../../app/TodoList/model/model';
 
 @IonicPage()
 @Component({
@@ -10,8 +11,8 @@ import { Observable } from 'rxjs';
 })
 export class AuthenticationPage {
 
-  private userObs: Observable<firebase.User>
-  public user: firebase.User
+  private userObs: Observable<User>
+  public user: User
 
   constructor(private authProvider: AuthenticationProvider) {
 

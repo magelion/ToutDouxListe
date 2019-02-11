@@ -47,20 +47,10 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
 
   updateList() {
 
-    console.log('todoListItem, id=' + this.todoListId);
 
     if(this.todoListId != null && this.todoListId != undefined) {
 
-      console.log('todoListItem2, id=' + this.todoListId);
-
-      /*this.todoService.getLists().subscribe(lists => {
-
-        console.log('todoListItem3, value=' + JSON.stringify(lists));
-      });*/
-
       this.todoService.getList(this.todoListId).subscribe(value => {
-
-        console.log('todoListItem3, value=' + JSON.stringify(value));
 
         if (value) {
           this.list = value;
