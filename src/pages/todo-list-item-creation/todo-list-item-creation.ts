@@ -56,7 +56,7 @@ export class TodoListItemCreationPage implements OnChanges {
         desc: this.desc,
         complete: false,
       };
-      this.todoService.createItem(this.list.key, item).subscribe();
+      this.todoService.createItem(this.list.uuid, item).subscribe();
 
       this.viewCtrl.dismiss();
     }
