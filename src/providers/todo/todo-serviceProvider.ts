@@ -17,7 +17,7 @@ export class TodoServiceProvider {
   private todoListsSub$: BehaviorSubject<Observable<TodoList[]>>;
   private user:User;
 
-  constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
+  constructor(private afs: AngularFirestore, authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
 
     this.todoListsRef = afs.collection('NOT_EXISTING_COL');
