@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList} from "../../app/TodoList/model/model";
+import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
 import {Observable} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
@@ -14,6 +14,7 @@ export class TodoServiceProvider {
 
   private todoListsRef: AngularFirestoreCollection<TodoList>;
   private todoLists:Observable<TodoList[]>;
+  private user:User;
 
   constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
@@ -66,7 +67,7 @@ export class TodoServiceProvider {
 
   public editTodoList(list: TodoList) : Promise<void> {
 
-    return this.getTodoListDoc(list.key).update(list);
+    return this.getTodoListDoc(list.uuid).update(list);
   }
 
   public editTodo(listUuid : string, editedItem: TodoItem) : Observable<Promise<void>> {
@@ -106,14 +107,14 @@ export class TodoServiceProvider {
     let newList = {
       uuid : newUuid,
       name : name,
-      items : new Array()
+      items : new Array(),
+      owner : this.user.uid
     } as TodoList;
 
     return this.todoListsRef.add(newList)
     .then(newListRef => {
       
       newList.uuid = newListRef.id;
-      newList.key = newListRef.id;
       this.editTodoList(newList);
     })
     .catch(error => {

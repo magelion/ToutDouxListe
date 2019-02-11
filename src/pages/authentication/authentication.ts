@@ -4,6 +4,7 @@ import { AuthenticationProvider } from '../../providers/authentication/authentic
 import { Observable } from 'rxjs';
 import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
+import { User } from '../../app/TodoList/model/model';
 
 @IonicPage()
 @Component({
@@ -12,8 +13,8 @@ import { TabsPage } from '../tabs/tabs';
 })
 export class AuthenticationPage {
 
-  private userObs: Observable<firebase.User>
-  public user: firebase.User
+  private userObs: Observable<User>
+  public user: User
 
   constructor(
     private authProvider: AuthenticationProvider,
@@ -27,7 +28,9 @@ export class AuthenticationPage {
     this.userObs.subscribe(user => {
       
       this.user = user;
-      this.navController.setRoot(TabsPage);
+      if (this.user!=null){
+        this.navController.setRoot(TabsPage);
+      }
     });
   }
 

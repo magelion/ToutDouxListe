@@ -1,8 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams } from 'ionic-angular';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { AuthenticationPage } from '../authentication/authentication';
+import { User } from '../../app/TodoList/model/model';
 
 /**
  * Generated class for the AcountPage page.
@@ -17,12 +18,12 @@ import { AuthenticationPage } from '../authentication/authentication';
   templateUrl: 'acount.html',
 })
 export class AcountPage {
-  private userObs: Observable<firebase.User>
-  public user: firebase.User
+  private userObs: Observable<User>
+  public user: User
 
   constructor(
     private authProvider: AuthenticationProvider,
-    private navController: NavController) {
+    private navController: NavController, private app: App) {
 
     this.userObs = this.authProvider.getUser();
     this.updateUser();
@@ -52,8 +53,12 @@ export class AcountPage {
   }
 
   logout() {
-    this.authProvider.signOut();
-    this.navController.setRoot(AuthenticationPage);
+    this.authProvider.signOut()
+    .then(()=> {
+      console.log('logout complete'); 
+      // this.navController.setRoot(AuthenticationPage);});
+      this.app.getRootNav().setRoot(AuthenticationPage);});
+    
   }
 
 }

@@ -1,8 +1,8 @@
 export interface TodoList {
   uuid : string,
   name : string,
-  key? : string, // After delebaration, key and uuid shall be the same : the database id
-  items : TodoItem[]
+  items : TodoItem[],
+  owner : string
 }
 
 export interface TodoItem {
