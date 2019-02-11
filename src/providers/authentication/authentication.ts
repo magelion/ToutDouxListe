@@ -71,8 +71,10 @@ export class AuthenticationProvider {
   }
 
 
-  public signOut() {
-    this.fireBasesAuth.auth.signOut();
+  public signOut() : Promise<void>{
+    return this.fireBasesAuth.auth.signOut().then(() => {
+      this.user.next(null);
+    });
   }
 
   private async loginUserGoogleNative(): Promise<firebase.User> {

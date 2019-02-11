@@ -1,23 +1,29 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController } from 'ionic-angular';
-import { AuthenticationProvider } from '../../providers/authentication/authentication';
+import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
-import { TabsPage } from '../tabs/tabs';
+import { AuthenticationProvider } from '../../providers/authentication/authentication';
+import { AuthenticationPage } from '../authentication/authentication';
 import { User } from '../../app/TodoList/model/model';
+
+/**
+ * Generated class for the AcountPage page.
+ *
+ * See https://ionicframework.com/docs/components/#navigation for more info on
+ * Ionic pages and navigation.
+ */
 
 @IonicPage()
 @Component({
-  selector: 'page-authentication',
-  templateUrl: 'authentication.html',
+  selector: 'page-acount',
+  templateUrl: 'acount.html',
 })
-export class AuthenticationPage {
-
+export class AcountPage {
   private userObs: Observable<User>
   public user: User
 
   constructor(
     private authProvider: AuthenticationProvider,
-    private navController: NavController) {
+    private navController: NavController, private app: App) {
 
     this.userObs = this.authProvider.getUser();
     this.updateUser();
@@ -27,9 +33,6 @@ export class AuthenticationPage {
     this.userObs.subscribe(user => {
       
       this.user = user;
-      if (this.user!=null){
-        this.navController.setRoot(TabsPage);
-      }
     });
   }
 
@@ -50,6 +53,12 @@ export class AuthenticationPage {
   }
 
   logout() {
-    this.authProvider.signOut();
+    this.authProvider.signOut()
+    .then(()=> {
+      console.log('logout complete'); 
+      // this.navController.setRoot(AuthenticationPage);});
+      this.app.getRootNav().setRoot(AuthenticationPage);});
+    
   }
+
 }
