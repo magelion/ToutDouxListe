@@ -54,7 +54,7 @@ export class AuthenticationProvider {
 
     console.log("addUserInDbIfNotExist");
     const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
-    console.log("user collection = " + users);
+    //console.log("user collection = " + users);
 
     users.snapshotChanges().map(action => {
 
