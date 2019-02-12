@@ -58,6 +58,7 @@ export class TodoServiceProvider {
           data.items = new Array();
         }
 
+        // Technically this is useless now (that was for previous version support)
         data.uuid = key;
 
         return { key, ...data };

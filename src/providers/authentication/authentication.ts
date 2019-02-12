@@ -4,8 +4,9 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable, BehaviorSubject } from 'rxjs';
 import firebase from 'firebase';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
 import { User } from '../../app/TodoList/model/model';
+import { tap, map, take } from 'rxjs/operators';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -21,7 +22,8 @@ export class AuthenticationProvider {
         uid: fireBaseUser.uid,
         displayName: fireBaseUser.displayName,
         email: fireBaseUser.email,
-        photoURL : fireBaseUser.photoURL
+        photoURL : fireBaseUser.photoURL,
+        contacts : []
       }
       
       return data;
@@ -47,19 +49,23 @@ export class AuthenticationProvider {
 
     var result: Promise<User>;
 
+    var loginResult: Promise<firebase.User>;
     // Actually, those promises are useless as they login synchronously
     if (this.platform.is('cordova')) {
       console.log("Platform : Cordova");
-      result = this.loginUserGoogleNative();
+      loginResult = this.loginUserGoogleNative();
     } else {
       console.log("Platform : Other");
-      result = this.loginUserGoogleWeb();
+      loginResult = this.loginUserGoogleWeb();
     }
 
     // Insert user in db if first connection
-    result = result.then(user => {
-      console.log("google login -> then. User=" + JSON.stringify(user));
+    result = loginResult.then(async firebaseUser => {
+      console.log("google login -> then. User=" + JSON.stringify(firebaseUser));
 
+      const user = await this.GetUserFromFirebaseUser(firebaseUser);
+
+      console.log("User fetched : " + JSON.stringify(user))
       if(user) {
         
         this.addUserInDbIfNotExist(user);
@@ -69,6 +75,28 @@ export class AuthenticationProvider {
     });
 
     return result;
+  }
+
+  private GetUserFromFirebaseUser(firebaseUser : firebase.User) : Promise<User> {
+
+    if (!firebaseUser) return null;
+
+    console.log('GetUserFromFirebaseUser : uid=' + firebaseUser.uid);
+    const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', firebaseUser.uid));
+
+    return users.valueChanges().pipe(
+      take(1),
+      map(userList => {
+        
+        if(userList.length < 1) return null;
+
+        const user: User = userList[0];
+        
+        if(!user.contacts) user.contacts = new Array();
+
+        return user;
+      }),
+    ).toPromise();
   }
 
   private addUserInDbIfNotExist(user: User) {
@@ -84,7 +112,8 @@ export class AuthenticationProvider {
           uid: user.uid,
           displayName: user.displayName,
           email: user.email,
-          photoURL : user.photoURL
+          photoURL : user.photoURL,
+          contacts : []
         }
         users.add(data);
       }
@@ -98,7 +127,7 @@ export class AuthenticationProvider {
     });
   }
 
-  private async loginUserGoogleNative(): Promise<User> {
+  private async loginUserGoogleNative(): Promise<firebase.User> {
 
     console.log('LogInUserGoogleNative');
     try {
@@ -113,14 +142,7 @@ export class AuthenticationProvider {
       return this.fireBasesAuth.auth.signInAndRetrieveDataWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(credentials => {
 
         const fireBaseUser: firebase.User = credentials.user;
-        console.log('firebase user=' + JSON.stringify(fireBaseUser));
-        const data : User = {
-          uid: fireBaseUser.uid,
-          displayName: fireBaseUser.displayName,
-          email: fireBaseUser.email,
-          photoURL : fireBaseUser.photoURL
-        }
-        return data;
+        return fireBaseUser;
       });
 
     } catch (err) {
@@ -132,7 +154,7 @@ export class AuthenticationProvider {
    * Log in with google by web.
    * Used with simulator.
    */
-  private async loginUserGoogleWeb(): Promise<User> {
+  private async loginUserGoogleWeb(): Promise<firebase.User> {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
@@ -140,15 +162,7 @@ export class AuthenticationProvider {
       return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => {
         
         const fireBaseUser:firebase.User = userCredential.user;
-        console.log('firebase user=' + JSON.stringify(fireBaseUser));
-        const data : User = {
-          uid: fireBaseUser.uid,
-          displayName: fireBaseUser.displayName,
-          email: fireBaseUser.email,
-          photoURL : fireBaseUser.photoURL
-        }
-
-        return data;
+        return fireBaseUser;
       });
     } catch (err) {
       console.log(err);
