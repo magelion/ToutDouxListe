@@ -28,6 +28,7 @@ export class AuthenticationProvider {
   }
 
   public canLoginUser(): boolean {
+    console.log('canLoginUser : userObs=' + this.userObs$ + ', googlePlus=' + this.googlePlus + ', this.isConnected=' + this.isConnected());
     return this.userObs$ === null && this.googlePlus !== null && !this.isConnected();
   }
 
@@ -88,8 +89,11 @@ export class AuthenticationProvider {
 
   private async loginUserGoogleNative(): Promise<User> {
 
+    console.log('LogInUserGoogleNative');
     // Check if plug in available
+    // Test
     if (this.canLoginUser()) {
+    }
 
       try {
 
@@ -99,8 +103,10 @@ export class AuthenticationProvider {
           'scopes': 'profile email'
         });
 
-        return this.fireBasesAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(fireBaseUser => {
+        console.log('gplusUser=' + JSON.stringify(gplusUser));
+        return this.fireBasesAuth.auth.signInAndRetrieveDataWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(credentials => {
 
+          const fireBaseUser: firebase.User = credentials.user;
           console.log('firebase user=' + JSON.stringify(fireBaseUser));
           const data : User = {
             uid: fireBaseUser.uid,
@@ -114,7 +120,7 @@ export class AuthenticationProvider {
       } catch (err) {
         console.log(err);
       }
-    }
+    //}
   }
 
   /**
@@ -149,6 +155,12 @@ export class AuthenticationProvider {
   }
 
   public isConnected(): boolean {
-    return this.fireBasesAuth.auth.currentUser !== null;
+    console.log('IsConnected.uid=' + this.fireBasesAuth.auth.currentUser.uid);
+    if (this.fireBasesAuth.auth.currentUser && this.fireBasesAuth.auth.currentUser.uid) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

@@ -1,16 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { AuthenticationPage } from '../authentication/authentication';
 import { User } from '../../app/TodoList/model/model';
-
-/**
- * Generated class for the AcountPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -23,7 +16,7 @@ export class AcountPage {
 
   constructor(
     private authProvider: AuthenticationProvider,
-    private navController: NavController, private app: App) {
+    private app: App) {
 
     this.userObs = this.authProvider.getUser();
     this.updateUser();
@@ -43,7 +36,7 @@ export class AcountPage {
   public loginUserGoogle() {
 
     (<Promise<any>>this.authProvider.googleLogin())
-    .then((res) => {
+    .then(() => {
       this.updateUser();
     });
   }
