@@ -26,7 +26,7 @@ import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import firebase from 'firebase';
 import { AngularFireModule } from '@angular/fire';
 import { AngularFirestoreModule } from 'angularfire2/firestore';
-import { AngularFireAuth } from 'angularfire2/auth';
+import { AngularFireAuth, AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthenticationProvider } from '../providers/authentication/authentication';
 import { AcountPage } from '../pages/acount/acount';
 
@@ -57,6 +57,7 @@ firebase.initializeApp(firebaseConfig);
     HttpModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
+    AngularFireAuthModule,
     //AngularFirestoreModule.enablePersistence(), // Caching for offline use
     IonicModule.forRoot(ToutDouxListeApp),
     TodoListItemCreationPageModule,
@@ -81,7 +82,6 @@ firebase.initializeApp(firebaseConfig);
     TodoServiceProvider,
     UtilitiesService,
     GooglePlus,
-    AngularFireAuth,
     AuthenticationProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
   ],

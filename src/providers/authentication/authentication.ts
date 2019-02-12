@@ -10,22 +10,30 @@ import { User } from '../../app/TodoList/model/model';
 @Injectable()
 export class AuthenticationProvider {
 
-  private user: BehaviorSubject<User>;
-  private userObs: Observable<User>;
+  private userSub$: BehaviorSubject<User>;
+  private userObs$: Observable<User>;
 
   constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
 
-    this.userObs = fireBasesAuth.authState;
-    this.user = new BehaviorSubject(null);
+    this.userObs$ = fireBasesAuth.authState.map(fireBaseUser => {
+      const data : User = {
+        uid: fireBaseUser.uid,
+        displayName: fireBaseUser.displayName,
+        email: fireBaseUser.email,
+        photoURL : fireBaseUser.photoURL
+      }
+      return data;
+    });
+    this.userSub$ = new BehaviorSubject(null);
   }
 
   public canLoginUser(): boolean {
-    return this.userObs === null && this.googlePlus !== null && !this.isConnected();
+    return this.userObs$ === null && this.googlePlus !== null && !this.isConnected();
   }
 
   public googleLogin(): Promise<User> {
 
-    var result: Promise<firebase.User>;
+    var result: Promise<User>;
 
     // Actually, those promises are useless as they login synchronously
     if (this.platform.is('cordova')) {
@@ -36,23 +44,24 @@ export class AuthenticationProvider {
       result = this.loginUserGoogleWeb();
     }
 
-    console.log("result = " + JSON.stringify(result));
-
     // Insert user in db if first connection
     result = result.then(user => {
-      console.log("google login -> then");
-      this.addUserInDbIfNotExist(user);
+      console.log("google login -> then. User=" + JSON.stringify(user));
 
-      this.user.next(user);
+      if(user) {
+        
+        this.addUserInDbIfNotExist(user);
+        this.userSub$.next(user);
+      }
       return user;
     });
 
     return result;
   }
 
-  private addUserInDbIfNotExist(user: firebase.User) {
+  private addUserInDbIfNotExist(user: User) {
 
-    console.log("addUserInDbIfNotExist");
+    console.log("addUserInDbIfNotExist : user=" + JSON.stringify(user));
     const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
     //console.log("user collection = " + users);
 
@@ -73,11 +82,11 @@ export class AuthenticationProvider {
 
   public signOut() : Promise<void>{
     return this.fireBasesAuth.auth.signOut().then(() => {
-      this.user.next(null);
+      this.userSub$.next(null);
     });
   }
 
-  private async loginUserGoogleNative(): Promise<firebase.User> {
+  private async loginUserGoogleNative(): Promise<User> {
 
     // Check if plug in available
     if (this.canLoginUser()) {
@@ -85,12 +94,22 @@ export class AuthenticationProvider {
       try {
 
         const gplusUser = await this.googlePlus.login({
-          'webClientId': 'your-webClientId-XYZ.apps.googleusercontent.com',
+          'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
           'offline': true,
           'scopes': 'profile email'
         });
 
-        return this.fireBasesAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken));
+        return this.fireBasesAuth.auth.signInWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(fireBaseUser => {
+
+          console.log('firebase user=' + JSON.stringify(fireBaseUser));
+          const data : User = {
+            uid: fireBaseUser.uid,
+            displayName: fireBaseUser.displayName,
+            email: fireBaseUser.email,
+            photoURL : fireBaseUser.photoURL
+          }
+          return data;
+        });
 
       } catch (err) {
         console.log(err);
@@ -102,19 +121,31 @@ export class AuthenticationProvider {
    * Log in with google by web.
    * UNUSED as it opens a web tab.
    */
-  private async loginUserGoogleWeb(): Promise<firebase.User> {
+  private async loginUserGoogleWeb(): Promise<User> {
     try {
       const provider = new firebase.auth.GoogleAuthProvider();
       provider.addScope('profile');
       provider.addScope('email');
-      return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => userCredential.user);
+      return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => {
+        
+        const fireBaseUser:firebase.User = userCredential.user;
+        console.log('firebase user=' + JSON.stringify(fireBaseUser));
+        const data : User = {
+          uid: fireBaseUser.uid,
+          displayName: fireBaseUser.displayName,
+          email: fireBaseUser.email,
+          photoURL : fireBaseUser.photoURL
+        }
+
+        return data;
+      });
     } catch (err) {
       console.log(err);
     }
   }
 
   public getUser(): Observable<User> {
-    return this.user.asObservable();
+    return this.userSub$.asObservable();
   }
 
   public isConnected(): boolean {

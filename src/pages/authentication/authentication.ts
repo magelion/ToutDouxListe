@@ -27,7 +27,7 @@ export class AuthenticationPage {
     this.userObs.subscribe(user => {
       
       this.user = user;
-      if (this.user!=null){
+      if (this.user !== null){
         this.navController.setRoot(TabsPage);
       }
     });
@@ -39,7 +39,7 @@ export class AuthenticationPage {
 
   public loginUserGoogle() {
 
-    (<Promise<any>>this.authProvider.googleLogin())
+    this.authProvider.googleLogin()
     .then((res) => {
       this.updateUser();
     });

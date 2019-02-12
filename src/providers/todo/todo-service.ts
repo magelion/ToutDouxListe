@@ -1,11 +1,11 @@
-import { Injectable } from '@angular/core';
+/*import { Injectable } from '@angular/core';
 import {TodoItem, TodoList} from "../../app/TodoList/model/model";
 import {Observable} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFireDatabase, AngularFireList } from 'angularfire2/database';
 import { map, tap } from 'rxjs/operators';
-import { AuthenticationProvider } from '../authentication/authentication';
+import { AuthenticationProvider } from '../authentication/authentication';*/
 
 /**
  * DEPRECATED
@@ -13,7 +13,7 @@ import { AuthenticationProvider } from '../authentication/authentication';
  * DO NOT USE THIS.
  * Instead go check out todo-serviceProvider.ts
  */
-@Injectable()
+/*@Injectable()
 export class TodoServiceProvider {
 
   private static readonly TODO_LIST_DB_NAME:string = "/TodoLists";
@@ -135,4 +135,4 @@ export class TodoServiceProvider {
       }) 
     );
   }
-}
+}*/
