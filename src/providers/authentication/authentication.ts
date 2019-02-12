@@ -12,6 +12,7 @@ export class AuthenticationProvider {
 
   private userSub$: BehaviorSubject<User>;
   private userObs$: Observable<User>;
+  private isConnectedVar: boolean;
 
   constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
 
@@ -22,9 +23,19 @@ export class AuthenticationProvider {
         email: fireBaseUser.email,
         photoURL : fireBaseUser.photoURL
       }
+      
       return data;
     });
+
     this.userSub$ = new BehaviorSubject(null);
+    this.userSub$.subscribe(user => {
+      if(user !== null && user !== undefined) {
+        this.isConnectedVar = true;
+      }
+      else {
+        this.isConnectedVar = false;
+      }
+    })
   }
 
   public canLoginUser(): boolean {
@@ -90,42 +101,36 @@ export class AuthenticationProvider {
   private async loginUserGoogleNative(): Promise<User> {
 
     console.log('LogInUserGoogleNative');
-    // Check if plug in available
-    // Test
-    if (this.canLoginUser()) {
+    try {
+
+      const gplusUser = await this.googlePlus.login({
+        'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
+        'offline': true,
+        'scopes': 'profile email'
+      });
+
+      console.log('gplusUser=' + JSON.stringify(gplusUser));
+      return this.fireBasesAuth.auth.signInAndRetrieveDataWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(credentials => {
+
+        const fireBaseUser: firebase.User = credentials.user;
+        console.log('firebase user=' + JSON.stringify(fireBaseUser));
+        const data : User = {
+          uid: fireBaseUser.uid,
+          displayName: fireBaseUser.displayName,
+          email: fireBaseUser.email,
+          photoURL : fireBaseUser.photoURL
+        }
+        return data;
+      });
+
+    } catch (err) {
+      console.log(err);
     }
-
-      try {
-
-        const gplusUser = await this.googlePlus.login({
-          'webClientId': '262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com',
-          'offline': true,
-          'scopes': 'profile email'
-        });
-
-        console.log('gplusUser=' + JSON.stringify(gplusUser));
-        return this.fireBasesAuth.auth.signInAndRetrieveDataWithCredential(firebase.auth.GoogleAuthProvider.credential(gplusUser.idToken)).then(credentials => {
-
-          const fireBaseUser: firebase.User = credentials.user;
-          console.log('firebase user=' + JSON.stringify(fireBaseUser));
-          const data : User = {
-            uid: fireBaseUser.uid,
-            displayName: fireBaseUser.displayName,
-            email: fireBaseUser.email,
-            photoURL : fireBaseUser.photoURL
-          }
-          return data;
-        });
-
-      } catch (err) {
-        console.log(err);
-      }
-    //}
   }
 
   /**
    * Log in with google by web.
-   * UNUSED as it opens a web tab.
+   * Used with simulator.
    */
   private async loginUserGoogleWeb(): Promise<User> {
     try {
@@ -155,12 +160,6 @@ export class AuthenticationProvider {
   }
 
   public isConnected(): boolean {
-    console.log('IsConnected.uid=' + this.fireBasesAuth.auth.currentUser.uid);
-    if (this.fireBasesAuth.auth.currentUser && this.fireBasesAuth.auth.currentUser.uid) {
-      return true;
-    }
-    else {
-      return false;
-    }
+    return this.isConnectedVar;
   }
 }
