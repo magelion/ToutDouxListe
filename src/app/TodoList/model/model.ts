@@ -1,7 +1,8 @@
 export interface TodoList {
   uuid : string,
   name : string,
-  items : TodoItem[]
+  items : TodoItem[],
+  owner : string
 }
 
 export interface TodoItem {
@@ -9,4 +10,12 @@ export interface TodoItem {
   name : string,
   desc? : string,
   complete : boolean
+}
+
+export interface User {
+
+  uid? : string,
+  displayName : string,
+  email : string
+  photoURL : string
 }

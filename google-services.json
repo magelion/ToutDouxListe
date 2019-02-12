@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "262426639490",
+    "firebase_url": "https://toutdouxliste-1759c.firebaseio.com",
+    "project_id": "toutdouxliste-1759c",
+    "storage_bucket": "toutdouxliste-1759c.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:262426639490:android:764d2cb7da3280eb",
+        "android_client_info": {
+          "package_name": "io.ionic.starter"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "262426639490-q3p46l2hcskn9covghkgf6n92hth32rn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "io.ionic.starter",
+            "certificate_hash": "e42ab9a95ac5581a8d54b6a712f1bb4ee083753f"
+          }
+        },
+        {
+          "client_id": "262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDHK29x25ZEUTIa00H6oz-jnk3NjurctsU"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "262426639490-edt7n07dsvdkn1d4kmslcjd06qteaq23.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

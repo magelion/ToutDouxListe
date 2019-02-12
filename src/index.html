@@ -18,6 +18,8 @@
   <!-- cordova.js required for cordova apps (remove if not needed) -->
   <script src="cordova.js"></script>
 
+  <script src="https://www.gstatic.com/firebasejs/5.8.1/firebase.js"></script>
+
   <!-- un-comment this code to enable service worker
   <script>
     if ('serviceWorker' in navigator) {
@@ -29,11 +31,32 @@
   <!-- External libraries -->
   <script src="external/myLibrary.ts"></script>
 
-  <link href="build/main.css" rel="stylesheet">
+  <!-- <script>
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '307918099858578',
+        cookie     : true,
+        xfbml      : true,
+        version    : '{api-version}'
+      });
+        
+      FB.AppEvents.logPageView();   
+        
+    };
 
+    (function(d, s, id){
+      var js, fjs = d.getElementsByTagName(s)[0];
+      if (d.getElementById(id)) {return;}
+      js = d.createElement(s); js.id = id;
+      js.src = "https://connect.facebook.net/en_US/sdk.js";
+      fjs.parentNode.insertBefore(js, fjs);
+    }(document, 'script', 'facebook-jssdk'));
+  </script> -->
+  <!-- <script src="https://apis.google.com/js/api.js" type="text/javascript"></script> -->
+
+  <link href="build/main.css" rel="stylesheet">
 </head>
 <body>
-
   <!-- Ionic's root component and where the app will load -->
   <ion-app></ion-app>
 

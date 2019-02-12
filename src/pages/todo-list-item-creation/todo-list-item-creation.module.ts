@@ -1,7 +1,7 @@
 import { NgModule } from '@angular/core';
 import { IonicPageModule } from 'ionic-angular';
 import { TodoListItemCreationPage } from './todo-list-item-creation';
-import { TodoServiceProvider } from '../../app/TodoList/services/todo-service';
+import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 
 @NgModule({
   declarations: [
