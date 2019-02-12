@@ -26,6 +26,7 @@ export class AuthenticationPage {
   updateUser() {
     this.userObs.subscribe(user => {
       
+      console.log('Authentication : user=' + JSON.stringify(user));
       this.user = user;
       if (this.user !== null){
         this.navController.setRoot(TabsPage);
