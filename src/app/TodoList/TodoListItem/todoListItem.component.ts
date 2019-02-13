@@ -36,7 +36,8 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
   deleteItem (item: TodoItem) {
 
     if(this.todoListId != null && this.todoListId != undefined) {
-      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe();
+      console.log('DeleteItem : ' + item.name+"--"+item.uuid+"--"+item.desc);
+      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe;
     }
   }
 
