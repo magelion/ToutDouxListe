@@ -13,25 +13,20 @@ import { User } from '../../app/TodoList/model/model';
 export class AuthenticationPage {
 
   private userObs: Observable<User>
-  public user: User
 
   constructor(
     private authProvider: AuthenticationProvider,
     private navController: NavController) {
 
     this.userObs = this.authProvider.getUser();
-    this.updateUser();
-  }
-
-  updateUser() {
     this.userObs.subscribe(user => {
       
       console.log('Authentication : user=' + JSON.stringify(user));
-      this.user = user;
-      if (this.user !== null){
+      if (user !== null){
         this.navController.setRoot(TabsPage);
       }
     });
+    console.log('AuthenticationPage : construction completed');
   }
 
   ionViewDidLoad() {
@@ -40,17 +35,16 @@ export class AuthenticationPage {
 
   public loginUserGoogle() {
 
-    this.authProvider.googleLogin()
-    .then((res) => {
-      this.updateUser();
-    });
+    console.log('AuthenticationPage : loginUserGoogle');
+    this.authProvider.googleLogin();
   }
 
-  canLoginUser(): boolean {
-    return this.authProvider.canLoginUser();
+  public isConnected(): boolean {
+    return this.authProvider.isConnected();
   }
 
   logout() {
+    console.log('AuthenticationPage : logout');
     this.authProvider.signOut();
   }
 }

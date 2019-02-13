@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, App } from 'ionic-angular';
+import { IonicPage, App, NavController } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { AuthenticationPage } from '../authentication/authentication';
 import { User } from '../../app/TodoList/model/model';
+import { AuthenticationPage } from '../authentication/authentication';
 
 @IonicPage()
 @Component({
@@ -50,8 +50,8 @@ export class AcountPage {
     .then(()=> {
       console.log('logout complete'); 
       // this.navController.setRoot(AuthenticationPage);});
-      this.app.getRootNav().setRoot(AuthenticationPage);});
-    
+      this.app.getRootNav().setRoot(AuthenticationPage);
+    });
   }
 
 }

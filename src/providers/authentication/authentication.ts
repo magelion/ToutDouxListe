@@ -3,10 +3,10 @@ import { Platform } from 'ionic-angular';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable, BehaviorSubject } from 'rxjs';
-import firebase from 'firebase';
-import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
+import firebase, { firestore } from 'firebase';
+import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
 import { User } from '../../app/TodoList/model/model';
-import { tap, map, take } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 
 @Injectable()
 export class AuthenticationProvider {
@@ -37,6 +37,8 @@ export class AuthenticationProvider {
       else {
         this.isConnectedVar = false;
       }
+
+      console.log('AuthenticationProvider : isConnectedVar=' + this.isConnectedVar);
     })
   }
 
@@ -105,25 +107,31 @@ export class AuthenticationProvider {
     const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
     //console.log("user collection = " + users);
 
-    users.snapshotChanges().map(action => {
-
-      if(action.length === 0) {
-        const data : User = {
-          uid: user.uid,
-          displayName: user.displayName,
-          email: user.email,
-          photoURL : user.photoURL,
-          contacts : []
+    users.snapshotChanges().pipe(
+      
+      take(1),
+      map(action => {
+        if(action.length === 0) {
+          const data : User = {
+            uid: user.uid,
+            displayName: user.displayName,
+            email: user.email,
+            photoURL : user.photoURL,
+            contacts : []
+          }
+          users.add(data);
         }
-        users.add(data);
-      }
-    }).subscribe();
+      })
+    ).subscribe().unsubscribe();
   }
 
 
   public signOut() : Promise<void>{
+
+    console.log('signing out');
     return this.fireBasesAuth.auth.signOut().then(() => {
       this.userSub$.next(null);
+      console.log('signed out');
     });
   }
 
@@ -146,7 +154,7 @@ export class AuthenticationProvider {
       });
 
     } catch (err) {
-      console.log(err);
+      console.log('LogInUserGoogleNative : Error : ' + JSON.stringify(err));
     }
   }
 
