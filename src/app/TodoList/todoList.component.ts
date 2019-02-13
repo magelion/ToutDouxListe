@@ -25,7 +25,7 @@ export class TodoComponent implements OnInit, OnDestroy {
     this.todoService.getTodoListsSub().subscribe(obs => {
 
       this.lists = obs;
-    })
+    });
   }
 
   ngOnDestroy() {

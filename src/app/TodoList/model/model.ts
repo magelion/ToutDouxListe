@@ -3,19 +3,20 @@ export interface TodoList {
   name : string,
   items : TodoItem[],
   owner : string
-}
+};
 
 export interface TodoItem {
   uuid? : string,
   name : string,
   desc? : string,
   complete : boolean
-}
+};
 
 export interface User {
 
   uid? : string,
   displayName : string,
-  email : string
-  photoURL : string
-}
+  email : string,
+  photoURL : string,
+  contacts : User[]
+};
