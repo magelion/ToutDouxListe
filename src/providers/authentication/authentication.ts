@@ -3,31 +3,32 @@ import { Platform } from 'ionic-angular';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable, BehaviorSubject } from 'rxjs';
-import firebase, { firestore } from 'firebase';
+import firebase from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
-import { User } from '../../app/TodoList/model/model';
+import { User, PublicUser } from '../../app/TodoList/model/model';
 import { map, take } from 'rxjs/operators';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class AuthenticationProvider {
 
   private userSub$: BehaviorSubject<User>;
-  private userObs$: Observable<User>;
   private isConnectedVar: boolean;
 
   constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
 
-    this.userObs$ = fireBasesAuth.authState.map(fireBaseUser => {
-      const data : User = {
-        uid: fireBaseUser.uid,
-        displayName: fireBaseUser.displayName,
-        email: fireBaseUser.email,
-        photoURL : fireBaseUser.photoURL,
-        contacts : []
-      }
+    // this.userObs$ = fireBasesAuth.authState.map(fireBaseUser => {
+
+    //   const data : User = {
+    //     uid: fireBaseUser.uid,
+    //     displayName: fireBaseUser.displayName,
+    //     email: fireBaseUser.email,
+    //     photoURL : fireBaseUser.photoURL,
+    //     contacts : []
+    //   }
       
-      return data;
-    });
+    //   return data;
+    // });
 
     this.userSub$ = new BehaviorSubject(null);
     this.userSub$.subscribe(user => {
@@ -43,8 +44,8 @@ export class AuthenticationProvider {
   }
 
   public canLoginUser(): boolean {
-    console.log('canLoginUser : userObs=' + this.userObs$ + ', googlePlus=' + this.googlePlus + ', this.isConnected=' + this.isConnected());
-    return this.userObs$ === null && this.googlePlus !== null && !this.isConnected();
+    console.log('canLoginUser : googlePlus=' + this.googlePlus + ', this.isConnected=' + this.isConnected());
+    return this.googlePlus !== null && !this.isConnected();
   }
 
   public googleLogin(): Promise<User> {
@@ -65,14 +66,19 @@ export class AuthenticationProvider {
     result = loginResult.then(async firebaseUser => {
       console.log("google login -> then. User=" + JSON.stringify(firebaseUser));
 
-      const user = await this.GetUserFromFirebaseUser(firebaseUser);
+      var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
 
-      console.log("User fetched : " + JSON.stringify(user))
+      console.log("User fetched : " + JSON.stringify(user));
+
+      // If user doesn't exists
+      if(!user) {
+        user = await this.addUserInDbIfNotExist(firebaseUser);
+      }
+
       if(user) {
-        
-        this.addUserInDbIfNotExist(user);
         this.userSub$.next(user);
       }
+      
       return user;
     });
 
@@ -101,28 +107,48 @@ export class AuthenticationProvider {
     ).toPromise();
   }
 
-  private addUserInDbIfNotExist(user: User) {
+  private addUserInDbIfNotExist(user: firebase.User) : Promise<User> {
 
     console.log("addUserInDbIfNotExist : user=" + JSON.stringify(user));
     const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
     //console.log("user collection = " + users);
 
-    users.snapshotChanges().pipe(
+    return users.snapshotChanges().pipe(
       
       take(1),
       map(action => {
+
         if(action.length === 0) {
+
           const data : User = {
             uid: user.uid,
             displayName: user.displayName,
             email: user.email,
             photoURL : user.photoURL,
+            publicUid: uuid(),
             contacts : []
           }
+
+          const publicUser: PublicUser = {
+
+            uid: data.publicUid,
+            displayName: data.displayName,
+            photoURL : data.photoURL,
+          }
+
+          // Add User
           users.add(data);
+
+          // Add PublicUser
+          this.db.collection('PublicUsers').add(publicUser);
+
+          return data;
+        }
+        else {
+          return null;
         }
       })
-    ).subscribe().unsubscribe();
+    ).toPromise();
   }
 
 
@@ -177,7 +203,7 @@ export class AuthenticationProvider {
     }
   }
 
-  public getUser(): Observable<User> {
+  public getUserObs(): Observable<User> {
     return this.userSub$.asObservable();
   }
 

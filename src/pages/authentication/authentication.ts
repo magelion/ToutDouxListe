@@ -18,7 +18,7 @@ export class AuthenticationPage {
     private authProvider: AuthenticationProvider,
     private navController: NavController) {
 
-    this.userObs = this.authProvider.getUser();
+    this.userObs = this.authProvider.getUserObs();
     this.userObs.subscribe(user => {
       
       console.log('Authentication : user=' + JSON.stringify(user));

@@ -25,7 +25,7 @@ export class TodoListItemCreationPage implements OnChanges {
     this.formValidation = new FormGroup(({
       name: new FormControl('', Validators.required),
       desc: new FormControl('', Validators.required)
-    }))
+    }));
   }
 
   ionViewDidLoad() {

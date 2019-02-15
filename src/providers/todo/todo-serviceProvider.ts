@@ -24,7 +24,7 @@ export class TodoServiceProvider {
     this.todoLists = null;
     this.todoListsSub$ = new BehaviorSubject(null);
     
-    authProvider.getUser().subscribe(user => {
+    authProvider.getUserObs().subscribe(user => {
       
       if(user != null) {
         this.user = user;

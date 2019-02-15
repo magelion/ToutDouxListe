@@ -12,11 +12,18 @@ export interface TodoItem {
   complete : boolean
 };
 
-export interface User {
+export interface PublicUser {
 
   uid? : string,
   displayName : string,
-  email : string,
   photoURL : string,
-  contacts : User[]
+};
+
+export interface User extends PublicUser {
+
+  email : string,
+  contacts : User[],
+
+  // Id of the corresponding PublicUser
+  publicUid: string
 };

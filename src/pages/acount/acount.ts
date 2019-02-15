@@ -18,7 +18,7 @@ export class AcountPage {
     private authProvider: AuthenticationProvider,
     private app: App) {
 
-    this.userObs = this.authProvider.getUser();
+    this.userObs = this.authProvider.getUserObs();
     this.updateUser();
   }
 
