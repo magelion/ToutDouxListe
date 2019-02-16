@@ -15,7 +15,7 @@
       </ion-item-options>
   </ion-item-sliding>
 </ion-list> -->
-<div *ngIf="list$">
+<div *ngIf="todoListId">
   <ion-card *ngFor="let item of (list$ | async)?.items" >
     <ion-card-header>
         <ion-input type="text" stacked [(ngModel)]=item.name ng-model-options="{updateOn: 'blur'}" (ngModelChange)="dataChanged(item)">{{ item?.name }}</ion-input>

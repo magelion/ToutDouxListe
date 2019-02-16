@@ -58,4 +58,32 @@ export class ContactProvider {
       }
     });
   }
+
+  public getContacts(user: User) : Promise<PublicUser[]> {
+
+    var resultPromise : Promise<PublicUser[]>;
+    const resultList : PublicUser[] = new Array();
+    
+    user.contacts.forEach(contactPId => {
+
+      resultPromise = resultPromise.then(val => {
+          
+        return this.db.collection('PublicUsers').doc(contactPId).get().toPromise().then(publicUser => {
+
+          resultList.push(publicUser.data() as PublicUser);
+          return resultList;
+        });
+      });
+    });
+
+    return resultPromise;
+  }
+
+  public getPublicUser(uid: string) : Promise<PublicUser> {
+
+    return this.db.collection('PublicUsers').doc(uid).get().map(doc => {
+
+      return doc.data() as PublicUser;
+    }).toPromise()
+  }
 }

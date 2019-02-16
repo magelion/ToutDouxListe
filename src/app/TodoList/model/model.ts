@@ -3,6 +3,8 @@ export interface TodoList {
   name : string,
   items : TodoItem[],
   owner : string
+  // Public uid to share this list with
+  sharedTo : string[]
 };
 
 export interface TodoItem {
@@ -14,16 +16,18 @@ export interface TodoItem {
 
 export interface PublicUser {
 
-  uid? : string,
+  uid : string,
   displayName : string,
   photoURL : string,
 };
 
-export interface User extends PublicUser {
+export interface User {
 
+  uid : string,
   email : string,
   contacts : string[],
 
   // Id of the corresponding PublicUser
   publicUid: string
+
 };

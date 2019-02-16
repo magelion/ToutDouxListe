@@ -1,8 +1,8 @@
 import { Component } from '@angular/core';
-import { IonicPage, App, NavController } from 'ionic-angular';
+import { IonicPage, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { User } from '../../app/TodoList/model/model';
+import { User, PublicUser } from '../../app/TodoList/model/model';
 import { AuthenticationPage } from '../authentication/authentication';
 
 @IonicPage()
@@ -11,8 +11,11 @@ import { AuthenticationPage } from '../authentication/authentication';
   templateUrl: 'acount.html',
 })
 export class AcountPage {
+
   private userObs: Observable<User>
+
   public user: User
+  public publicUser: PublicUser;
 
   constructor(
     private authProvider: AuthenticationProvider,
@@ -20,6 +23,10 @@ export class AcountPage {
 
     this.userObs = this.authProvider.getUserObs();
     this.updateUser();
+
+    this.authProvider.getPublicUserObs().subscribe(publicUser => {
+      this.publicUser = publicUser;
+    })
   }
 
   updateUser() {

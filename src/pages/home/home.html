@@ -5,6 +5,13 @@
 </ion-header>
 
 <ion-content padding>
-  <!-- <page-authentication></page-authentication> -->
-  <todoList></todoList>
+
+  <ion-list>
+
+      <todoList *ngFor="let list of (lists | async)" [list]="list"></todoList>
+    
+      <button ion-button color="secondary" (click)="createListCommand()">
+          <ion-icon name="add"></ion-icon>
+      </button>
+    </ion-list>
 </ion-content>

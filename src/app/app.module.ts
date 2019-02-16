@@ -11,11 +11,9 @@ import { TabsPage } from '../pages/tabs/tabs';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
-import { TodoComponent } from './TodoList/todoList.component';
 import { TodoServiceProvider } from '../providers/todo/todo-serviceProvider';
 import { UtilitiesService } from './utilities/UtilitiesService';
 import { TodoItemsPage } from "../pages/todo-items/todo-items";
-import { TodoListItem } from './TodoList/TodoListItem/todoListItem.component';
 import { TodoListItemCreationPageModule } from '../pages/todo-list-item-creation/todo-list-item-creation.module';
 import { TodoListItemCreationPage } from '../pages/todo-list-item-creation/todo-list-item-creation';
 import { AuthenticationPageModule } from '../pages/authentication/authentication.module';
@@ -30,6 +28,8 @@ import { AngularFireAuthModule } from 'angularfire2/auth';
 import { AuthenticationProvider } from '../providers/authentication/authentication';
 import { AcountPage } from '../pages/acount/acount';
 import { ContactProvider } from '../providers/contact/contact';
+import { ComponentsModule } from '../components/components.module';
+import { ShareListPageModule } from '../pages/share-list/share-list.module';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -48,8 +48,6 @@ firebase.initializeApp(firebaseConfig);
     ContactPage,
     HomePage,
     TabsPage,
-    TodoComponent,
-    TodoListItem,
     TodoItemsPage,
     AcountPage,
   ],
@@ -62,7 +60,9 @@ firebase.initializeApp(firebaseConfig);
     //AngularFirestoreModule.enablePersistence(), // Caching for offline use
     IonicModule.forRoot(ToutDouxListeApp),
     TodoListItemCreationPageModule,
-    AuthenticationPageModule
+    AuthenticationPageModule,
+    ComponentsModule,
+    ShareListPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
@@ -71,8 +71,6 @@ firebase.initializeApp(firebaseConfig);
     ContactPage,
     HomePage,
     TabsPage,
-    TodoComponent,
-    TodoListItem,
     TodoItemsPage,
     TodoListItemCreationPage,
     AcountPage,

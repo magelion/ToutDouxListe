@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Constants} from "../../app/utilities/Constants";
 import { TodoListItemCreationPage } from '../todo-list-item-creation/todo-list-item-creation';
+import { ShareListPage } from '../share-list/share-list';
 
 @IonicPage()
 @Component({
@@ -23,6 +24,12 @@ export class TodoItemsPage {
 
   createListItemCommand() {
     this.navCtrl.push(TodoListItemCreationPage, {
+      uuid: this.listId
+    });
+  }
+
+  shareList() {
+    this.navCtrl.push(ShareListPage, {
       uuid: this.listId
     });
   }

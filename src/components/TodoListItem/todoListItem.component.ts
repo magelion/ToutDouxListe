@@ -1,7 +1,7 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges} from '@angular/core'
-import {TodoItem, TodoList} from "../model/model";
-import { TodoServiceProvider } from '../../../providers/todo/todo-serviceProvider';
+import {Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges} from '@angular/core';
 import { Observable } from 'rxjs';
+import { TodoList, TodoItem } from '../../app/TodoList/model/model';
+import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 
 @Component({
   selector: 'todoListItem',

@@ -8,12 +8,13 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument,
 import { User, PublicUser } from '../../app/TodoList/model/model';
 import { map, take } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
-import { Action } from 'rxjs/internal/scheduler/Action';
 
 @Injectable()
 export class AuthenticationProvider {
 
   private userSub$: BehaviorSubject<User>;
+  private publicUserSub$: BehaviorSubject<PublicUser>
+
   private isConnectedVar: boolean;
   private userCollection: AngularFirestoreCollection<User>;
   private userDoc: DocumentReference;
@@ -21,6 +22,8 @@ export class AuthenticationProvider {
   constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
 
     this.userSub$ = new BehaviorSubject(null);
+    this.publicUserSub$ = new BehaviorSubject(null);
+
     this.userSub$.subscribe(user => {
       if(user !== null && user !== undefined) {
         this.isConnectedVar = true;
@@ -59,22 +62,45 @@ export class AuthenticationProvider {
       console.log("google login -> then. User=" + JSON.stringify(firebaseUser));
 
       var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
-
-      console.log("User fetched : " + JSON.stringify(user));
-
+      var publicUser: PublicUser;
+      
       // If user doesn't exists
       if(!user) {
-        user = await this.addUserInDbIfNotExist(firebaseUser);
+        const result = await this.addUserInDb(firebaseUser);
+        user = result.user;
+        publicUser = result.publicUser;
       }
+      else {
+        publicUser = await this.getPublicUser(user);
+      }
+
+      console.log("User fetched : " + JSON.stringify(user));
+      console.log("Public User fetched : " + JSON.stringify(publicUser));
 
       if(user) {
         this.userSub$.next(user);
+      }
+      if(publicUser) {
+        this.publicUserSub$.next(publicUser);
       }
       
       return user;
     });
 
     return result;
+  }
+
+  private getPublicUser(user: User): Promise<PublicUser> {
+
+    const docRef: AngularFirestoreDocument = this.db.collection('PublicUsers').doc(user.publicUid);
+    return docRef.get().map(value => {
+
+      return value.data() as PublicUser;
+    }).toPromise();
+  }
+
+  public getPublicUserObs(): Observable<PublicUser> {
+    return this.publicUserSub$.asObservable();
   }
 
   private GetUserFromFirebaseUser(firebaseUser : firebase.User) : Promise<User> {
@@ -94,11 +120,14 @@ export class AuthenticationProvider {
         const users: User[] = action.map(a => {
 
           if(!a.payload.doc.exists) return null;
+
           const data = a.payload.doc.data() as User;
+          const key = a.payload.doc.id;
+          
           this.userDoc = a.payload.doc.ref;
           
           const user: User = data;
-          
+          user.uid = key;
           if(!user.contacts) user.contacts = new Array();
   
           return user;
@@ -114,62 +143,35 @@ export class AuthenticationProvider {
     ).toPromise();
   }
 
-  private addUserInDbIfNotExist(firebaseUser: firebase.User) : Promise<User> {
+  private addUserInDb(firebaseUser: firebase.User) : Promise<{user:User, publicUser:PublicUser}> {
 
-    console.log("addUserInDbIfNotExist : user=" + JSON.stringify(firebaseUser));
-    if(this.userCollection === null) {
+    console.log("addUserInDb : user=" + JSON.stringify(firebaseUser));
 
-      this.userCollection = this.db.collection('Users', ref => ref.where('uid', '==', firebaseUser.uid));
+    const result = {user: null, publicUser: null};
+
+    const user : User = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      publicUid: uuid(),
+      contacts : []
     }
 
-    return this.userCollection.snapshotChanges().pipe(
-      
-      take(1),
-      map(action => {
+    const publicUser: PublicUser = {
 
-        const users: User[] = action.map( a => {
+      uid: user.publicUid,
+      displayName: firebaseUser.displayName,
+      photoURL : firebaseUser.photoURL,
+    }
 
-          if(!a.payload.doc.exists) {
+    return this.userCollection.doc(user.uid).set(user).then(() => {
 
-            const user : User = {
-              uid: firebaseUser.uid,
-              displayName: firebaseUser.displayName,
-              email: firebaseUser.email,
-              photoURL : firebaseUser.photoURL,
-              publicUid: uuid(),
-              contacts : []
-            }
-  
-            const publicUser: PublicUser = {
-  
-              uid: user.publicUid,
-              displayName: user.displayName,
-              photoURL : user.photoURL,
-            }
-  
-            
-            // Add User
-            this.userCollection.add(user).then(doc => this.userDoc = doc);
-            
-            // Add PublicUser
-            this.db.collection('PublicUsers').add(publicUser);
-            
-            return user;
-          }
-          else {
-            this.userDoc = a.payload.doc.ref;
-            return a.payload.doc.data();
-          }
-        });
+      this.db.collection('PublicUsers').doc(publicUser.uid).set(publicUser);
 
-        if(users !== null && users.length > 0) {
-          return users[0];
-        }
-        else {
-          return null;
-        }
-      })
-    ).toPromise();
+      result.user = user;
+      result.publicUser = user;
+
+      return result;
+    });
   }
 
 
@@ -241,5 +243,10 @@ export class AuthenticationProvider {
     else {
       return null;
     }
+  }
+
+  public updatePublicUser(publicUser: PublicUser) {
+
+    this.db.doc('PublicUsers/' + publicUser.uid).update(publicUser);
   }
 }
