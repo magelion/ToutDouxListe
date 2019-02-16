@@ -22,7 +22,7 @@ export interface PublicUser {
 export interface User extends PublicUser {
 
   email : string,
-  contacts : User[],
+  contacts : string[],
 
   // Id of the corresponding PublicUser
   publicUid: string

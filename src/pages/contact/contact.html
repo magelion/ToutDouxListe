@@ -20,12 +20,20 @@
     </button>
   </form>
 
-  <ion-list>
-    <ion-item *ngFor="let publicUser of (searchResult$ | async)">
+  <ion-item *ngIf="searchResult">
+
+    <ion-label>Result found : {{ searchResult.length }}</ion-label>
+  </ion-item>
+
+  <ion-list *ngIf="searchResult">
+    <ion-item *ngFor="let publicUser of searchResult">
       <ion-avatar item-left>
         <img [src]="publicUser.photoURL">
       </ion-avatar>
       <h2>{{ publicUser.displayName}}</h2>
+      <button ion-button color="secondary" (click)="addContact(publicUser)">
+        <ion-icon name="add"></ion-icon>
+      </button>
     </ion-item>
   </ion-list>
 </ion-content>
