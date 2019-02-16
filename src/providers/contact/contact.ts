@@ -59,21 +59,32 @@ export class ContactProvider {
     });
   }
 
-  public getContacts(user: User) : Promise<PublicUser[]> {
+  public getContactsOfUser(user: User) : Promise<PublicUser[]> {
 
     var resultPromise : Promise<PublicUser[]>;
     const resultList : PublicUser[] = new Array();
     
+    console.log('ContactProvider : getContactsOfUser');
     user.contacts.forEach(contactPId => {
 
-      resultPromise = resultPromise.then(val => {
-          
-        return this.db.collection('PublicUsers').doc(contactPId).get().toPromise().then(publicUser => {
+      if(!resultPromise) {
+        resultPromise = this.getPublicUser(contactPId).then(publicUser => {
 
-          resultList.push(publicUser.data() as PublicUser);
+          resultList.push(publicUser);
           return resultList;
         });
-      });
+      }
+      else {
+
+        resultPromise = resultPromise.then(val => {
+            
+          return this.getPublicUser(contactPId).then(publicUser => {
+  
+            resultList.push(publicUser);
+            return resultList;
+          });
+        });
+      }
     });
 
     return resultPromise;
@@ -81,6 +92,7 @@ export class ContactProvider {
 
   public getPublicUser(uid: string) : Promise<PublicUser> {
 
+    if(!uid) return null;
     return this.db.collection('PublicUsers').doc(uid).get().map(doc => {
 
       return doc.data() as PublicUser;

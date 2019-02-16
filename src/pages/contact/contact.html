@@ -29,10 +29,6 @@
     <ion-item *ngFor="let publicUser of searchResult">
 
       <contact [contact]="publicUser"></contact>
-      <!-- <ion-avatar item-left>
-        <img [src]="publicUser.photoURL">
-      </ion-avatar>
-      <h2>{{ publicUser.displayName}}</h2> -->
       <button ion-button color="secondary" (click)="addContact(publicUser)">
         <ion-icon name="add"></ion-icon>
       </button>

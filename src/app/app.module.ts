@@ -30,6 +30,8 @@ import { AcountPage } from '../pages/acount/acount';
 import { ContactProvider } from '../providers/contact/contact';
 import { ComponentsModule } from '../components/components.module';
 import { ShareListPageModule } from '../pages/share-list/share-list.module';
+import { ShareListPage } from '../pages/share-list/share-list';
+import { ContactComponent } from '../components/contact/contact';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -49,7 +51,7 @@ firebase.initializeApp(firebaseConfig);
     HomePage,
     TabsPage,
     TodoItemsPage,
-    AcountPage,
+    AcountPage
   ],
   imports: [
     BrowserModule,
@@ -74,6 +76,7 @@ firebase.initializeApp(firebaseConfig);
     TodoItemsPage,
     TodoListItemCreationPage,
     AcountPage,
+    ShareListPage
   ],
   providers: [
     StatusBar,
@@ -84,6 +87,6 @@ firebase.initializeApp(firebaseConfig);
     AuthenticationProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ContactProvider,
-  ],
+  ]
 })
 export class AppModule {}

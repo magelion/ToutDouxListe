@@ -22,15 +22,15 @@ export class TodoItemsPage {
     console.log('ionViewDidLoad TodoItemsPage id=' + this.listId);
   }
 
-  createListItemCommand() {
+  public createListItemCommand() {
     this.navCtrl.push(TodoListItemCreationPage, {
       uuid: this.listId
     });
   }
 
-  shareList() {
+  public shareList() {
     this.navCtrl.push(ShareListPage, {
-      uuid: this.listId
+      listId: this.listId
     });
   }
 }
