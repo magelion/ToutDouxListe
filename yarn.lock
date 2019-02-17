@@ -320,6 +320,13 @@
   dependencies:
     "@types/cordova" latest
 
+"@ionic-native/facebook@^5.1.0":
+  version "5.1.0"
+  resolved "https://registry.yarnpkg.com/@ionic-native/facebook/-/facebook-5.1.0.tgz#5b80421d19fc0d0a6d8959bd78c994f51f9924dc"
+  integrity sha512-OW4yOXCprF2rrYGcI/dNsO1baqldSbKgF7eukVNgI7GugV0EDaVGAK8ljO6LVSSxiQ4Gi/lOR0mzQ+XMc3LeCg==
+  dependencies:
+    "@types/cordova" latest
+
 "@ionic-native/google-plus@^5.0.0":
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/@ionic-native/google-plus/-/google-plus-5.0.0.tgz#07b8ecae3b69da188fb0e823be1ffe4d19a09755"

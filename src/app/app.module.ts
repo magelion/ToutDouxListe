@@ -31,7 +31,8 @@ import { ContactProvider } from '../providers/contact/contact';
 import { ComponentsModule } from '../components/components.module';
 import { ShareListPageModule } from '../pages/share-list/share-list.module';
 import { ShareListPage } from '../pages/share-list/share-list';
-import { ContactComponent } from '../components/contact/contact';
+
+import { Facebook } from '@ionic-native/facebook/ngx'
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -87,6 +88,7 @@ firebase.initializeApp(firebaseConfig);
     AuthenticationProvider,
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ContactProvider,
+    Facebook
   ]
 })
 export class AppModule {}

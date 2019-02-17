@@ -43,7 +43,13 @@ export class AuthenticationPage {
     return this.authProvider.isConnected();
   }
 
-  logout() {
+  public loginUserFacebook() {
+
+    console.log('AuthenticationPage : loginUserFacebook');
+    this.authProvider.logInWithFacebook();
+  }
+
+  public logout() {
     console.log('AuthenticationPage : logout');
     this.authProvider.signOut();
   }

@@ -5,6 +5,11 @@
     &nbsp;Login with Google
   </button>
 
+  <button ion-button block color="danger" (click)="loginUserFacebook()" *ngIf="!isConnected()">
+    <ion-icon name="logo-facebook"></ion-icon>
+    &nbsp;Login with Facebook
+  </button>
+
   <!-- <ion-item *ngIf="user">
     <ion-avatar item-left>
       <img [src]="user.photoURL">

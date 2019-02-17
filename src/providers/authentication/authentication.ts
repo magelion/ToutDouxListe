@@ -8,6 +8,7 @@ import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument,
 import { User, PublicUser } from '../../app/TodoList/model/model';
 import { map, take } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
+import { Facebook } from '@ionic-native/facebook/ngx'
 
 @Injectable()
 export class AuthenticationProvider {
@@ -19,7 +20,12 @@ export class AuthenticationProvider {
   private userCollection: AngularFirestoreCollection<User>;
   private userDoc: DocumentReference;
 
-  constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
+  constructor(
+    private googlePlus: GooglePlus,
+     private fireBasesAuth: AngularFireAuth, 
+     private platform: Platform, 
+     private db: AngularFirestore, 
+     private facebook: Facebook) {
 
     this.userSub$ = new BehaviorSubject(null);
     this.publicUserSub$ = new BehaviorSubject(null);
@@ -45,49 +51,22 @@ export class AuthenticationProvider {
 
   public googleLogin(): Promise<User> {
 
-    var result: Promise<User>;
-
     var loginResult: Promise<firebase.User>;
+    
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
+
     // Actually, those promises are useless as they login synchronously
     if (this.platform.is('cordova')) {
       console.log("Platform : Cordova");
       loginResult = this.loginUserGoogleNative();
     } else {
       console.log("Platform : Other");
-      loginResult = this.loginUserGoogleWeb();
+      loginResult = this.logInWithPopup(provider);
     }
 
-    // Insert user in db if first connection
-    result = loginResult.then(async firebaseUser => {
-      console.log("google login -> then. User=" + JSON.stringify(firebaseUser));
-
-      var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
-      var publicUser: PublicUser;
-      
-      // If user doesn't exists
-      if(!user) {
-        const result = await this.addUserInDb(firebaseUser);
-        user = result.user;
-        publicUser = result.publicUser;
-      }
-      else {
-        publicUser = await this.getPublicUser(user);
-      }
-
-      console.log("User fetched : " + JSON.stringify(user));
-      console.log("Public User fetched : " + JSON.stringify(publicUser));
-
-      if(user) {
-        this.userSub$.next(user);
-      }
-      if(publicUser) {
-        this.publicUserSub$.next(publicUser);
-      }
-      
-      return user;
-    });
-
-    return result;
+    return this.loginFollowUp(loginResult);
   }
 
   private getPublicUser(user: User): Promise<PublicUser> {
@@ -207,25 +186,6 @@ export class AuthenticationProvider {
     }
   }
 
-  /**
-   * Log in with google by web.
-   * Used with simulator.
-   */
-  private async loginUserGoogleWeb(): Promise<firebase.User> {
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope('profile');
-      provider.addScope('email');
-      return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => {
-        
-        const fireBaseUser:firebase.User = userCredential.user;
-        return fireBaseUser;
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
   public getUserObs(): Observable<User> {
     return this.userSub$.asObservable();
   }
@@ -248,5 +208,113 @@ export class AuthenticationProvider {
   public updatePublicUser(publicUser: PublicUser) {
 
     this.db.doc('PublicUsers/' + publicUser.uid).update(publicUser);
+  }
+
+  public logInWithFacebook() : Promise<User>{
+
+    const provider : firebase.auth.FacebookAuthProvider = new firebase.auth.FacebookAuthProvider();
+
+    provider.addScope('public_profile');
+    provider.addScope('email');
+
+    console.log('Facebook provider = ' + JSON.stringify(provider));
+
+    var loginResult: Promise<firebase.User>;
+    
+    // Actually, those promises are useless as they login synchronously
+    if (this.platform.is('cordova')) {
+      console.log("Platform : Cordova");
+      loginResult = this.loginUserFacebookNative(provider);
+    } else {
+      console.log("Platform : Other");
+      loginResult = this.logInWithPopup(provider);
+    }
+
+    return this.loginFollowUp(loginResult);
+  }
+
+  private logInWithPopup(provider : firebase.auth.AuthProvider) : Promise<firebase.User> {
+
+    const result = firebase.auth().signInWithPopup(provider).then((result) => {
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      //var token = result.credential.accessToken;
+      // The signed-in user info.
+      const user : firebase.User = result.user;
+      return user;
+
+    });
+    
+    result.catch((error) => {
+
+      console.log('Error logging with popup : ' + JSON.stringify(error));
+    });
+
+    return result;
+  }
+
+  private loginUserFacebookNative(provider : firebase.auth.FacebookAuthProvider): Promise<firebase.User> {
+    
+    // Redirect (opens a webpage)
+    /*const result = firebase.auth().signInWithRedirect(provider).then(() => {
+      
+      return firebase.auth().getRedirectResult().then((result) => {
+
+        return result.user;
+      });
+
+    });
+    
+    result.catch((error) => {
+      
+      console.log(JSON.stringify(error));
+    });
+
+    return result;*/
+
+    const result =  this.facebook.login(['email', 'public_profile'])
+    .then( response => {
+      const facebookCredential = firebase.auth.FacebookAuthProvider
+        .credential(response.authResponse.accessToken);    
+      return firebase.auth().signInWithCredential(facebookCredential);
+    });
+    result.catch(e => console.log('Error logging into Facebook (native)', e));
+    return result;
+  }
+
+  private loginFollowUp(loginResult : Promise<firebase.User>) : Promise<User> {
+
+    var result: Promise<User>;
+
+    // Insert user in db if first connection
+    result = loginResult.then(async firebaseUser => {
+      console.log("login -> then. User=" + JSON.stringify(firebaseUser));
+
+      var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
+      var publicUser: PublicUser;
+      
+      // If user doesn't exists
+      if(!user) {
+        const result = await this.addUserInDb(firebaseUser);
+        user = result.user;
+        publicUser = result.publicUser;
+      }
+      else {
+        publicUser = await this.getPublicUser(user);
+      }
+
+      console.log("User fetched : " + JSON.stringify(user));
+      console.log("Public User fetched : " + JSON.stringify(publicUser));
+
+      if(user) {
+        this.userSub$.next(user);
+      }
+      if(publicUser) {
+        this.publicUserSub$.next(publicUser);
+      }
+      
+      return user;
+    });
+
+    return result;
   }
 }
