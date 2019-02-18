@@ -8,9 +8,9 @@
 
 
 <ion-content padding>
-  <div *ngIf="list">
+  <ion-list *ngIf="list">
     <todoListItem *ngFor="let item of list.items" [list]="list" [item]="item"></todoListItem>
-  </div>
+  </ion-list>
   
   <button ion-button color="secondary" (click)="createListItemCommand()">
       <ion-icon name="add"></ion-icon>

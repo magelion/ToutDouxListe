@@ -28,12 +28,15 @@ export class TodoListItem {
     // }
   }
 
-  private dataChanged(newObj: TodoItem, listId: string) {
+  private dataChanged($event) {
 
-    if (!listId || !newObj) return;
+    if (!this.list || !this.item) return;
 
-    console.log('changed : ' + JSON.stringify(newObj));
-    this.todoService.editTodo(listId, newObj);
+    console.log('changed : ' + JSON.stringify(this.item));
+
+    const subToken = this.todoService.editTodo(this.list.uuid, this.item).subscribe(res => {
+      res.then(() => subToken.unsubscribe());
+    });
   }
 
   /*updateList() {
