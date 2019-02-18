@@ -6,8 +6,24 @@
 
 </ion-header>
 
-
 <ion-content padding>
+
+  <form (ngSubmit)="createTodoItemCommand()" [formGroup]="formValidation">
+    <ion-item>
+      <ion-label floating>Name</ion-label>
+      <ion-input name="itemName" type="text" [(ngModel)]="name" required formControlName="name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Description</ion-label>
+      <ion-input name="itemDesc" type="text" [(ngModel)]="desc" required formControlName="desc"></ion-input>
+    </ion-item>
+
+    <button ion-button block type="submit" color="secondary">
+        Add
+        <ion-icon name="add"></ion-icon>
+    </button>
+  </form>
+<!-- 
   <ion-list>
     <ion-item>
       <ion-label floating>Name</ion-label>
@@ -22,5 +38,5 @@
   <button ion-button block color="secondary" (click)="createTodoItemCommand()">
     Add
     <ion-icon name="add"></ion-icon>
-  </button>
+  </button> -->
 </ion-content>

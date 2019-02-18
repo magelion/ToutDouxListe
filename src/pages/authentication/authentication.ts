@@ -2,7 +2,6 @@ import { Component } from '@angular/core';
 import { IonicPage, NavController } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { Observable } from 'rxjs';
-import { HomePage } from '../home/home';
 import { TabsPage } from '../tabs/tabs';
 import { User } from '../../app/TodoList/model/model';
 
@@ -14,24 +13,20 @@ import { User } from '../../app/TodoList/model/model';
 export class AuthenticationPage {
 
   private userObs: Observable<User>
-  public user: User
 
   constructor(
     private authProvider: AuthenticationProvider,
     private navController: NavController) {
 
-    this.userObs = this.authProvider.getUser();
-    this.updateUser();
-  }
-
-  updateUser() {
+    this.userObs = this.authProvider.getUserObs();
     this.userObs.subscribe(user => {
       
-      this.user = user;
-      if (this.user!=null){
+      console.log('Authentication : user=' + JSON.stringify(user));
+      if (user !== null){
         this.navController.setRoot(TabsPage);
       }
     });
+    console.log('AuthenticationPage : construction completed');
   }
 
   ionViewDidLoad() {
@@ -40,17 +35,22 @@ export class AuthenticationPage {
 
   public loginUserGoogle() {
 
-    (<Promise<any>>this.authProvider.googleLogin())
-    .then((res) => {
-      this.updateUser();
-    });
+    console.log('AuthenticationPage : loginUserGoogle');
+    this.authProvider.googleLogin();
   }
 
-  canLoginUser(): boolean {
-    return this.authProvider.canLoginUser();
+  public isConnected(): boolean {
+    return this.authProvider.isConnected();
   }
 
-  logout() {
+  public loginUserFacebook() {
+
+    console.log('AuthenticationPage : loginUserFacebook');
+    this.authProvider.logInWithFacebook();
+  }
+
+  public logout() {
+    console.log('AuthenticationPage : logout');
     this.authProvider.signOut();
   }
 }

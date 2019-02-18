@@ -1,16 +1,9 @@
 import { Component } from '@angular/core';
-import { IonicPage, NavController, NavParams, App } from 'ionic-angular';
+import { IonicPage, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
+import { User, PublicUser } from '../../app/TodoList/model/model';
 import { AuthenticationPage } from '../authentication/authentication';
-import { User } from '../../app/TodoList/model/model';
-
-/**
- * Generated class for the AcountPage page.
- *
- * See https://ionicframework.com/docs/components/#navigation for more info on
- * Ionic pages and navigation.
- */
 
 @IonicPage()
 @Component({
@@ -18,15 +11,22 @@ import { User } from '../../app/TodoList/model/model';
   templateUrl: 'acount.html',
 })
 export class AcountPage {
+
   private userObs: Observable<User>
+
   public user: User
+  public publicUser: PublicUser;
 
   constructor(
     private authProvider: AuthenticationProvider,
-    private navController: NavController, private app: App) {
+    private app: App) {
 
-    this.userObs = this.authProvider.getUser();
+    this.userObs = this.authProvider.getUserObs();
     this.updateUser();
+
+    this.authProvider.getPublicUserObs().subscribe(publicUser => {
+      this.publicUser = publicUser;
+    })
   }
 
   updateUser() {
@@ -43,7 +43,7 @@ export class AcountPage {
   public loginUserGoogle() {
 
     (<Promise<any>>this.authProvider.googleLogin())
-    .then((res) => {
+    .then(() => {
       this.updateUser();
     });
   }
@@ -56,9 +56,9 @@ export class AcountPage {
     this.authProvider.signOut()
     .then(()=> {
       console.log('logout complete'); 
-      //this.navController.setRoot(AuthenticationPage);});
-      this.app.getRootNav().setRoot(AuthenticationPage);});
-    
+      // this.navController.setRoot(AuthenticationPage);});
+      this.app.getRootNav().setRoot(AuthenticationPage);
+    });
   }
 
 }

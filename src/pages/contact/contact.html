@@ -7,11 +7,31 @@
 </ion-header>
 
 <ion-content>
-  <ion-list>
-    <ion-list-header>Follow us on Twitter</ion-list-header>
+  
+  <form (ngSubmit)="searchUsers()" [formGroup]="formValidation">
     <ion-item>
-      <ion-icon name="ionic" item-start></ion-icon>
-      @ionicframework
+      <ion-label floating>Name</ion-label>
+      <ion-input name="userName" type="text" [(ngModel)]="userName" required formControlName="name"></ion-input>
+    </ion-item>
+
+    <button ion-button block type="submit">
+        Search&nbsp;
+        <ion-icon name="search"></ion-icon>
+    </button>
+  </form>
+
+  <ion-item *ngIf="searchResult">
+
+    <ion-label>Result found : {{ searchResult.length }}</ion-label>
+  </ion-item>
+
+  <ion-list *ngIf="searchResult">
+    <ion-item *ngFor="let publicUser of searchResult">
+
+      <contact [contact]="publicUser"></contact>
+      <button ion-button color="secondary" (click)="addContact(publicUser)">
+        <ion-icon name="add"></ion-icon>
+      </button>
     </ion-item>
   </ion-list>
 </ion-content>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
-import {Observable} from "rxjs";
+import {TodoItem, TodoList, User, PublicUser} from "../../app/TodoList/model/model";
+import {Observable, BehaviorSubject, from, forkJoin} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
@@ -13,65 +13,130 @@ export class TodoServiceProvider {
   public static readonly TODO_LISTS_DB_NAME:string = 'TodoLists';
 
   private todoListsRef: AngularFirestoreCollection<TodoList>;
-  private todoLists:Observable<TodoList[]>;
-  private user:User;
+  private todoLists$:Observable<TodoList[]>;
+  private todoListsSub$: BehaviorSubject<Observable<TodoList[]>>;
+  private user: User;
 
-  constructor(private afs: AngularFirestore, private authProvider: AuthenticationProvider) {
+  constructor(private afs: AngularFirestore, authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
 
-    //if(authProvider.isConnected()) {
-      //authProvider.getUser().subscribe(user => {
-        this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
-        this.updateLists();
-      //});
-    //}
+    this.todoListsRef = null;
+    this.todoLists$ = null;
+    this.todoListsSub$ = new BehaviorSubject(null);
+    
+    authProvider.getUserObs().subscribe(user => {
+      
+      if(user != null) {
+        this.user = user;
+        console.log('TodoService : user = ' + JSON.stringify(user));
+
+        this.todoListsRef = null;
+        this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
+          ref => ref.where('owner', '==', user.uid));
+
+        this.todoListsSub$.next(this.updateLists());
+      }
+    });
+  }
+
+  public getTodoListsSub() : Observable<Observable<TodoList[]>> {
+    return this.todoListsSub$.asObservable();
   }
 
   private updateLists() : Observable<TodoList[]> {
-    this.todoLists = this.todoListsRef.snapshotChanges().pipe(
 
-      map(actions => actions.map(a => {
+    console.log('updateList called');
 
-        const data = a.payload.doc.data() as TodoList;
-        const key = a.payload.doc.id;
+    this.todoListsRef = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
+    const colRef = this.todoListsRef.ref;
 
-        if(!data.items) {
-          data.items = new Array();
-        }
+    const ownedListSnap$ = from(colRef.where('owner', '==', this.user.uid).get());
+    const sharedListSnap$ = from(colRef.where('sharedTo', 'array-contains', this.user.publicUid).get());
 
-        data.uuid = key;
+    const finalObs$ = forkJoin(ownedListSnap$, sharedListSnap$).map(data => {
+      return data[0].docs.concat(data[1].docs);
+    });
+    //const finalObs$ = Observable.merge(ownedListSnap$, sharedListSnap$);
 
-        return { key, ...data };
-      })),
+    this.todoLists$ = finalObs$.pipe(
+      
+      map(docs => {
+        return docs.map(doc => {
+          return doc.data() as TodoList;
+        });
+      }),
       tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
     );
-    return this.todoLists;
+
+    // if(this.todoListsRef === null) {
+    //   return Observable.empty();
+    // }
+    // this.todoLists = this.todoListsRef.snapshotChanges().pipe(
+
+    //   map(actions => actions.map(a => {
+
+    //     var data = a.payload.doc.data() as TodoList;
+
+    //     data = this.mapFetchedList(data);
+    //     return data;
+
+    //   })),
+    //   tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
+    // );
+    return this.todoLists$;
+  }
+
+  private mapFetchedList(list : TodoList) : TodoList{
+
+    if(!list.items) {
+      list.items = new Array();
+    }
+    if(!list.sharedTo) list.sharedTo = new Array();
+
+    return list;
   }
 
   public getLists(): Observable<TodoList[]> {
 
-    // For some reasons, just returning the observable is not enough because 
-    // is won't give any more event after some time
     return this.updateLists();
   }
 
   public getList(key: string): Observable<TodoList>{
 
-    return this.getTodoListDoc(key).valueChanges() as Observable<TodoList>;
+    if(this.todoListsRef === null) {
+      console.log('TodoProvider : getList : ref null');
+      return Observable.empty();
+    }
+    return this.getTodoListDoc(key).valueChanges().map(value => {
+
+      value = this.mapFetchedList(value);
+      return value;
+    });
   }
 
   private getTodoListDoc(listKey: string) : AngularFirestoreDocument<TodoList> {
 
-    return this.afs.doc(`${TodoServiceProvider.TODO_LISTS_DB_NAME}/${listKey}`);
+    if(this.todoListsRef === null) {
+      return null;
+    }
+    return this.afs.doc(TodoServiceProvider.TODO_LISTS_DB_NAME + '/' + listKey);
   }
 
   public editTodoList(list: TodoList) : Promise<void> {
 
+    if(this.todoListsRef === null) {
+      console.log('TodoProvider : editTodoList : ref null : nothing updated');
+      return new Promise<void>(() => {});
+    }
+    console.log('TodoProvider : editTodoList : list=' + JSON.stringify(list));
     return this.getTodoListDoc(list.uuid).update(list);
   }
 
   public editTodo(listUuid : string, editedItem: TodoItem) : Observable<Promise<void>> {
 
+    if(this.todoListsRef === null || !editedItem || !listUuid) {
+      return Observable.empty();
+    }
     return this.getList(listUuid).pipe(
       
       map((todoList) => {
@@ -84,6 +149,9 @@ export class TodoServiceProvider {
 
   public deleteTodo(listUuid: string, uuid: String) : Observable<Promise<void>> {
 
+    if(this.todoListsRef === null) {
+      return Observable.empty();
+    }
     return this.getList(listUuid).pipe(
       
       map((todoList) => {
@@ -96,6 +164,12 @@ export class TodoServiceProvider {
 
   public deleteList(listKey: string) : Promise<void> {
 
+    if(this.todoListsRef === null) {
+      return new Promise<void>(() => {});
+    }
+    if(this.todoListsRef === null) {
+      return new Promise<void>(() => {});
+    }
     return this.getTodoListDoc(listKey).delete()
       .then(value => console.log("List deleted " + listKey))
       .catch(reason => console.log("error while deleting list" + reason));
@@ -103,6 +177,9 @@ export class TodoServiceProvider {
 
   public createList(name: string) : Promise<void> {
     
+    if(this.todoListsRef === null) {
+      return new Promise<void>(() => {});
+    }
     const newUuid = uuid();
     let newList = {
       uuid : newUuid,
@@ -124,6 +201,9 @@ export class TodoServiceProvider {
 
   public createItem(listUuid:string, item:TodoItem) : Observable<Promise<void>> {
 
+    if(this.todoListsRef === null) {
+      return Observable.empty();
+    }
     return this.getList(listUuid).pipe(
       
       take(1), // Avoid loop creation

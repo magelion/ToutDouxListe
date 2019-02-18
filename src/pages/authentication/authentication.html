@@ -1,16 +1,21 @@
 <ion-content padding>
 
-<button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!user">
-  <ion-icon name="logo-googleplus"></ion-icon>
-  Login with Google
-</button>
+  <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!isConnected()">
+    <ion-icon name="logo-google"></ion-icon>
+    &nbsp;Login with Google
+  </button>
 
-<ion-item *ngIf="user">
-  <ion-avatar item-left>
-    <img [src]="user.photoURL">
-  </ion-avatar>
-  <h2>{{ user.displayName}}</h2>
-  <h3>{{ user.email}}</h3>
-  <button ion-button (click)="logout()">Log out</button>
-</ion-item>
+  <button ion-button block color="danger" (click)="loginUserFacebook()" *ngIf="!isConnected()">
+    <ion-icon name="logo-facebook"></ion-icon>
+    &nbsp;Login with Facebook
+  </button>
+
+  <!-- <ion-item *ngIf="user">
+    <ion-avatar item-left>
+      <img [src]="user.photoURL">
+    </ion-avatar>
+    <h2>{{ user.displayName}}</h2>
+    <h3>{{ user.email}}</h3>
+    <button ion-button (click)="logout()">Log out</button>
+  </ion-item> -->
 </ion-content>

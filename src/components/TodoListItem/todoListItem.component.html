@@ -1,0 +1,27 @@
+<h2>{{list?.name}}</h2>
+<!-- <ion-list *ngIf="list$">
+  <ion-item-sliding *ngFor="let item of (list$ | async)?.items">
+      <ion-item  text-wrap>
+        <ion-input type="text" stacked [(ngModel)]=item.name >{{ item?.name }}</ion-input>
+      </ion-item>
+      <ion-item>
+          <ion-input placeholder="Description" [(ngModel)]=item.desc>{{ item?.desc }}</ion-input>
+      </ion-item>
+      <ion-item-options side="left">
+        <button ion-button color="danger" (click)="deleteItem(item)">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+  </ion-item-sliding>
+</ion-list> -->
+<div *ngIf="todoListId">
+  <ion-card *ngFor="let item of (list$ | async)?.items" >
+    <ion-card-header>
+        <ion-input type="text" stacked [(ngModel)]=item.name ng-model-options="{updateOn: 'blur'}" (ngModelChange)="dataChanged(item)">{{ item?.name }}</ion-input>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-checkbox type="checkbox" [(ngModel)]=item.complete value="Completed" (ngModelChange)="dataChanged(item)"></ion-checkbox>
+      <ion-textarea text-wrap placeholder="Description" [(ngModel)]=item.desc (ngModelChange)="dataChanged(item, list$.uuid)">{{ item?.desc }}</ion-textarea>
+    </ion-card-content>
+  </ion-card>
+</div>
