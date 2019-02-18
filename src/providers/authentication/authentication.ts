@@ -69,13 +69,27 @@ export class AuthenticationProvider {
     return this.loginFollowUp(loginResult);
   }
 
-  private getPublicUser(user: User): Promise<PublicUser> {
+  private getPublicUser(user: User, firebaseUser: firebase.User): Promise<PublicUser> {
 
-    const docRef: AngularFirestoreDocument = this.db.collection('PublicUsers').doc(user.publicUid);
+    /*const docRef: AngularFirestoreDocument = this.db.collection('PublicUsers').doc(user.publicUid);
+    
     return docRef.get().map(value => {
 
       return value.data() as PublicUser;
-    }).toPromise();
+    }).toPromise();*/
+
+    const publicUser: PublicUser = {
+
+      uid: user.publicUid,
+      displayName: firebaseUser.displayName,
+      photoURL : firebaseUser.photoURL,
+    }
+
+    console.log('getPublicUser : ' + JSON.stringify(publicUser));
+
+    return this.db.collection('PublicUsers').doc(publicUser.uid).set(publicUser).then(() => {
+      return publicUser;
+    });
   }
 
   public getPublicUserObs(): Observable<PublicUser> {
@@ -299,7 +313,7 @@ export class AuthenticationProvider {
         publicUser = result.publicUser;
       }
       else {
-        publicUser = await this.getPublicUser(user);
+        publicUser = await this.getPublicUser(user, firebaseUser);
       }
 
       console.log("User fetched : " + JSON.stringify(user));
