@@ -189,7 +189,14 @@ export class TodoServiceProvider {
       owner : this.user.uid
     } as TodoList;
 
-    return this.todoListsRef.add(newList)
+    const promise = this.todoListsRef.doc(newList.uuid).set(newList).then(res => {
+
+      this.updateLists();
+    });
+
+    return promise;
+
+    /*return this.todoListsRef.add(newList)
     .then(newListRef => {
       
       newList.uuid = newListRef.id;
@@ -197,7 +204,7 @@ export class TodoServiceProvider {
     })
     .catch(error => {
       console.log("CreateList error : " + JSON.stringify(error));
-    });
+    });*/
   }
 
   public createItem(listUuid:string, item:TodoItem) : Observable<Promise<void>> {
