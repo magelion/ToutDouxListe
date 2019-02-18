@@ -1,6 +1,7 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges} from '@angular/core'
+import {Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges} from '@angular/core'
 import {TodoItem, TodoList} from "../model/model";
 import { TodoServiceProvider } from '../../../providers/todo/todo-serviceProvider';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'todoListItem',
@@ -10,14 +11,19 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
 
   @Input('todoListId') todoListId?: string;
 
-  list?: TodoList;
-  items?: TodoItem[];
+  list$?: Observable<TodoList>;
 
   constructor(private todoService: TodoServiceProvider) {
   }
 
-  ngOnChanges(arg: any) {
-    this.updateList();
+  ngOnChanges(changeRecord: SimpleChanges) {
+
+    console.log('change=' + JSON.stringify(changeRecord));
+    if(changeRecord.todoListId !== undefined) {
+
+      this.todoListId = changeRecord.todoListId.currentValue;
+      this.updateList();
+    }
   }
 
   ngOnInit() {
@@ -36,28 +42,26 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
   deleteItem (item: TodoItem) {
 
     if(this.todoListId != null && this.todoListId != undefined) {
-      console.log('DeleteItem : ' + item.name+"--"+item.uuid+"--"+item.desc);
-      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe;
+      console.log('deleting : ' + JSON.stringify(item));
+      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe();
     }
   }
 
-  dataChanged(newObj) {
+  dataChanged(newObj: TodoItem, listId: string) {
+
+    if (!listId || !newObj) return;
+
     console.log('changed : ' + JSON.stringify(newObj));
-    this.todoService.editTodoList(this.list);
+    this.todoService.editTodo(listId, newObj);
   }
 
   updateList() {
 
 
-    if(this.todoListId != null && this.todoListId != undefined) {
+    console.log('This todoListId=' + this.todoListId);
+    if(this.todoListId !== null && this.todoListId !== undefined) {
 
-      this.todoService.getList(this.todoListId).subscribe(value => {
-
-        if (value) {
-          this.list = value;
-          this.items = value.items;
-        }
-      });
+      this.list$ = this.todoService.getList(this.todoListId);
     }
   }
 }

@@ -3,6 +3,7 @@ import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angul
 import { TodoList } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { v4 as uuid } from 'uuid';
+import { FormControl, FormGroup, Validators } from '@angular/forms';
 
 @IonicPage()
 @Component({
@@ -17,7 +18,14 @@ export class TodoListItemCreationPage implements OnChanges {
   name:string;
   desc:string;
 
+  formValidation: FormGroup;
+
   constructor(public navCtrl: NavController, public navParams: NavParams, private todoService: TodoServiceProvider, public viewCtrl: ViewController) {
+
+    this.formValidation = new FormGroup(({
+      name: new FormControl('', Validators.required),
+      desc: new FormControl('', Validators.required)
+    }))
   }
 
   ionViewDidLoad() {
@@ -48,7 +56,7 @@ export class TodoListItemCreationPage implements OnChanges {
 
   createTodoItemCommand() {
 
-    if(this.todoListId != null && this.todoListId != undefined && this.list) {
+    if(this.todoListId && this.list && this.name && this.desc) {
       
       let item = {
         uuid: uuid(),

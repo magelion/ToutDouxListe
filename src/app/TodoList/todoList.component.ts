@@ -88,8 +88,6 @@ export class TodoComponent implements OnInit, OnDestroy {
     prompt.present();
   }
 
-
-
   editListCommand(list: TodoList) {
     const prompt = this.alertCtrl.create({
       title: 'Edit List',

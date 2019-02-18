@@ -23,11 +23,13 @@ export class TodoServiceProvider {
     this.todoListsRef = null;
     this.todoLists = null;
     this.todoListsSub$ = new BehaviorSubject(null);
+    
     authProvider.getUser().subscribe(user => {
       
       if(user != null) {
         this.user = user;
         console.log('TodoService : user = ' + JSON.stringify(user));
+
         this.todoListsRef = null;
         this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
           ref => ref.where('owner', '==', user.uid));
@@ -101,7 +103,7 @@ export class TodoServiceProvider {
 
   public editTodo(listUuid : string, editedItem: TodoItem) : Observable<Promise<void>> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsRef === null || !editedItem || !listUuid) {
       return Observable.empty();
     }
     return this.getList(listUuid).pipe(
