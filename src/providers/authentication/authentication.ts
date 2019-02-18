@@ -3,33 +3,33 @@ import { Platform } from 'ionic-angular';
 import { GooglePlus } from '@ionic-native/google-plus/ngx';
 import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable, BehaviorSubject } from 'rxjs';
-import firebase, { firestore } from 'firebase';
-import { AngularFirestore, AngularFirestoreCollection } from 'angularfire2/firestore';
-import { User } from '../../app/TodoList/model/model';
+import firebase from 'firebase';
+import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument, DocumentReference } from 'angularfire2/firestore';
+import { User, PublicUser } from '../../app/TodoList/model/model';
 import { map, take } from 'rxjs/operators';
+import { v4 as uuid } from 'uuid';
+import { Facebook } from '@ionic-native/facebook/ngx'
 
 @Injectable()
 export class AuthenticationProvider {
 
   private userSub$: BehaviorSubject<User>;
-  private userObs$: Observable<User>;
+  private publicUserSub$: BehaviorSubject<PublicUser>
+
   private isConnectedVar: boolean;
+  private userCollection: AngularFirestoreCollection<User>;
+  private userDoc: DocumentReference;
 
-  constructor(private googlePlus: GooglePlus, private fireBasesAuth: AngularFireAuth, private platform: Platform, private db: AngularFirestore) {
-
-    this.userObs$ = fireBasesAuth.authState.map(fireBaseUser => {
-      const data : User = {
-        uid: fireBaseUser.uid,
-        displayName: fireBaseUser.displayName,
-        email: fireBaseUser.email,
-        photoURL : fireBaseUser.photoURL,
-        contacts : []
-      }
-      
-      return data;
-    });
+  constructor(
+    private googlePlus: GooglePlus,
+     private fireBasesAuth: AngularFireAuth, 
+     private platform: Platform, 
+     private db: AngularFirestore, 
+     private facebook: Facebook) {
 
     this.userSub$ = new BehaviorSubject(null);
+    this.publicUserSub$ = new BehaviorSubject(null);
+
     this.userSub$.subscribe(user => {
       if(user !== null && user !== undefined) {
         this.isConnectedVar = true;
@@ -39,44 +39,47 @@ export class AuthenticationProvider {
       }
 
       console.log('AuthenticationProvider : isConnectedVar=' + this.isConnectedVar);
-    })
+    });
+
+    this.userCollection = null;
   }
 
   public canLoginUser(): boolean {
-    console.log('canLoginUser : userObs=' + this.userObs$ + ', googlePlus=' + this.googlePlus + ', this.isConnected=' + this.isConnected());
-    return this.userObs$ === null && this.googlePlus !== null && !this.isConnected();
+    console.log('canLoginUser : googlePlus=' + this.googlePlus + ', this.isConnected=' + this.isConnected());
+    return this.googlePlus !== null && !this.isConnected();
   }
 
   public googleLogin(): Promise<User> {
 
-    var result: Promise<User>;
-
     var loginResult: Promise<firebase.User>;
+    
+    const provider = new firebase.auth.GoogleAuthProvider();
+    provider.addScope('profile');
+    provider.addScope('email');
+
     // Actually, those promises are useless as they login synchronously
     if (this.platform.is('cordova')) {
       console.log("Platform : Cordova");
       loginResult = this.loginUserGoogleNative();
     } else {
       console.log("Platform : Other");
-      loginResult = this.loginUserGoogleWeb();
+      loginResult = this.logInWithPopup(provider);
     }
 
-    // Insert user in db if first connection
-    result = loginResult.then(async firebaseUser => {
-      console.log("google login -> then. User=" + JSON.stringify(firebaseUser));
+    return this.loginFollowUp(loginResult);
+  }
 
-      const user = await this.GetUserFromFirebaseUser(firebaseUser);
+  private getPublicUser(user: User): Promise<PublicUser> {
 
-      console.log("User fetched : " + JSON.stringify(user))
-      if(user) {
-        
-        this.addUserInDbIfNotExist(user);
-        this.userSub$.next(user);
-      }
-      return user;
-    });
+    const docRef: AngularFirestoreDocument = this.db.collection('PublicUsers').doc(user.publicUid);
+    return docRef.get().map(value => {
 
-    return result;
+      return value.data() as PublicUser;
+    }).toPromise();
+  }
+
+  public getPublicUserObs(): Observable<PublicUser> {
+    return this.publicUserSub$.asObservable();
   }
 
   private GetUserFromFirebaseUser(firebaseUser : firebase.User) : Promise<User> {
@@ -84,45 +87,70 @@ export class AuthenticationProvider {
     if (!firebaseUser) return null;
 
     console.log('GetUserFromFirebaseUser : uid=' + firebaseUser.uid);
-    const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', firebaseUser.uid));
+    if(this.userCollection === null) {
 
-    return users.valueChanges().pipe(
+      this.userCollection = this.db.collection('Users', ref => ref.where('uid', '==', firebaseUser.uid));
+    }
+
+    return this.userCollection.snapshotChanges().pipe(
       take(1),
-      map(userList => {
+      map(action => {
         
-        if(userList.length < 1) return null;
+        const users: User[] = action.map(a => {
 
-        const user: User = userList[0];
-        
-        if(!user.contacts) user.contacts = new Array();
+          if(!a.payload.doc.exists) return null;
 
-        return user;
-      }),
+          const data = a.payload.doc.data() as User;
+          const key = a.payload.doc.id;
+          
+          this.userDoc = a.payload.doc.ref;
+          
+          const user: User = data;
+          user.uid = key;
+          if(!user.contacts) user.contacts = new Array();
+  
+          return user;
+        });
+
+        if(users !== null && users.length > 0) {
+          return users[0];
+        }
+        else {
+          return null;
+        }
+      })
     ).toPromise();
   }
 
-  private addUserInDbIfNotExist(user: User) {
+  private addUserInDb(firebaseUser: firebase.User) : Promise<{user:User, publicUser:PublicUser}> {
 
-    console.log("addUserInDbIfNotExist : user=" + JSON.stringify(user));
-    const users: AngularFirestoreCollection<User> = this.db.collection('Users', ref => ref.where('uid', '==', user.uid));
-    //console.log("user collection = " + users);
+    console.log("addUserInDb : user=" + JSON.stringify(firebaseUser));
 
-    users.snapshotChanges().pipe(
-      
-      take(1),
-      map(action => {
-        if(action.length === 0) {
-          const data : User = {
-            uid: user.uid,
-            displayName: user.displayName,
-            email: user.email,
-            photoURL : user.photoURL,
-            contacts : []
-          }
-          users.add(data);
-        }
-      })
-    ).subscribe().unsubscribe();
+    const result = {user: null, publicUser: null};
+
+    const user : User = {
+      uid: firebaseUser.uid,
+      email: firebaseUser.email,
+      publicUid: uuid(),
+      contacts : []
+    }
+
+    const publicUser: PublicUser = {
+
+      uid: user.publicUid,
+      displayName: firebaseUser.displayName,
+      photoURL : firebaseUser.photoURL,
+    }
+
+    return this.userCollection.doc(user.uid).set(user).then(() => {
+
+      this.db.collection('PublicUsers').doc(publicUser.uid).set(publicUser);
+
+      result.user = user;
+      result.publicUser = user;
+
+      return result;
+    });
   }
 
 
@@ -158,30 +186,135 @@ export class AuthenticationProvider {
     }
   }
 
-  /**
-   * Log in with google by web.
-   * Used with simulator.
-   */
-  private async loginUserGoogleWeb(): Promise<firebase.User> {
-    try {
-      const provider = new firebase.auth.GoogleAuthProvider();
-      provider.addScope('profile');
-      provider.addScope('email');
-      return this.fireBasesAuth.auth.signInWithPopup(provider).then(userCredential => {
-        
-        const fireBaseUser:firebase.User = userCredential.user;
-        return fireBaseUser;
-      });
-    } catch (err) {
-      console.log(err);
-    }
-  }
-
-  public getUser(): Observable<User> {
+  public getUserObs(): Observable<User> {
     return this.userSub$.asObservable();
   }
 
   public isConnected(): boolean {
     return this.isConnectedVar;
+  }
+
+  public updateUser(user: User) : Promise<void> {
+
+    if(this.isConnected() && this.userDoc) {
+
+      return this.userDoc.update(user);
+    }
+    else {
+      return null;
+    }
+  }
+
+  public updatePublicUser(publicUser: PublicUser) {
+
+    this.db.doc('PublicUsers/' + publicUser.uid).update(publicUser);
+  }
+
+  public logInWithFacebook() : Promise<User>{
+
+    const provider : firebase.auth.FacebookAuthProvider = new firebase.auth.FacebookAuthProvider();
+
+    provider.addScope('public_profile');
+    provider.addScope('email');
+
+    console.log('Facebook provider = ' + JSON.stringify(provider));
+
+    var loginResult: Promise<firebase.User>;
+    
+    // Actually, those promises are useless as they login synchronously
+    if (this.platform.is('cordova')) {
+      console.log("Platform : Cordova");
+      loginResult = this.loginUserFacebookNative(provider);
+    } else {
+      console.log("Platform : Other");
+      loginResult = this.logInWithPopup(provider);
+    }
+
+    return this.loginFollowUp(loginResult);
+  }
+
+  private logInWithPopup(provider : firebase.auth.AuthProvider) : Promise<firebase.User> {
+
+    const result = firebase.auth().signInWithPopup(provider).then((result) => {
+      // This gives you a Facebook Access Token. You can use it to access the Facebook API.
+      //var token = result.credential.accessToken;
+      // The signed-in user info.
+      const user : firebase.User = result.user;
+      return user;
+
+    });
+    
+    result.catch((error) => {
+
+      console.log('Error logging with popup : ' + JSON.stringify(error));
+    });
+
+    return result;
+  }
+
+  private loginUserFacebookNative(provider : firebase.auth.FacebookAuthProvider): Promise<firebase.User> {
+    
+    // Redirect (opens a webpage)
+    /*const result = firebase.auth().signInWithRedirect(provider).then(() => {
+      
+      return firebase.auth().getRedirectResult().then((result) => {
+
+        return result.user;
+      });
+
+    });
+    
+    result.catch((error) => {
+      
+      console.log(JSON.stringify(error));
+    });
+
+    return result;*/
+
+    const result =  this.facebook.login(['email', 'public_profile'])
+    .then( response => {
+      const facebookCredential = firebase.auth.FacebookAuthProvider
+        .credential(response.authResponse.accessToken);    
+      return firebase.auth().signInWithCredential(facebookCredential);
+    });
+    result.catch(e => console.log('Error logging into Facebook (native)', e));
+    return result;
+  }
+
+  private loginFollowUp(loginResult : Promise<firebase.User>) : Promise<User> {
+
+    var result: Promise<User>;
+
+    // Insert user in db if first connection
+    result = loginResult.then(async firebaseUser => {
+      console.log("login -> then. User=" + JSON.stringify(firebaseUser));
+
+      var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
+      var publicUser: PublicUser;
+      
+      // If user doesn't exists
+      if(!user) {
+        const result = await this.addUserInDb(firebaseUser);
+        user = result.user;
+        publicUser = result.publicUser;
+      }
+      else {
+        publicUser = await this.getPublicUser(user);
+      }
+
+      console.log("User fetched : " + JSON.stringify(user));
+      console.log("Public User fetched : " + JSON.stringify(publicUser));
+
+      if(user) {
+        this.userSub$.next(user);
+      }
+      if(publicUser) {
+        this.publicUserSub$.next(publicUser);
+      }
+      
+      return user;
+    });
+
+    return result;
   }
 }

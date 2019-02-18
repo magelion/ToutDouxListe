@@ -1,5 +1,5 @@
 <h2>{{list?.name}}</h2>
-<ion-list *ngIf="list$">
+<!-- <ion-list *ngIf="list$">
   <ion-item-sliding *ngFor="let item of (list$ | async)?.items">
       <ion-item  text-wrap>
         <ion-input type="text" stacked [(ngModel)]=item.name >{{ item?.name }}</ion-input>
@@ -13,8 +13,8 @@
         </button>
       </ion-item-options>
   </ion-item-sliding>
-</ion-list> 
-<!-- <div *ngIf="list$">
+</ion-list> -->
+<div *ngIf="todoListId">
   <ion-card *ngFor="let item of (list$ | async)?.items" >
     <ion-card-header>
         <ion-input type="text" stacked [(ngModel)]=item.name ng-model-options="{updateOn: 'blur'}" (ngModelChange)="dataChanged(item)">{{ item?.name }}</ion-input>
@@ -24,4 +24,4 @@
       <ion-textarea text-wrap placeholder="Description" [(ngModel)]=item.desc (ngModelChange)="dataChanged(item, list$.uuid)">{{ item?.desc }}</ion-textarea>
     </ion-card-content>
   </ion-card>
-</div> -->
+</div>

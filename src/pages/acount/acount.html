@@ -3,11 +3,11 @@
   <ion-icon name="logo-googleplus"></ion-icon>
   Login with Google
 </button>
-  <ion-item *ngIf="user">
+  <ion-item *ngIf="user && publicUser">
     <ion-avatar item-left>
-      <img [src]="user.photoURL">
+      <img [src]="publicUser.photoURL">
     </ion-avatar>
-    <h2>{{ user.displayName}}</h2>
+    <h2>{{ publicUser.displayName}}</h2>
     <h3>{{ user.email}}</h3>
     <button ion-button (click)="logout()">Log out</button>
   </ion-item>

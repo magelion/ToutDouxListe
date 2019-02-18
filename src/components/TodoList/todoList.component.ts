@@ -1,34 +1,22 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'
-import { TodoList } from "./model/model";
+import { Component, Input } from '@angular/core'
+import { TodoList } from "../../app/TodoList/model/model";
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
-import { Observable } from 'rxjs';
 
 @Component({
   selector: 'todoList',
   templateUrl: './todoList.component.html'
 })
-export class TodoComponent implements OnInit, OnDestroy {
+export class TodoComponent {
 
-  lists: Observable<TodoList[]>;
+  @Input() list?: TodoList;
 
   constructor(
     public todoService: TodoServiceProvider,
     private navController: NavController,
     private alertCtrl: AlertController
   ) {
-
-  }
-
-  ngOnInit() {
-    this.todoService.getTodoListsSub().subscribe(obs => {
-
-      this.lists = obs;
-    });
-  }
-
-  ngOnDestroy() {
 
   }
 
@@ -55,39 +43,6 @@ export class TodoComponent implements OnInit, OnDestroy {
     }
   }
 
-  createList(name: string) {
-    this.todoService.createList(name);
-  }
-
-  createListCommand() {
-    const prompt = this.alertCtrl.create({
-      title: 'Create List',
-      message: 'Enter list name',
-      inputs: [
-        {
-          name : 'name',
-          placeholder : 'My awsome list'
-        },
-      ],
-      buttons: [
-        {
-          text: 'Cancel',
-          handler: data => {
-            console.log('Cancel clicked');
-          }
-        },
-        {
-          text: 'Save',
-          handler: data => {
-            console.log('Saved clicked');
-            this.createList(data.name);
-          }
-        }
-      ]
-    });
-    prompt.present();
-  }
-
   editListCommand(list: TodoList) {
     const prompt = this.alertCtrl.create({
       title: 'Edit List',
@@ -101,7 +56,7 @@ export class TodoComponent implements OnInit, OnDestroy {
       buttons: [
         {
           text: 'Cancel',
-          handler: data => {
+          handler: () => {
             console.log('Cancel clicked');
           }
         },

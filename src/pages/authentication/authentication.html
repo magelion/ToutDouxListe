@@ -1,8 +1,13 @@
 <ion-content>
 
   <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!isConnected()">
-    <ion-icon name="logo-googleplus"></ion-icon>
-    Login with Google
+    <ion-icon name="logo-google"></ion-icon>
+    &nbsp;Login with Google
+  </button>
+
+  <button ion-button block color="danger" (click)="loginUserFacebook()" *ngIf="!isConnected()">
+    <ion-icon name="logo-facebook"></ion-icon>
+    &nbsp;Login with Facebook
   </button>
 
   <!-- <ion-item *ngIf="user">

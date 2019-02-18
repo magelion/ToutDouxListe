@@ -18,7 +18,7 @@ export class AuthenticationPage {
     private authProvider: AuthenticationProvider,
     private navController: NavController) {
 
-    this.userObs = this.authProvider.getUser();
+    this.userObs = this.authProvider.getUserObs();
     this.userObs.subscribe(user => {
       
       console.log('Authentication : user=' + JSON.stringify(user));
@@ -43,7 +43,13 @@ export class AuthenticationPage {
     return this.authProvider.isConnected();
   }
 
-  logout() {
+  public loginUserFacebook() {
+
+    console.log('AuthenticationPage : loginUserFacebook');
+    this.authProvider.logInWithFacebook();
+  }
+
+  public logout() {
     console.log('AuthenticationPage : logout');
     this.authProvider.signOut();
   }

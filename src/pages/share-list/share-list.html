@@ -1,0 +1,21 @@
+<ion-header>
+
+  <ion-navbar>
+    <ion-title>ShareList</ion-title>
+  </ion-navbar>
+
+</ion-header>
+
+
+<ion-content padding>
+
+  <ion-list *ngIf="contactList">
+    <ion-item *ngFor="let contact of contactList">
+
+      <contact [contact]="contact"></contact>
+      <button ion-button color="secondary" (click)="shareListTo(contact)">
+        <ion-icon name="validate"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-list>
+</ion-content>
