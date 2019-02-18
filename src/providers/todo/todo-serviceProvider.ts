@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList, User, PublicUser} from "../../app/TodoList/model/model";
+import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
 import {Observable, BehaviorSubject, from, forkJoin} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
@@ -34,7 +34,7 @@ export class TodoServiceProvider {
         this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
           ref => ref.where('owner', '==', user.uid));
 
-        this.todoListsSub$.next(this.updateLists());
+        this.updateLists();
       }
     });
   }
@@ -49,14 +49,14 @@ export class TodoServiceProvider {
 
     this.todoListsRef = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
     const colRef = this.todoListsRef.ref;
+    const sharedListRef = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME).ref;
 
     const ownedListSnap$ = from(colRef.where('owner', '==', this.user.uid).get());
-    const sharedListSnap$ = from(colRef.where('sharedTo', 'array-contains', this.user.publicUid).get());
+    const sharedListSnap$ = from(sharedListRef.where('sharedTo', 'array-contains', this.user.publicUid).get());
 
     const finalObs$ = forkJoin(ownedListSnap$, sharedListSnap$).map(data => {
       return data[0].docs.concat(data[1].docs);
     });
-    //const finalObs$ = Observable.merge(ownedListSnap$, sharedListSnap$);
 
     this.todoLists$ = finalObs$.pipe(
       
@@ -68,21 +68,8 @@ export class TodoServiceProvider {
       tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
     );
 
-    // if(this.todoListsRef === null) {
-    //   return Observable.empty();
-    // }
-    // this.todoLists = this.todoListsRef.snapshotChanges().pipe(
+    this.todoListsSub$.next(this.todoLists$);
 
-    //   map(actions => actions.map(a => {
-
-    //     var data = a.payload.doc.data() as TodoList;
-
-    //     data = this.mapFetchedList(data);
-    //     return data;
-
-    //   })),
-    //   tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
-    // );
     return this.todoLists$;
   }
 
@@ -129,7 +116,7 @@ export class TodoServiceProvider {
       return new Promise<void>(() => {});
     }
     console.log('TodoProvider : editTodoList : list=' + JSON.stringify(list));
-    return this.getTodoListDoc(list.uuid).update(list);
+    return this.getTodoListDoc(list.uuid).update(list).then(() => {this.updateLists()});
   }
 
   public editTodo(listUuid : string, editedItem: TodoItem) : Observable<Promise<void>> {
@@ -149,15 +136,25 @@ export class TodoServiceProvider {
 
   public deleteTodo(listUuid: string, uuid: String) : Observable<Promise<void>> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsRef === null || !listUuid || !uuid) {
+      console.log('deleteTodo : invalid args, nothing deleted : ref=' + this.todoListsRef + '; listId=' + listUuid + '; itemIt=' + uuid);
       return Observable.empty();
     }
     return this.getList(listUuid).pipe(
       
+      take(1),
       map((todoList) => {
+        
         const index = todoList.items.findIndex(item => item.uuid === uuid);
-        todoList.items.splice(index, 1);
-        return this.editTodoList(todoList);
+
+        if(index >= 0) {
+          todoList.items.splice(index, 1);
+          console.log('deleteTodo : index=' + index + '; newList=' + JSON.stringify(todoList));
+          return this.editTodoList(todoList);
+        }
+        else {
+          return new Promise<void>(() => {});
+        }
       })
     );
   }
@@ -171,7 +168,11 @@ export class TodoServiceProvider {
       return new Promise<void>(() => {});
     }
     return this.getTodoListDoc(listKey).delete()
-      .then(value => console.log("List deleted " + listKey))
+      .then(() => {
+        console.log("List deleted " + listKey);
+        // Update observable
+        this.updateLists();
+      })
       .catch(reason => console.log("error while deleting list" + reason));
   }
 

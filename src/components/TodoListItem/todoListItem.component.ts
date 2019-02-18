@@ -1,5 +1,4 @@
-import {Component, OnInit, OnDestroy, Input, OnChanges, SimpleChanges} from '@angular/core';
-import { Observable } from 'rxjs';
+import {Component, Input} from '@angular/core';
 import { TodoList, TodoItem } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 
@@ -7,47 +6,29 @@ import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
   selector: 'todoListItem',
   templateUrl: './todoListItem.component.html'
 })
-export class TodoListItem implements OnInit, OnDestroy, OnChanges {
+export class TodoListItem {
 
-  @Input('todoListId') todoListId?: string;
-
-  list$?: Observable<TodoList>;
+  @Input('list') list?: TodoList;
+  @Input('item') item?: TodoItem;
 
   constructor(private todoService: TodoServiceProvider) {
-  }
-
-  ngOnChanges(changeRecord: SimpleChanges) {
-
-    console.log('change=' + JSON.stringify(changeRecord));
-    if(changeRecord.todoListId !== undefined) {
-
-      this.todoListId = changeRecord.todoListId.currentValue;
-      this.updateList();
-    }
-  }
-
-  ngOnInit() {
-
-    this.updateList();
-  }
-
-  ngOnDestroy() {
-
-  }
-
-  selectItem (item: TodoItem) {
-    console.log("item:" + item.name + ";desc=" + item.desc);
+  
+    console.log('TodoListItemComponent : list=' + JSON.stringify(this.list) + "; item=" + JSON.stringify(this.item));
   }
   
-  deleteItem (item: TodoItem) {
+  public deleteItem () {
 
-    if(this.todoListId != null && this.todoListId != undefined) {
-      console.log('deleting : ' + JSON.stringify(item));
-      this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe();
-    }
+    console.log('TodoListItemComponent : deleteItem : item=' + JSON.stringify(this.item) + '; list=' + JSON.stringify(this.list));
+    const subToken = this.todoService.deleteTodo(this.list.uuid, this.item.uuid).subscribe(res => {
+      res.then(val => {subToken.unsubscribe()});
+    })
+    // if(this.todoListId != null && this.todoListId != undefined) {
+    //   console.log('deleting : ' + JSON.stringify(item));
+    //   this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe();
+    // }
   }
 
-  dataChanged(newObj: TodoItem, listId: string) {
+  private dataChanged(newObj: TodoItem, listId: string) {
 
     if (!listId || !newObj) return;
 
@@ -55,7 +36,7 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
     this.todoService.editTodo(listId, newObj);
   }
 
-  updateList() {
+  /*updateList() {
 
 
     console.log('This todoListId=' + this.todoListId);
@@ -63,5 +44,5 @@ export class TodoListItem implements OnInit, OnDestroy, OnChanges {
 
       this.list$ = this.todoService.getList(this.todoListId);
     }
-  }
+  }*/
 }

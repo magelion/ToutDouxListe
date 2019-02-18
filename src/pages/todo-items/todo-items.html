@@ -1,15 +1,17 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>todoItems</ion-title>
+    <ion-title *ngIf="list">{{ list.name }}</ion-title>
   </ion-navbar>
 
 </ion-header>
 
 
 <ion-content padding>
+  <div *ngIf="list">
+    <todoListItem *ngFor="let item of list.items" [list]="list" [item]="item"></todoListItem>
+  </div>
   
-  <todoListItem [todoListId]="listId"></todoListItem>
   <button ion-button color="secondary" (click)="createListItemCommand()">
       <ion-icon name="add"></ion-icon>
   </button>

@@ -42,6 +42,8 @@ export class ContactPage {
       })
     )
     .subscribe(users => {
+
+      console.log('contact page : search result : ' + JSON.stringify(users));
       this.searchResult = users;
     });
 

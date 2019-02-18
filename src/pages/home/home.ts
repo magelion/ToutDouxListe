@@ -1,5 +1,5 @@
-import { Component, OnInit } from '@angular/core';
-import { Observable } from 'rxjs';
+import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Subscription } from 'rxjs';
 import { TodoList } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { AlertController } from 'ionic-angular';
@@ -11,15 +11,23 @@ import { AlertController } from 'ionic-angular';
 })
 export class HomePage implements OnInit {
   
-  lists: Observable<TodoList[]>;
+  public lists: TodoList[];
+  private subToken : Subscription;
 
-  constructor(private todoService: TodoServiceProvider, private alertCtrl: AlertController) {
+  constructor(private todoService: TodoServiceProvider, private alertCtrl: AlertController, private changeDetector: ChangeDetectorRef) {
   }
 
   ngOnInit() {
     this.todoService.getTodoListsSub().subscribe(obs => {
 
-      this.lists = obs;
+      if(this.subToken) {
+        this.subToken.unsubscribe();
+      }
+      this.subToken = obs.subscribe(lists => {
+
+        console.log('Home : updated : ' + JSON.stringify(lists));
+        this.lists = lists
+      })
     });
   }
 
