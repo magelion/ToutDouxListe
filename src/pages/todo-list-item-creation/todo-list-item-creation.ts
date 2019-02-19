@@ -1,6 +1,6 @@
 import { Component, OnChanges } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { TodoList } from '../../app/TodoList/model/model';
+import { TodoList, TodoItem } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { v4 as uuid } from 'uuid';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
@@ -24,7 +24,7 @@ export class TodoListItemCreationPage implements OnChanges {
 
     this.formValidation = new FormGroup(({
       name: new FormControl('', Validators.required),
-      desc: new FormControl('', Validators.required)
+      desc: new FormControl('')
     }));
   }
 
@@ -56,14 +56,16 @@ export class TodoListItemCreationPage implements OnChanges {
 
   createTodoItemCommand() {
 
-    if(this.todoListId && this.list && this.name && this.desc) {
+    if(this.todoListId && this.list && this.name) {
       
-      let item = {
+      let item : TodoItem = {
         uuid: uuid(),
         name: this.name,
-        desc: this.desc,
-        complete: false,
+        complete: false
       };
+
+      this.desc ? item.desc = this.desc : item.desc = '';
+      
       const subToken = this.todoService.createItem(this.list.uuid, item).subscribe(res => {
         res.then(val => subToken.unsubscribe());
       });

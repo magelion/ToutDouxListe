@@ -1,4 +1,4 @@
-import { NgModule, ErrorHandler } from '@angular/core';
+import { NgModule, ErrorHandler, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { ToutDouxListeApp } from './app.component';
@@ -57,6 +57,7 @@ firebase.initializeApp(firebaseConfig);
   imports: [
     BrowserModule,
     HttpModule,
+    IonicModule,
     AngularFireModule.initializeApp(firebaseConfig),
     AngularFirestoreModule,
     AngularFireAuthModule,
@@ -89,6 +90,7 @@ firebase.initializeApp(firebaseConfig);
     {provide: ErrorHandler, useClass: IonicErrorHandler},
     ContactProvider,
     Facebook
-  ]
+  ],
+  //schemas: [ CUSTOM_ELEMENTS_SCHEMA ]
 })
 export class AppModule {}

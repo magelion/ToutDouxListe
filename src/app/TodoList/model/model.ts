@@ -8,7 +8,7 @@ export interface TodoList {
 };
 
 export interface TodoItem {
-  uuid? : string,
+  uuid : string,
   name : string,
   desc? : string,
   complete : boolean

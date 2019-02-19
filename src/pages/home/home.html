@@ -9,7 +9,14 @@
   <ion-list>
     <todoList *ngFor='let list of lists' [list]="list"></todoList>
   </ion-list>
-  <button ion-button color="secondary" (click)="createListCommand()">
+
+  <!-- <button ion-button color="secondary" (click)="createListCommand()">
       <ion-icon name="add"></ion-icon>
-  </button>
+  </button> -->
+
+  <ion-fab bottom end fixed>
+    <button ion-fab color="secondary" (click)="createListCommand()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
 </ion-content>

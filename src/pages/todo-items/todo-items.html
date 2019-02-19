@@ -11,10 +11,13 @@
   <ion-list *ngIf="list">
     <todoListItem *ngFor="let item of list.items" [list]="list" [item]="item"></todoListItem>
   </ion-list>
-  
-  <button ion-button color="secondary" (click)="createListItemCommand()">
+
+  <ion-fab bottom end fixed>
+    <button ion-fab color="secondary" (click)="createListItemCommand()">
       <ion-icon name="add"></ion-icon>
-  </button>
+    </button>
+  </ion-fab>
+
   <button ion-button (click)="shareList()">
       <ion-icon name="share"></ion-icon>
   </button>
