@@ -2,7 +2,7 @@ import { Component, OnInit, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Constants} from "../../app/utilities/Constants";
 import { TodoListItemCreationPage } from '../todo-list-item-creation/todo-list-item-creation';
-import { Observable, Subscription } from 'rxjs';
+import { Subscription } from 'rxjs';
 import { TodoList } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { ShareListPage } from '../share-list/share-list';
@@ -38,7 +38,7 @@ export class TodoItemsPage implements OnInit, OnDestroy{
       console.log('list = ' + JSON.stringify(this.list));
     })
     .catch(error => {
-      console.error('todo-item page : error on list update : ', error);
+      console.error('todo-item page : error on list update : ' + JSON.stringify(error));
     });
   }
   
