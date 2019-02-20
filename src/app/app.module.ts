@@ -30,9 +30,9 @@ import { AcountPage } from '../pages/acount/acount';
 import { ContactProvider } from '../providers/contact/contact';
 import { ComponentsModule } from '../components/components.module';
 import { ShareListPageModule } from '../pages/share-list/share-list.module';
-import { ShareListPage } from '../pages/share-list/share-list';
 
 import { Facebook } from '@ionic-native/facebook/ngx'
+import { ShareListPage } from '../pages/share-list/share-list';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",

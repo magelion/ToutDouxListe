@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { PublicUser, User } from '../../app/TodoList/model/model';
+import { PublicUser, User, TodoList } from '../../app/TodoList/model/model';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
@@ -12,9 +12,10 @@ import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 })
 export class ShareListPage {
 
-  todoListId: string;
-  contactList: PublicUser[] = new Array();
-  user: User;
+  private todoListId: string;
+  private contactList: PublicUser[] = new Array();
+  private user: User;
+  private todoList : TodoList;
 
   constructor(private navParams: NavParams, private contactProvider: ContactProvider, private authProvider: AuthenticationProvider, private todoProvider: TodoServiceProvider) {
 
@@ -27,14 +28,30 @@ export class ShareListPage {
 
     if (this.user && this.contactProvider) {
 
+      const subToken = this.todoProvider.getList(this.todoListId).subscribe(todoList => {
+
+        this.todoList = todoList;
+        subToken.unsubscribe();
+      })
+
       console.log('ShareListPage : user=' + JSON.stringify(this.user));
       this.contactProvider.getPublicUser(this.user.contacts[0]);
 
       const userContactsPromise = this.contactProvider.getContactsOfUser(this.user);
       if(userContactsPromise) {
-        userContactsPromise.then(contacts => this.contactList = contacts);
+        userContactsPromise.then(contacts => {
+          this.contactList = this.getAvailableContacts(contacts);
+        });
       }
     }
+  }
+
+  private getAvailableContacts(contacts : PublicUser[]) : PublicUser[]{
+
+    return contacts;
+    // return contacts.filter((user) => {
+    //   return this.todoList.sharedTo.indexOf(user.uid);
+    // })
   }
 
   public shareListTo(publicUser: PublicUser) {
@@ -42,14 +59,36 @@ export class ShareListPage {
     console.log('ShareListPage : publicUser=' + JSON.stringify(publicUser) + '; todoListId=' + this.todoListId);
     if(!this.todoListId) return null;
 
-    const listObs = this.todoProvider.getList(this.todoListId);
+    console.log('ShareListPage : List=' + JSON.stringify(this.todoList));
+    this.todoList.sharedTo.push(publicUser.uid);
+    this.todoProvider.editTodoList(this.todoList);
 
-    const subToken = listObs.subscribe(todoList => {
+    this.contactList = this.getAvailableContacts(this.contactList);
+  }
 
-      console.log('ShareListPage : List=' + JSON.stringify(todoList));
-      todoList.sharedTo.push(publicUser.uid);
-      this.todoProvider.editTodoList(todoList);
-      subToken.unsubscribe();
-    })
+  public isAdded(user : PublicUser) : boolean {
+
+    if(!this.todoList) {
+      return false;
+    }
+    else {
+      return this.todoList.sharedTo.indexOf(user.uid) > -1;
+    }
+  }
+
+  public unshareListTo(publicUser : PublicUser) {
+
+    console.log('unshareListTo : publicUser=' + JSON.stringify(publicUser) + '; todoListId=' + this.todoListId);
+    if(!this.todoListId) return null;
+
+    console.log('unshareListTo : List=' + JSON.stringify(this.todoList));
+
+    const ind = this.todoList.sharedTo.indexOf(publicUser.uid);
+    if(ind < 0) return null;
+    console.log('unshareListPage : index=' + ind);
+    this.todoList.sharedTo.splice(ind, 1);
+    this.todoProvider.editTodoList(this.todoList);
+
+    this.contactList = this.getAvailableContacts(this.contactList);
   }
 }

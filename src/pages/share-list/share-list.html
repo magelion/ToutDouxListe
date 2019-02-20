@@ -1,7 +1,7 @@
 <ion-header>
 
   <ion-navbar>
-    <ion-title>ShareList</ion-title>
+    <ion-title>Share List</ion-title>
   </ion-navbar>
 
 </ion-header>
@@ -13,9 +13,17 @@
     <ion-item *ngFor="let contact of contactList">
 
       <contact [contact]="contact"></contact>
-      <button ion-button color="secondary" (click)="shareListTo(contact)">
-        <ion-icon name="validate"></ion-icon>
-      </button>
+      
+      <div [ngSwitch]="isAdded(contact)">
+        
+        <button *ngSwitchCase="true" ion-button color="danger" (click)="unshareListTo(contact)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+
+        <button *ngSwitchCase="false" ion-button color="secondary" (click)="shareListTo(contact)">
+          <ion-icon name="add"></ion-icon>
+        </button>
+      </div>
     </ion-item>
   </ion-list>
 </ion-content>
