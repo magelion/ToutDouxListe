@@ -8,13 +8,15 @@ import { ContactProvider } from '../providers/contact/contact';
 import { CommonModule } from '@angular/common';
 import { IonicPageModule } from 'ionic-angular';
 import { ContactComponent } from './contact/contact';
+import { ItemEditComponent } from './item-edit/item-edit';
 
 @NgModule({
 	declarations: [
 		ContactListComponent,
 		TodoListItem,
 		TodoComponent,
-    	ContactComponent
+    	ContactComponent,
+    ItemEditComponent
 	],
 	imports: [
 		CommonModule,
@@ -29,7 +31,8 @@ import { ContactComponent } from './contact/contact';
 		ContactListComponent,
 		TodoListItem,
 		TodoComponent,
-    	ContactComponent
+    	ContactComponent,
+    ItemEditComponent
 	]
 })
 export class ComponentsModule {}

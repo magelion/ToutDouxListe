@@ -1,0 +1,20 @@
+<ion-header>
+  <ion-navbar>
+      <ion-title>Update {{item?.name}}</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <form (ngSubmit)="updateTodoItem()" [formGroup]="formValidation">
+    <item-edit>
+      
+    </item-edit>
+
+    <button ion-button block type="submit" color="secondary">
+        Confirm
+        <ion-icon name="checkmark"></ion-icon>
+    </button>
+  </form>
+
+</ion-content>

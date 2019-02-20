@@ -42,13 +42,17 @@ export class TodoListItemCreationPage implements OnChanges {
 
     if(this.todoListId != null && this.todoListId != undefined) {
 
-      this.todoService.getList(this.todoListId).subscribe(
+      const subToken = this.todoService.getList(this.todoListId).subscribe(
         value => {
           this.list = value;
           console.log("Item creation page : list get : " + JSON.stringify(this.list));
+
+          subToken.unsubscribe();
         },
         err => {
           console.log("Item creation page : error on getting list : " + err);
+
+          subToken.unsubscribe();
         }
       );
     }

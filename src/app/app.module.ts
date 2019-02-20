@@ -33,6 +33,7 @@ import { ShareListPageModule } from '../pages/share-list/share-list.module';
 
 import { Facebook } from '@ionic-native/facebook/ngx'
 import { ShareListPage } from '../pages/share-list/share-list';
+import { TodoItemEditPageModule } from '../pages/todo-item-edit/todo-item-edit.module';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -66,7 +67,8 @@ firebase.initializeApp(firebaseConfig);
     TodoListItemCreationPageModule,
     AuthenticationPageModule,
     ComponentsModule,
-    ShareListPageModule
+    ShareListPageModule,
+    TodoItemEditPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
