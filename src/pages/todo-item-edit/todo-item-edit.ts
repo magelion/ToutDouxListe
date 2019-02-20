@@ -11,21 +11,14 @@ import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 })
 export class TodoItemEditPage {
 
-  itemId?: string;
-  item?: TodoItem;
-  listId : string;
-
-  name:string;
-  desc:string;
+  private itemId?: string;
+  public item?: TodoItem;
+  private listId : string;
 
   formValidation: FormGroup;
 
   constructor(public navCtrl: NavController, public navParams: NavParams, private todoService: TodoServiceProvider, public viewCtrl: ViewController) {
-
-    this.formValidation = new FormGroup(({
-      name: new FormControl('', Validators.required),
-      desc: new FormControl('')
-    }));
+    
   }
 
   ionViewDidLoad() {
@@ -40,7 +33,7 @@ export class TodoItemEditPage {
     this.updateItem();
   }
 
-  public updateItem() {
+  public async updateItem() {
 
     if(this.itemId != null && this.itemId != undefined && this.listId != null && this.listId != undefined) {
 

@@ -42,17 +42,13 @@ export class TodoListItemCreationPage implements OnChanges {
 
     if(this.todoListId != null && this.todoListId != undefined) {
 
-      const subToken = this.todoService.getList(this.todoListId).subscribe(
+      this.todoService.getList(this.todoListId).then(
         value => {
           this.list = value;
           console.log("Item creation page : list get : " + JSON.stringify(this.list));
-
-          subToken.unsubscribe();
         },
         err => {
           console.log("Item creation page : error on getting list : " + err);
-
-          subToken.unsubscribe();
         }
       );
     }
@@ -70,8 +66,8 @@ export class TodoListItemCreationPage implements OnChanges {
 
       this.desc ? item.desc = this.desc : item.desc = '';
       
-      const subToken = this.todoService.createItem(this.list.uuid, item).subscribe(res => {
-        res.then(val => subToken.unsubscribe());
+      this.todoService.createItem(this.list.uuid, item).then(res => {
+        this.viewCtrl.dismiss();
       });
 
       this.viewCtrl.dismiss();

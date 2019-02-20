@@ -7,9 +7,7 @@
 <ion-content padding>
 
   <form (ngSubmit)="updateTodoItem()" [formGroup]="formValidation">
-    <item-edit>
-      
-    </item-edit>
+    <item-edit [item]="item"></item-edit>
 
     <button ion-button block type="submit" color="secondary">
         Confirm

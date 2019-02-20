@@ -68,7 +68,7 @@ firebase.initializeApp(firebaseConfig);
     AuthenticationPageModule,
     ComponentsModule,
     ShareListPageModule,
-    TodoItemEditPageModule
+    TodoItemEditPageModule,
   ],
   bootstrap: [IonicApp],
   entryComponents: [

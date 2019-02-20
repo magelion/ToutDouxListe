@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TodoList } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
@@ -9,26 +9,25 @@ import { AlertController } from 'ionic-angular';
   selector: 'page-home',
   templateUrl: 'home.html',
 })
-export class HomePage implements OnInit {
-  
+export class HomePage implements OnInit, OnDestroy {
   public lists: TodoList[];
   private subToken : Subscription;
+  
+  constructor(private todoService: TodoServiceProvider, private alertCtrl: AlertController) {
 
-  constructor(private todoService: TodoServiceProvider, private alertCtrl: AlertController, private changeDetector: ChangeDetectorRef) {
-  }
-
-  ngOnInit() {
-    this.todoService.getTodoListsSub().subscribe(obs => {
-
-      if(this.subToken) {
-        this.subToken.unsubscribe();
-      }
-      this.subToken = obs.subscribe(lists => {
-
-        console.log('Home : updated : ' + JSON.stringify(lists));
-        this.lists = lists
-      })
+    this.subToken = this.todoService.getTodoListsObs().subscribe(lists => {
+      
+      console.log('Home : updated : ' + JSON.stringify(lists));
+      this.lists = lists;
     });
+  }
+  
+  ngOnInit() {
+    
+  }
+  
+  ngOnDestroy(): void {
+    this.subToken.unsubscribe();
   }
 
   createListCommand() {
