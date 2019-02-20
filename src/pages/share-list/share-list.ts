@@ -28,10 +28,9 @@ export class ShareListPage {
 
     if (this.user && this.contactProvider) {
 
-      const subToken = this.todoProvider.getList(this.todoListId).subscribe(todoList => {
+      this.todoProvider.getList(this.todoListId).then(todoList => {
 
         this.todoList = todoList;
-        subToken.unsubscribe();
       })
 
       console.log('ShareListPage : user=' + JSON.stringify(this.user));
