@@ -19,9 +19,8 @@ export class TodoListItem {
   public deleteItem () {
 
     console.log('TodoListItemComponent : deleteItem : item=' + JSON.stringify(this.item) + '; list=' + JSON.stringify(this.list));
-    const subToken = this.todoService.deleteTodo(this.list.uuid, this.item.uuid).subscribe(res => {
-      res.then(val => {subToken.unsubscribe()});
-    })
+    this.todoService.deleteTodo(this.list.uuid, this.item.uuid);
+
     // if(this.todoListId != null && this.todoListId != undefined) {
     //   console.log('deleting : ' + JSON.stringify(item));
     //   this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe();
@@ -34,9 +33,7 @@ export class TodoListItem {
 
     console.log('changed : ' + JSON.stringify(this.item));
 
-    const subToken = this.todoService.editTodo(this.list.uuid, this.item).subscribe(res => {
-      res.then(() => subToken.unsubscribe());
-    });
+    this.todoService.editTodo(this.list.uuid, this.item);
   }
 
   /*updateList() {
