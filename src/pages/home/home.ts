@@ -1,4 +1,4 @@
-import { Component, OnInit, ChangeDetectorRef, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
 import { TodoList } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
@@ -43,7 +43,7 @@ export class HomePage implements OnInit, OnDestroy {
       buttons: [
         {
           text: 'Cancel',
-          handler: data => {
+          handler: () => {
             console.log('Cancel clicked');
           }
         },

@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { TodoList, TodoItem } from '../../app/TodoList/model/model';
-import { FormGroup, FormControl, Validators } from '@angular/forms';
+import { TodoItem } from '../../app/TodoList/model/model';
+import { FormGroup } from '@angular/forms';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 
 @IonicPage()
@@ -15,10 +15,10 @@ export class TodoItemEditPage {
   public item?: TodoItem;
   private listId : string;
 
-  formValidation: FormGroup;
-
-  constructor(public navCtrl: NavController, public navParams: NavParams, private todoService: TodoServiceProvider, public viewCtrl: ViewController) {
-    
+  constructor(public navCtrl: NavController, 
+    public navParams: NavParams, 
+    private todoService: TodoServiceProvider, 
+    public viewCtrl: ViewController) {
   }
 
   ionViewDidLoad() {
@@ -29,7 +29,7 @@ export class TodoItemEditPage {
     this.updateItem();
   }
 
-  ngOnChanges(arg: any) {
+  ngOnChanges() {
     this.updateItem();
   }
 
@@ -50,6 +50,15 @@ export class TodoItemEditPage {
           subToken.unsubscribe();
         }
       );*/
+    }
+  }
+
+  public async editItem() {
+
+    if(this.item && this.listId) {
+
+      await this.todoService.editTodo(this.listId, this.item);
+      this.viewCtrl.dismiss();
     }
   }
 

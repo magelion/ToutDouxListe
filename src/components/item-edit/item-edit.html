@@ -1,4 +1,8 @@
-<!-- Generated template for the ItemEditComponent component -->
-<div>
-  {{text}}
-</div>
+<ion-item>
+  <ion-label floating>Name</ion-label>
+  <ion-input name="itemName" type="text" [(ngModel)]="name" required formControlName="nameForm"></ion-input>
+</ion-item>
+<ion-item>
+  <ion-label floating>Description</ion-label>
+  <ion-input name="itemDesc" type="text" [(ngModel)]="desc" formControlName="descForm"></ion-input>
+</ion-item>

@@ -1,6 +1,8 @@
 import {Component, Input} from '@angular/core';
 import { TodoList, TodoItem } from '../../app/TodoList/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
+import { NavController } from 'ionic-angular';
+import { TodoItemEditPage } from '../../pages/todo-item-edit/todo-item-edit';
 
 @Component({
   selector: 'todoListItem',
@@ -11,7 +13,7 @@ export class TodoListItem {
   @Input('list') list?: TodoList;
   @Input('item') item?: TodoItem;
 
-  constructor(private todoService: TodoServiceProvider) {
+  constructor(private todoService: TodoServiceProvider, private navCtrl: NavController) {
   
     console.log('TodoListItemComponent : list=' + JSON.stringify(this.list) + "; item=" + JSON.stringify(this.item));
   }
@@ -26,14 +28,14 @@ export class TodoListItem {
     // }
   }
 
-  private dataChanged($event) {
+  /*private dataChanged($event) {
 
     if (!this.list || !this.item) return;
 
     console.log('changed : ' + JSON.stringify(this.item));
 
     this.todoService.editTodo(this.list.uuid, this.item);
-  }
+  }*/
 
   /*updateList() {
 
@@ -44,4 +46,12 @@ export class TodoListItem {
       this.list$ = this.todoService.getList(this.todoListId);
     }
   }*/
+
+  public editItem() {
+
+    this.navCtrl.push(TodoItemEditPage, {
+      itemId: this.item.uuid,
+      listId: this.list.uuid
+    });
+  }
 }

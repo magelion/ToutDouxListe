@@ -6,7 +6,7 @@
 
 <ion-content padding>
 
-  <form (ngSubmit)="updateTodoItem()" [formGroup]="formValidation">
+  <form (ngSubmit)="editItem()">
     <item-edit [item]="item"></item-edit>
 
     <button ion-button block type="submit" color="secondary">
