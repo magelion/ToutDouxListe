@@ -36,7 +36,10 @@ export class AuthenticationPage {
   public loginUserGoogle() {
 
     console.log('AuthenticationPage : loginUserGoogle');
-    this.authProvider.googleLogin();
+    this.authProvider.googleLogin().catch((e) => {
+      alert(e);
+      console.log("Authentication page : loginUserGoogle error : " + JSON.stringify(e));
+    });
   }
 
   public isConnected(): boolean {
