@@ -129,9 +129,12 @@ export class TodoServiceProvider {
 
     return this.getList(listUuid).then(list => {
       const index = list.items.findIndex(item => item.uuid === editedItem.uuid);
-      list.items[index] = editedItem;
-      return this.editTodoList(list);
-    })
+
+      if(index >= 0) {
+        list.items[index] = editedItem;
+        return this.editTodoList(list);
+      }
+    });
   }
 
   public deleteTodo(listUuid: string, uuid: String) : Promise<void> {
