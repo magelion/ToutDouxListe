@@ -6,8 +6,15 @@
 
 <ion-content padding>
 
-  <form (ngSubmit)="editItem()">
-    <item-edit [item]="item"></item-edit>
+  <form (ngSubmit)="editItem()"[formGroup]="formValidation" *ngIf="item">
+    <ion-item>
+      <ion-label floating>Name</ion-label>
+      <ion-input name="itemName" type="text" [(ngModel)]="item.name" required formControlName="name"></ion-input>
+    </ion-item>
+    <ion-item>
+      <ion-label floating>Description</ion-label>
+      <ion-input name="itemDesc" type="text" [(ngModel)]="item.desc" formControlName="desc"></ion-input>
+    </ion-item>
 
     <button ion-button block type="submit" color="secondary">
         Confirm
