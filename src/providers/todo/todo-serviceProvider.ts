@@ -12,7 +12,7 @@ export class TodoServiceProvider {
 
   public static readonly TODO_LISTS_DB_NAME:string = 'TodoLists';
 
-  private todoListsRef: AngularFirestoreCollection<TodoList>;
+  private todoListsCol: AngularFirestoreCollection<TodoList>;
   private todoListsSub$ = new BehaviorSubject<TodoList[]>( [] );
   private user: User;
   private _todolistsObs = this.todoListsSub$.asObservable();
@@ -22,36 +22,35 @@ export class TodoServiceProvider {
   constructor(private afs: AngularFirestore, authProvider: AuthenticationProvider) {
     console.log('Hello TodoServiceProvider Provider');
 
-    this.todoListsRef = null;
+    this.todoListsCol = null;
 
-    authProvider.getUserObs().subscribe(user => {
+    authProvider.getUserObs().subscribe(async user => {
       
       if(user != null) {
         this.user = user;
         console.log('TodoService : user = ' + JSON.stringify(user));
 
-        this.todoListsRef = null;
-        this.todoListsRef = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
+        this.todoListsCol = null;
+        /*this.todoListsCol = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
         ref => ref.where('owner', '==', user.uid));
 
-        console.log('updateList called');
+        console.log('updateList called');*/
 
-        this.todoListsRef = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME);
-        const colRef = this.todoListsRef.ref;
-        const sharedListRef = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME).ref;
+        this.todoListsCol = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, ref => ref.where('owner', '==', this.user.uid));
+        const sharedListCol: AngularFirestoreCollection<TodoList> = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, ref => ref.where('sharedTo', 'array-contains', this.user.publicUid));
+
+        const ownedListSnap$ = this.todoListsCol.snapshotChanges();
+        const sharedListSnap$ = sharedListCol.snapshotChanges();
     
-        const ownedListSnap$ = from(colRef.where('owner', '==', this.user.uid).get());
-        const sharedListSnap$ = from(sharedListRef.where('sharedTo', 'array-contains', this.user.publicUid).get());
-    
-        const finalObs$ = combineLatest(ownedListSnap$, sharedListSnap$).map(data => {
-          return data[0].docs.concat(data[1].docs);
-        });
-    
-        const todoLists$: Observable<TodoList[]> = finalObs$.pipe(
+        const finalObs$ = combineLatest(ownedListSnap$, sharedListSnap$).pipe(
           
-          map(docs => {
-            return docs.map(doc => {
-              return doc.data() as TodoList;
+          map(data => {
+          
+            //console.log('shared list : ' + JSON.stringify(data[1].map(action => action.payload.doc.data())))
+            const actions = data[0].concat(data[1]);
+            return actions.map(action => {
+
+              return action.payload.doc.data() as TodoList;
             });
           }),
           tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
@@ -61,11 +60,9 @@ export class TodoServiceProvider {
           this._subToken.unsubscribe();
         }
 
-        this._subToken = todoLists$.subscribe( (tdl: TodoList[]) => {
+        this._subToken = finalObs$.subscribe( (tdl: TodoList[]) => {
           this.todoListsSub$.next( tdl );
         });
-    
-        return todoLists$;
       }
     });
   }
@@ -86,7 +83,7 @@ export class TodoServiceProvider {
 
   public getList(key: string): Promise<TodoList>{
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       console.log('TodoProvider : getList : ref null');
       return new Promise(() => {});
     }
@@ -103,16 +100,16 @@ export class TodoServiceProvider {
 
   private getTodoListDoc(listKey: string) : AngularFirestoreDocument<TodoList> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       return null;
     }
     //return this.afs.doc(TodoServiceProvider.TODO_LISTS_DB_NAME + '/' + listKey);
-    return this.todoListsRef.doc(listKey);
+    return this.todoListsCol.doc(listKey);
   }
 
   public editTodoList(list: TodoList) : Promise<void> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       console.log('TodoProvider : editTodoList : ref null : nothing updated');
       return new Promise<void>(() => {});
     }
@@ -123,7 +120,7 @@ export class TodoServiceProvider {
 
   public editTodo(listUuid : string, editedItem: TodoItem) : Promise<void> {
 
-    if(this.todoListsRef === null || !editedItem || !listUuid) {
+    if(this.todoListsCol === null || !editedItem || !listUuid) {
       return new Promise(() => {});
     }
 
@@ -139,8 +136,8 @@ export class TodoServiceProvider {
 
   public deleteTodo(listUuid: string, uuid: String) : Promise<void> {
 
-    if(this.todoListsRef === null || !listUuid || !uuid) {
-      console.log('deleteTodo : invalid args, nothing deleted : ref=' + this.todoListsRef + '; listId=' + listUuid + '; itemIt=' + uuid);
+    if(this.todoListsCol === null || !listUuid || !uuid) {
+      console.log('deleteTodo : invalid args, nothing deleted : ref=' + this.todoListsCol + '; listId=' + listUuid + '; itemIt=' + uuid);
       return new Promise(() => {});
     }
 
@@ -161,10 +158,10 @@ export class TodoServiceProvider {
 
   public deleteList(listKey: string) : Promise<void> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       return new Promise<void>(() => {});
     }
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       return new Promise<void>(() => {});
     }
     return this.getTodoListDoc(listKey).delete()
@@ -176,7 +173,7 @@ export class TodoServiceProvider {
 
   public createList(name: string) : Promise<void> {
     
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       return new Promise<void>(() => {});
     }
     const newUuid = uuid();
@@ -187,14 +184,14 @@ export class TodoServiceProvider {
       owner : this.user.uid
     } as TodoList;
 
-    const promise = this.todoListsRef.doc(newList.uuid).set(newList);
+    const promise = this.todoListsCol.doc(newList.uuid).set(newList);
 
     return promise;
   }
 
   public createItem(listUuid:string, item:TodoItem) : Promise<void> {
 
-    if(this.todoListsRef === null) {
+    if(this.todoListsCol === null) {
       return new Promise(() => {});
     }
 

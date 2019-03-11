@@ -2,9 +2,31 @@
 <ion-item-sliding *ngIf="item && list">
     
   <ion-item [class.CompletedItem]="item.complete">
-    <ion-label type="text" stacked>{{ item?.name }} - complete : {{ item.complete }}</ion-label>
+
+    <div class="item-text-center" text-wrap (click)="toogleDesc()">
+      
+      <!-- <ion-label text-wrap> -->
+        <h2>{{ item?.name}}</h2>
+
+        <!-- <p *ngIf="isDescShown">{{ item?.desc }}</p> -->
+      <!-- </ion-label> -->
+    </div>
+
+    <ion-icon color="success" item-right [name]="isDescShown ? 'arrow-dropdown' : 'arrow-dropright'" end></ion-icon>
+
+    <div class="item-text-center" text-wrap (click)="toogleDesc()">
+        <p *ngIf="isDescShown">{{ item?.desc }}</p>
+    </div>
+    <!-- <ion-buttons end>
+      
+      <button ion-button end color="secondary" (click)="completeItem()">
+        <ion-icon name="checkmark"></ion-icon>
+      </button>
+    </ion-buttons> -->
+
+    <!-- <ion-label type="text" stacked>{{ item?.name }}</ion-label>
     <ion-label *ngIf="item.desc">{{ item?.desc }}</ion-label>
-    <button ion-button>Complete</button>
+    <button ion-button>Complete</button> -->
   </ion-item>
 
   <ion-item-options side="left">

@@ -13,9 +13,12 @@ export class TodoListItem {
   @Input('list') list?: TodoList;
   @Input('item') item?: TodoItem;
 
+  private isDescShown: boolean;
+
   constructor(private todoService: TodoServiceProvider, private navCtrl: NavController) {
   
     console.log('TodoListItemComponent : list=' + JSON.stringify(this.list) + "; item=" + JSON.stringify(this.item));
+    this.isDescShown = false;
   }
   
   public deleteItem (): void {
@@ -61,5 +64,9 @@ export class TodoListItem {
       this.item.complete = !this.item.complete;
       this.todoService.editTodo(this.list.uuid, this.item);
     }
+  }
+
+  public toogleDesc(): void {
+    this.isDescShown = ! this.isDescShown;
   }
 }
