@@ -8,14 +8,14 @@ import { AuthenticationProvider } from '../authentication/authentication';
 export class ContactProvider {
 
   private contactSearchSub$: BehaviorSubject<PublicUser[]>;
-  private user: User;
+  private connectedUser: User;
 
   constructor(private db: AngularFirestore, private auth: AuthenticationProvider) {
     console.log('Hello ContactProvider Provider');
 
     this.contactSearchSub$ = new BehaviorSubject(new Array());
 
-    this.auth.getUserObs().subscribe(user => this.user = user );
+    this.auth.getUserObs().subscribe(user => this.connectedUser = user );
   }
 
   public getContactSearchSub() : Observable<PublicUser[]> {
@@ -46,7 +46,7 @@ export class ContactProvider {
           };
 
           // Don't display ourself
-          if(this.user && this.user.publicUid !== publicUser.uid) {
+          if(this.connectedUser && this.connectedUser.publicUid !== publicUser.uid) {
             
             console.log('Fetched PublicUser=' + JSON.stringify(publicUser));
             searchResult.push(publicUser);
@@ -97,5 +97,18 @@ export class ContactProvider {
 
       return doc.data() as PublicUser;
     }).toPromise()
+  }
+
+  public deleteContact(contact: PublicUser) : Promise<void> {
+
+    if(this.connectedUser) {
+
+      const contactInd = this.connectedUser.contacts.indexOf(contact.uid);
+      if(contactInd >= 0) {
+
+        this.connectedUser.contacts.splice(contactInd, 1);
+        return this.auth.updateUser(this.connectedUser);
+      }
+    }
   }
 }

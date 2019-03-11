@@ -3,12 +3,12 @@
     {{ list.name }} : {{nbUnfinishedItems(list)}}
   </button>
   <ion-item-options side="left">
-    <button ion-button color="danger" (click)="deleteList(list)">
+    <button ion-button color="danger" (click)="deleteList(list)" class="sliding-button">
         <ion-icon name="trash"></ion-icon>
     </button>
   </ion-item-options>
   <ion-item-options side="right">
-    <button ion-button color="primary" (click)="editListCommand(list)">
+    <button ion-button color="primary" (click)="editListCommand(list)" class="sliding-button">
         <ion-icon name="create"></ion-icon>
     </button>
   </ion-item-options>

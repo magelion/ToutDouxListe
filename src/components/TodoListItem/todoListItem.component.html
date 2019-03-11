@@ -30,15 +30,15 @@
   </ion-item>
 
   <ion-item-options side="left">
-    <button ion-button color="danger" (click)="deleteItem()">
+    <button ion-button color="danger" (click)="deleteItem()" class="sliding-button">
       <ion-icon name="trash"></ion-icon>
     </button>
   </ion-item-options>
   <ion-item-options side="right">
-    <button ion-button color="primary" (click)="editItem()" style="min-width : 50px;">
+    <button ion-button color="primary" (click)="editItem()" style="min-width : 50px;" class="sliding-button">
       <ion-icon name="create"></ion-icon>
     </button>
-    <button ion-button color="secondary" (click)="completeItem()">
+    <button ion-button color="secondary" (click)="completeItem()" class="sliding-button">
       <ion-icon name="checkmark"></ion-icon>
     </button>
   </ion-item-options>

@@ -1,0 +1,29 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Contact list</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-list *ngIf="contactList">
+
+    <h1>PATATE</h1>
+    <ion-item-sliding *ngFor="let publicUser of contactList">
+
+      <contact [contact]="publicUser"></contact>
+
+      <ion-item-options side="left">
+        <button ion-button color="danger" (click)="deleteContact(publicUser)" class="sliding-button">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list>
+
+  <ion-fab bottom end fixed>
+    <button ion-fab color="secondary" (click)="addContactCommand()">
+      <ion-icon name="add"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>

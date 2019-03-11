@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
-import {Observable, BehaviorSubject, combineLatest, from, Subscription} from "rxjs";
+import {Observable, BehaviorSubject, combineLatest, Subscription} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
 import { AngularFirestore, AngularFirestoreCollection, AngularFirestoreDocument } from 'angularfire2/firestore';
