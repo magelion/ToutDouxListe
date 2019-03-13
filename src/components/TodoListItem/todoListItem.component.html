@@ -1,6 +1,6 @@
 
 <ion-item-sliding *ngIf="item && list">
-    <ion-item (click)="completeItem">
+    <ion-item (press)="deleteItem(list)">
       <ion-label type="text" stacked>{{ item?.name }}</ion-label>
       <ion-label *ngIf="item.desc">{{ item?.desc }}</ion-label>
     </ion-item>
