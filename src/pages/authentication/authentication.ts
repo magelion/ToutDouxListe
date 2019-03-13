@@ -12,7 +12,8 @@ import { User } from '../../app/TodoList/model/model';
 })
 export class AuthenticationPage {
 
-  private userObs: Observable<User>
+  private userObs: Observable<User>;
+  //private imgUrl="assets/icon.png";
 
   constructor(
     private authProvider: AuthenticationProvider,
