@@ -7,10 +7,10 @@ import { AuthenticationProvider } from '../../providers/authentication/authentic
 import { map } from 'rxjs/operators';
 
 @Component({
-  selector: 'page-contact',
+  selector: 'page-addContact',
   templateUrl: 'contact.html'
 })
-export class ContactPage {
+export class AddContactPage {
 
   // NgModels
   formValidation: FormGroup;

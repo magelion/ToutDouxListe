@@ -4,7 +4,7 @@ import { IonicApp, IonicModule, IonicErrorHandler } from 'ionic-angular';
 import { ToutDouxListeApp } from './app.component';
 
 import { AboutPage } from '../pages/about/about';
-import { ContactPage } from '../pages/contact/contact';
+import { AddContactPage } from '../pages/contact/contact';
 import { HomePage } from '../pages/home/home';
 import { TabsPage } from '../pages/tabs/tabs';
 
@@ -34,6 +34,7 @@ import { ShareListPageModule } from '../pages/share-list/share-list.module';
 import { Facebook } from '@ionic-native/facebook/ngx'
 import { ShareListPage } from '../pages/share-list/share-list';
 import { TodoItemEditPageModule } from '../pages/todo-item-edit/todo-item-edit.module';
+import { ContactListPageModule } from '../pages/contact-list/contact-list.module';
 
 export const firebaseConfig = {
   apiKey: "AIzaSyABNzMT2kEHr7fq3ONtZROlj_3Bh8GRC0M",
@@ -49,7 +50,7 @@ firebase.initializeApp(firebaseConfig);
   declarations: [
     ToutDouxListeApp,
     AboutPage,
-    ContactPage,
+    AddContactPage,
     HomePage,
     TabsPage,
     TodoItemsPage,
@@ -69,12 +70,13 @@ firebase.initializeApp(firebaseConfig);
     ComponentsModule,
     ShareListPageModule,
     TodoItemEditPageModule,
+    ContactListPageModule
   ],
   bootstrap: [IonicApp],
   entryComponents: [
     ToutDouxListeApp,
     AboutPage,
-    ContactPage,
+    AddContactPage,
     HomePage,
     TabsPage,
     TodoItemsPage,
