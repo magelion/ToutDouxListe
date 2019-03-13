@@ -20,19 +20,16 @@ export class ContactListPage implements OnDestroy {
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
     private contactProvider: ContactProvider,
-    private authProvider: AuthenticationProvider,
-    private cdRef: ChangeDetectorRef) {
+    authProvider: AuthenticationProvider) {
   
       this.connectedUserSubToken = authProvider.getUserObs().subscribe(user => {
 
+        this.contactList = [];
         this.connectedUser = user;
         this.contactProvider.getContactsOfUser(this.connectedUser).then(contacts => {
 
           this.contactList = contacts;
-          console.log("ContactListPage : contact list : " + JSON.stringify(this.contactList));
-
-          // For some reasons, angular doesn't get the changes on contactList
-          this.cdRef.detectChanges();
+          //console.log("ContactListPage : contact list : " + JSON.stringify(this.contactList));
         });
       });
   }
@@ -52,11 +49,17 @@ export class ContactListPage implements OnDestroy {
 
     if(contactInd >= 0) {
 
-      this.contactProvider.deleteContact(contact).then(value => {
+      this.contactProvider.deleteContact(contact).then(() => {
   
         // Re calcul index just in case because we are async
         contactInd = this.contactList.indexOf(contact);
-        this.contactList.slice(contactInd, 1);
+
+        console.log('DeleteContact : index=' + contactInd);
+        console.log('contactList length : ' + this.contactList.length);
+
+        this.contactList.splice(contactInd, 1);
+
+        console.log('contactList length : ' + this.contactList.length);
       });
     }
   }

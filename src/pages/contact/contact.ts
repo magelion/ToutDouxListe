@@ -24,7 +24,7 @@ export class AddContactPage {
       name: new FormControl('', Validators.required),
     }));
 
-    this.searchResult = null ;
+    this.searchResult = [];
     
     auth.getUserObs().subscribe(user => this.user = user);
 

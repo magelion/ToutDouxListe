@@ -5,19 +5,11 @@ import { PublicUser } from '../../app/TodoList/model/model';
   selector: 'contact',
   templateUrl: 'contact.html'
 })
-export class ContactComponent implements OnChanges{
+export class ContactComponent{
 
   @Input() contact?: PublicUser;
 
-  constructor(private cdRef: ChangeDetectorRef) {
+  constructor() {
 
-    console.log('ContactComponent : contact=' + JSON.stringify(this.contact));
-  }
-
-  ngOnChanges(changes: SimpleChanges): void {
-
-    console.log('ContactComponent : change=' + JSON.stringify(this.contact));
-    // For some reasons, angular doesn't get the changes on contactList
-    this.cdRef.detectChanges();
   }
 }

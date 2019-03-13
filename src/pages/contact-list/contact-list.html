@@ -6,12 +6,28 @@
 
 <ion-content padding>
 
-  <ion-list *ngIf="contactList">
+  <ion-card *ngFor="let contact of contactList">
+
+    <ion-item>
+      <ion-avatar item-left>
+        <img [src]="contact.photoURL">
+      </ion-avatar>
+      <h2>{{ contact.displayName}}</h2>
+
+      <button ion-button color="danger" (click)="deleteContact(contact)" item-right class="item-right-button">
+        <ion-icon name="trash"></ion-icon>
+      </button>
+    </ion-item>
+  </ion-card>
+
+  <!-- <ion-list *ngIf="contactList">
 
     <h1>PATATE</h1>
     <ion-item-sliding *ngFor="let publicUser of contactList">
 
-      <contact [contact]="publicUser"></contact>
+      <ion-item>
+        <contact [contact]="publicUser"></contact>
+      </ion-item>
 
       <ion-item-options side="left">
         <button ion-button color="danger" (click)="deleteContact(publicUser)" class="sliding-button">
@@ -19,11 +35,11 @@
         </button>
       </ion-item-options>
     </ion-item-sliding>
-  </ion-list>
+  </ion-list> -->
 
   <ion-fab bottom end fixed>
     <button ion-fab color="secondary" (click)="addContactCommand()">
-      <ion-icon name="add"></ion-icon>
+      <ion-icon name="person-add"></ion-icon>
     </button>
   </ion-fab>
 </ion-content>
