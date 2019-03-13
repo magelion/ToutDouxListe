@@ -49,12 +49,15 @@ export class AddContactPage {
 
   }
 
-  public searchUsers() {
+  public searchUsers(input) {
 
-    if(this.userName) {
+    if(input) {
 
-      this.searchResult = null;
-      this.contactProvider.searchOtherUser(this.userName);
+      const value = input.value;
+      console.log('searching ' + value);
+
+      this.searchResult = [];
+      this.contactProvider.searchOtherUser(value);
     }
   }
 
