@@ -12,9 +12,9 @@
       <!-- </ion-label> -->
     </div>
 
-    <ion-icon color="success" item-right [name]="isDescShown ? 'arrow-dropdown' : 'arrow-dropright'" end></ion-icon>
+    <ion-icon color="success" item-right [name]="isDescShown ? 'arrow-dropdown' : 'arrow-dropright'" end *ngIf="item.desc"></ion-icon>
 
-    <div class="item-text-center" text-wrap (click)="toogleDesc()">
+    <div class="item-text-center" text-wrap (click)="toogleDesc()" *ngIf="item.desc">
         <p *ngIf="isDescShown">{{ item?.desc }}</p>
     </div>
     <!-- <ion-buttons end>
