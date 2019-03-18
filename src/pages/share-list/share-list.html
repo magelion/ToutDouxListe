@@ -9,15 +9,18 @@
 
 <ion-content padding>
 
-  <ion-list *ngIf="contactList">
-    <ion-item *ngFor="let contact of contactList">
+  <ion-card *ngFor="let contact of contactList">
 
-      <contact [contact]="contact"></contact>
-      
-      <div [ngSwitch]="isAdded(contact)">
+    <ion-item text-wrap>
+      <ion-avatar item-left>
+        <img [src]="contact.photoURL">
+      </ion-avatar>
+      <h2>{{ contact.displayName}}</h2>
+
+      <div [ngSwitch]="isListSharedToContact(contact)" item-right class="item-right-button">
         
         <button *ngSwitchCase="true" ion-button color="danger" (click)="unshareListTo(contact)">
-          <ion-icon name="trash"></ion-icon>
+          <ion-icon name="remove"></ion-icon>
         </button>
 
         <button *ngSwitchCase="false" ion-button color="secondary" (click)="shareListTo(contact)">
@@ -25,5 +28,5 @@
         </button>
       </div>
     </ion-item>
-  </ion-list>
+  </ion-card>
 </ion-content>

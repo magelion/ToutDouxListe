@@ -65,7 +65,7 @@ export class ShareListPage {
     this.contactList = this.getAvailableContacts(this.contactList);
   }
 
-  public isAdded(user : PublicUser) : boolean {
+  public isListSharedToContact(user : PublicUser) : boolean {
 
     if(!this.todoList) {
       return false;
