@@ -14,8 +14,8 @@
 
     <ion-icon color="success" item-right [name]="isDescShown ? 'arrow-dropdown' : 'arrow-dropright'" end *ngIf="item.desc"></ion-icon>
 
-    <div class="item-text-center" text-wrap *ngIf="item.desc">
-        <p *ngIf="isDescShown">{{ item?.desc }}</p>
+    <div class="item-text-center" text-wrap *ngIf="item.desc" [class.shownDesc]="isDescShown" [class.hiddenDesc]="!isDescShown">
+        <p>{{ item?.desc }}</p>
     </div>
     <!-- <ion-buttons end>
       

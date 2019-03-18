@@ -38,7 +38,7 @@ $colors: (
   secondary:  #936a60,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #4f5263
 );
 
 
@@ -87,3 +87,7 @@ $colors: (
 
 @import "roboto";
 @import "noto-sans";
+
+// Theme changes 
+$text-color:        map-get($map: $colors, $key: light);
+$background-color:  map-get($map: $colors, $key: dark);
