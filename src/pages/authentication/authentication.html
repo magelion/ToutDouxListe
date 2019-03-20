@@ -1,15 +1,20 @@
-<ion-content padding>
+<ion-content class="vertical-align-content">
+ <ion-grid>
+  <ion-row>
+    <ion-col text-center>
+        <img src="assets/icon.png" class="herisson">
+      <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!isConnected()">
+        <ion-icon name="logo-google"></ion-icon>
+          &nbsp;Login with Google
+      </button>
 
-  <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!isConnected()">
-    <ion-icon name="logo-google"></ion-icon>
-    &nbsp;Login with Google
-  </button>
-
-  <button ion-button block color="primary" (click)="loginUserFacebook()" *ngIf="!isConnected()">
-    <ion-icon name="logo-facebook"></ion-icon>
-    &nbsp;Login with Facebook
-  </button>
-
+      <button ion-button block color="primary" (click)="loginUserFacebook()" *ngIf="!isConnected()">
+          <ion-icon name="logo-facebook"></ion-icon>
+          &nbsp;Login with Facebook
+      </button>
+    </ion-col>
+  </ion-row>
+</ion-grid>
   <!-- <ion-item *ngIf="user">
     <ion-avatar item-left>
       <img [src]="user.photoURL">

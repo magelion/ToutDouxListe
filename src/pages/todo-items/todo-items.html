@@ -13,12 +13,14 @@
   </ion-list>
 
   <ion-fab bottom end fixed>
-    <button ion-fab color="secondary" (click)="createListItemCommand()">
+    <button ion-fab color="secondary" (click)="createListItemCommand()" class="fab-button" >
       <ion-icon name="add"></ion-icon>
     </button>
-  </ion-fab>
 
-  <button ion-button (click)="shareList()">
+  </ion-fab>
+  <ion-fab bottom start fixed>
+    <button ion-fab (click)="shareList()" class="fab-button">
       <ion-icon name="share"></ion-icon>
-  </button>
+    </button>
+</ion-fab>
 </ion-content>

@@ -23,3 +23,12 @@
     min-width: 50px;
     min-height: 80%;
 }
+.fab-button {
+    max-width: 50px;
+}
+.vertical-align-content > *
+{
+     display: flex!important;
+     align-content: center!important;
+     align-items: center!important;
+}
