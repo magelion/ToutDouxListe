@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ContactProvider } from '../../providers/contact/contact';
-import { PublicUser, User } from '../../app/TodoList/model/model';
+import { PublicUser, User, Contact } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { map } from 'rxjs/operators';
 
@@ -36,7 +36,10 @@ export class AddContactPage {
         if(this.user) {
           return users.filter(value => {
             
-            return this.user.contacts.indexOf(value.uid) === -1
+            return this.user.contacts.find(contact => {
+              return contact.contactId == value.uid;
+            }) == undefined;
+            //return this.user.contacts.indexOf(value.uid) === -1
           });
         }
       })
@@ -63,9 +66,9 @@ export class AddContactPage {
 
   public addContact(newContact: PublicUser) {
 
-    this.user.contacts.push(newContact.uid);
-    this.auth.updateUser(this.user);
-    
+    this.contactProvider.sendFriendRequest(newContact);
+
+    // TODO : view contact request sent
     if(this.searchResult) {
 
       const userInd: number = this.searchResult.indexOf(newContact);

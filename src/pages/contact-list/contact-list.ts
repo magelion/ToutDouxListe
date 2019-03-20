@@ -1,8 +1,8 @@
-import { Component, OnDestroy, ChangeDetectorRef } from '@angular/core';
+import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { User, PublicUser } from '../../app/TodoList/model/model';
+import { User, PublicUser, FriendRequestState } from '../../app/TodoList/model/model';
 import { Subscription } from 'rxjs';
 import { AddContactPage } from '../contact/contact';
 
@@ -15,23 +15,28 @@ export class ContactListPage implements OnDestroy {
 
   private connectedUser: User;
   private connectedUserSubToken: Subscription;
-  public contactList: PublicUser[];
+  public contactPublicUserList: PublicUser[];
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
     private contactProvider: ContactProvider,
     authProvider: AuthenticationProvider) {
   
-      this.connectedUserSubToken = authProvider.getUserObs().subscribe(user => {
+    this.connectedUserSubToken = authProvider.getUserObs().subscribe(user => {
 
-        this.contactList = [];
-        this.connectedUser = user;
-        this.contactProvider.getContactsOfUser(this.connectedUser).then(contacts => {
+      this.contactPublicUserList = [];
+      this.connectedUser = user;
 
-          this.contactList = contacts;
+      const publicUserPromise: Promise<PublicUser[]> = this.contactProvider.getContactsPublicUserOfUser(this.connectedUser);
+      
+      if(publicUserPromise) {
+        publicUserPromise.then(publicUser => {
+  
+          this.contactPublicUserList = publicUser;
           //console.log("ContactListPage : contact list : " + JSON.stringify(this.contactList));
         });
-      });
+      }
+    });
   }
 
   ionViewDidLoad() {
@@ -43,23 +48,24 @@ export class ContactListPage implements OnDestroy {
     this.connectedUserSubToken.unsubscribe();
   }
 
-  deleteContact(contact: PublicUser): void {
+  deleteContact(publicUser: PublicUser): Promise<void> {
 
-    var contactInd = this.contactList.indexOf(contact);
+    var pubUserInd = this.contactPublicUserList.indexOf(publicUser);
+    const contact = this.connectedUser.contacts[pubUserInd];
 
-    if(contactInd >= 0) {
+    if(pubUserInd >= 0) {
 
-      this.contactProvider.deleteContact(contact).then(() => {
+      return this.contactProvider.deleteContact(contact).then(() => {
   
         // Re calcul index just in case because we are async
-        contactInd = this.contactList.indexOf(contact);
+        pubUserInd = this.contactPublicUserList.indexOf(publicUser);
 
-        console.log('DeleteContact : index=' + contactInd);
-        console.log('contactList length : ' + this.contactList.length);
+        console.log('DeleteContact : index=' + pubUserInd);
+        console.log('contactList length : ' + this.contactPublicUserList.length);
 
-        this.contactList.splice(contactInd, 1);
+        this.contactPublicUserList.splice(pubUserInd, 1);
 
-        console.log('contactList length : ' + this.contactList.length);
+        console.log('contactList length : ' + this.contactPublicUserList.length);
       });
     }
   }
@@ -67,5 +73,17 @@ export class ContactListPage implements OnDestroy {
   public addContactCommand() {
 
     this.navCtrl.push(AddContactPage);
+  }
+
+  public isPublicUserAdded(publicUser: PublicUser): boolean {
+
+    var pubUserInd = this.contactPublicUserList.indexOf(publicUser);
+    const contact = this.connectedUser.contacts[pubUserInd];
+    return contact.state === FriendRequestState.ACCEPTED;
+  }
+
+  public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
+
+    return null; // TODO
   }
 }

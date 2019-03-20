@@ -6,17 +6,25 @@
 
 <ion-content padding>
 
-  <ion-card *ngFor="let contact of contactList">
+  <ion-card *ngFor="let publicUser of contactPublicUserList">
 
     <ion-item text-wrap>
       <ion-avatar item-left>
-        <img [src]="contact.photoURL">
+        <img [src]="publicUser.photoURL">
       </ion-avatar>
-      <h2>{{ contact.displayName}}</h2>
+      <h2>{{ publicUser.displayName}}</h2>
 
-      <button ion-button color="danger" (click)="deleteContact(contact)" item-right class="item-right-button">
-        <ion-icon name="trash"></ion-icon>
-      </button>
+      <div [ngSwitch]="isPublicUserAdded(publicUser)" item-right class="item-right-button">
+        
+        <button *ngSwitchCase="true" ion-button color="danger" (click)="deleteContact(publicUser)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+
+        <button *ngSwitchCase="false" ion-button color="danger" (click)="cancelFriendRequest(publicUser)">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+
+      </div>
     </ion-item>
   </ion-card>
 
