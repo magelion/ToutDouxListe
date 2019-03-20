@@ -1,0 +1,7 @@
+.tabs-md .tab-button {
+    color: map-get($map: $colors, $key: light);
+}
+
+.tabs-md .tab-button-icon {
+    color: map-get($map: $colors, $key: light);
+}

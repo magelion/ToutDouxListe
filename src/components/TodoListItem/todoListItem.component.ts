@@ -13,19 +13,20 @@ export class TodoListItem {
   @Input('list') list?: TodoList;
   @Input('item') item?: TodoItem;
 
+  private isDescShown: boolean;
+
   constructor(private todoService: TodoServiceProvider, private navCtrl: NavController) {
   
     console.log('TodoListItemComponent : list=' + JSON.stringify(this.list) + "; item=" + JSON.stringify(this.item));
+    this.isDescShown = false;
   }
   
-  public deleteItem () {
+  public deleteItem (): void {
 
-    console.log('TodoListItemComponent : deleteItem : item=' + JSON.stringify(this.item) + '; list=' + JSON.stringify(this.list));
-    this.todoService.deleteTodo(this.list.uuid, this.item.uuid);
-    // if(this.todoListId != null && this.todoListId != undefined) {
-    //   console.log('deleting : ' + JSON.stringify(item));
-    //   this.todoService.deleteTodo(this.todoListId, item.uuid).subscribe().unsubscribe();
-    // }
+    if(this.list) {
+      console.log('TodoListItemComponent : deleteItem : item=' + JSON.stringify(this.item) + '; list=' + JSON.stringify(this.list));
+      this.todoService.deleteTodo(this.list.uuid, this.item.uuid);
+    }
   }
 
   /*private dataChanged($event) {
@@ -47,11 +48,25 @@ export class TodoListItem {
     }
   }*/
 
-  public editItem() {
+  public editItem(): void {
 
     this.navCtrl.push(TodoItemEditPage, {
       itemId: this.item.uuid,
       listId: this.list.uuid
     });
+  }
+
+  public completeItem(): void {
+
+    if(this.item && this.list) {
+
+      console.log('TodoListItemComponent : completeItem : item=' + JSON.stringify(this.item) + '; listId=' + JSON.stringify(this.list.uuid));
+      this.item.complete = !this.item.complete;
+      this.todoService.editTodo(this.list.uuid, this.item);
+    }
+  }
+
+  public toogleDesc(): void {
+    this.isDescShown = ! this.isDescShown;
   }
 }

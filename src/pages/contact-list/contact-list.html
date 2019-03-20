@@ -1,0 +1,53 @@
+<ion-header>
+  <ion-navbar>
+    <ion-title>Contact list</ion-title>
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <ion-card *ngFor="let publicUser of contactPublicUserList">
+
+    <ion-item text-wrap>
+      <ion-avatar item-left>
+        <img [src]="publicUser.photoURL">
+      </ion-avatar>
+      <h2>{{ publicUser.displayName}}</h2>
+
+      <div [ngSwitch]="isPublicUserAdded(publicUser)" item-right class="item-right-button">
+        
+        <button *ngSwitchCase="true" ion-button color="danger" (click)="deleteContact(publicUser)">
+          <ion-icon name="trash"></ion-icon>
+        </button>
+
+        <button *ngSwitchCase="false" ion-button color="danger" (click)="cancelFriendRequest(publicUser)">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+
+      </div>
+    </ion-item>
+  </ion-card>
+
+  <!-- <ion-list *ngIf="contactList">
+
+    <h1>PATATE</h1>
+    <ion-item-sliding *ngFor="let publicUser of contactList">
+
+      <ion-item>
+        <contact [contact]="publicUser"></contact>
+      </ion-item>
+
+      <ion-item-options side="left">
+        <button ion-button color="danger" (click)="deleteContact(publicUser)" class="sliding-button">
+            <ion-icon name="trash"></ion-icon>
+        </button>
+      </ion-item-options>
+    </ion-item-sliding>
+  </ion-list> -->
+
+  <ion-fab bottom end fixed>
+    <button ion-fab color="secondary" (click)="addContactCommand()">
+      <ion-icon name="person-add"></ion-icon>
+    </button>
+  </ion-fab>
+</ion-content>

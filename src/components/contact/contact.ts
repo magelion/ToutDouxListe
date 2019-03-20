@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
 import { PublicUser } from '../../app/TodoList/model/model';
 
 @Component({
@@ -10,5 +10,6 @@ export class ContactComponent{
   @Input() contact?: PublicUser;
 
   constructor() {
+
   }
 }

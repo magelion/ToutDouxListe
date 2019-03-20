@@ -1,0 +1,17 @@
+.CompletedItem {
+    background-color: map-get($colors, secondary);
+}
+
+.card-md h2 {
+    color: map-get($map: $colors, $key: light);
+}
+
+.shownDesc {
+    max-height: 300px;
+    transition: max-height 1s ease;
+}
+
+.hiddenDesc {
+    max-height: 0;
+    transition: max-height 0.25s ease-in-out;
+}

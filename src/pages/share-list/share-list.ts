@@ -34,9 +34,9 @@ export class ShareListPage {
       })
 
       console.log('ShareListPage : user=' + JSON.stringify(this.user));
-      this.contactProvider.getPublicUser(this.user.contacts[0]);
+      //this.contactProvider.getPublicUser(this.user.contacts[0]);
 
-      const userContactsPromise = this.contactProvider.getContactsOfUser(this.user);
+      const userContactsPromise = this.contactProvider.getContactsPublicUserOfUser(this.user);
       if(userContactsPromise) {
         userContactsPromise.then(contacts => {
           this.contactList = this.getAvailableContacts(contacts);
@@ -65,7 +65,7 @@ export class ShareListPage {
     this.contactList = this.getAvailableContacts(this.contactList);
   }
 
-  public isAdded(user : PublicUser) : boolean {
+  public isListSharedToContact(user : PublicUser) : boolean {
 
     if(!this.todoList) {
       return false;

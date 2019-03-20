@@ -69,8 +69,6 @@ export class TodoListItemCreationPage implements OnChanges {
       this.todoService.createItem(this.list.uuid, item).then(res => {
         this.viewCtrl.dismiss();
       });
-
-      this.viewCtrl.dismiss();
     }
   }
 }
