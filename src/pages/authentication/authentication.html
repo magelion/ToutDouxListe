@@ -1,8 +1,11 @@
-<ion-content class="vertical-align-content">
+<ion-header >
+  <ion-title><h1>Tout Doux Liste</h1></ion-title>
+</ion-header>
+<ion-content class="vertical-align-content-top">
  <ion-grid>
   <ion-row>
     <ion-col text-center>
-        <img src="assets/icon.png" class="herisson">
+      <img src="assets/icon.png" class="herisson">
       <button ion-button block color="danger" (click)="loginUserGoogle()" *ngIf="!isConnected()">
         <ion-icon name="logo-google"></ion-icon>
           &nbsp;Login with Google
@@ -15,12 +18,5 @@
     </ion-col>
   </ion-row>
 </ion-grid>
-  <!-- <ion-item *ngIf="user">
-    <ion-avatar item-left>
-      <img [src]="user.photoURL">
-    </ion-avatar>
-    <h2>{{ user.displayName}}</h2>
-    <h3>{{ user.email}}</h3>
-    <button ion-button (click)="logout()">Log out</button>
-  </ion-item> -->
+
 </ion-content>

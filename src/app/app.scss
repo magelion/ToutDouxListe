@@ -22,9 +22,16 @@
 .fab-button {
     max-width: 50px;
 }
-.vertical-align-content > *
+.vertical-align-content-center > *
 {
-     display: flex!important;
-     align-content: center!important;
-     align-items: center!important;
+     display: flex;
+     align-content: center;
+     align-items: center;
+}
+
+.vertical-align-content-top > *
+{
+     display: flex;
+     align-content: start;
+     align-items: start;
 }
