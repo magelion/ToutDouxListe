@@ -26,15 +26,18 @@
     <ion-label>Result found : {{ searchResult.length }}</ion-label>
   </ion-item>
 
-  <ion-card *ngFor="let contact of searchResult">
+  <ion-card *ngFor="let pubUser of searchResult">
     <ion-item>
       <ion-avatar item-left>
-        <img [src]="contact.photoURL">
+        <img [src]="pubUser.photoURL">
       </ion-avatar>
-      <h2>{{ contact.displayName}}</h2>
+      <h2>{{ pubUser.displayName}}</h2>
 
-      <button ion-button color="secondary" (click)="addContact(contact)" item-right class="item-right-button">
-        <ion-icon name="person-add"></ion-icon>
+      <button [disabled]="isFriendRequestSent(pubUser)" ion-button color="secondary" ng-disabled="isFriendRequestSent(pubUser)" (click)="addContact(pubUser)" item-right class="item-right-button">
+        <div [ngSwitch]="isFriendRequestSent(pubUser)">
+          <ion-icon *ngSwitchCase="true" name="send"></ion-icon>
+          <ion-icon *ngSwitchCase="false" name="person-add"></ion-icon>
+        </div>
       </button>
     </ion-item>
   </ion-card>

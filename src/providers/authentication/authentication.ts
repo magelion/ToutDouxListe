@@ -304,35 +304,46 @@ export class AuthenticationProvider {
     var result: Promise<User>;
 
     // Insert user in db if first connection
-    result = loginResult.then(async firebaseUser => {
+    result = loginResult.then(firebaseUser => {
       console.log("login -> then. User=" + JSON.stringify(firebaseUser));
 
-      var user: User = await this.GetUserFromFirebaseUser(firebaseUser);
-      var publicUser: PublicUser;
+      return this.GetUserFromFirebaseUser(firebaseUser).then(user => {
+        var publicUser: PublicUser;
       
-      // If user doesn't exists
-      if(!user) {
-        const result = await this.addUserInDb(firebaseUser);
-        user = result.user;
-        publicUser = result.publicUser;
-      }
-      else {
-        publicUser = await this.getPublicUser(user, firebaseUser);
-      }
+        // If user doesn't exists
+        if(!user) {
+          return this.addUserInDb(firebaseUser).then(result => {
 
-      console.log("User fetched : " + JSON.stringify(user));
-      console.log("Public User fetched : " + JSON.stringify(publicUser));
+            user = result.user;
+            publicUser = result.publicUser;
 
-      if(user) {
-        this.userSub$.next(user);
-      }
-      if(publicUser) {
-        this.publicUserSub$.next(publicUser);
-      }
-      
-      return user;
+            return this.loginEnd(user, publicUser);
+          });
+        }
+        else {
+          return this.getPublicUser(user, firebaseUser).then(publicUser => {
+
+            return this.loginEnd(user, publicUser);
+          });
+        }        
+      });
     });
 
     return result;
+  }
+
+  private loginEnd(user: User, publicUser: PublicUser) : User {
+
+    console.log("User fetched : " + JSON.stringify(user));
+    console.log("Public User fetched : " + JSON.stringify(publicUser));
+
+    if(user) {
+      this.userSub$.next(user);
+    }
+    if(publicUser) {
+      this.publicUserSub$.next(publicUser);
+    }
+    
+    return user;
   }
 }

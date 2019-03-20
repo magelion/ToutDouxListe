@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
+import {TodoItem, TodoList, User, FriendRequestState} from "../../app/TodoList/model/model";
 import {Observable, BehaviorSubject, combineLatest, Subscription} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
@@ -37,6 +37,7 @@ export class TodoServiceProvider {
         console.log('updateList called');*/
 
         this.todoListsCol = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, ref => ref.where('owner', '==', this.user.uid));
+
         const sharedListCol: AngularFirestoreCollection<TodoList> = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, ref => ref.where('sharedTo', 'array-contains', this.user.publicUid));
 
         const ownedListSnap$ = this.todoListsCol.snapshotChanges();
@@ -52,6 +53,24 @@ export class TodoServiceProvider {
 
               return action.payload.doc.data() as TodoList;
             });
+          }),
+          // Hide any list shared by non accepted contact (should not happen normally)
+          map(lists => {
+            return lists.filter(todoList => {
+              // If shared list
+              if(todoList.owner !== user.uid) {
+                
+                const contact = this.user.contacts.find(cont => {
+                  return cont.contactId === todoList.owner;
+                });
+                if(contact) {
+                  return contact.state === FriendRequestState.ACCEPTED;
+                }
+                else {
+                  return false;
+                }
+              }
+            })
           }),
           tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
         );
@@ -181,7 +200,7 @@ export class TodoServiceProvider {
       uuid : newUuid,
       name : name,
       items : new Array(),
-      owner : this.user.uid
+      owner : this.user.publicUid
     } as TodoList;
 
     const promise = this.todoListsCol.doc(newList.uuid).set(newList);

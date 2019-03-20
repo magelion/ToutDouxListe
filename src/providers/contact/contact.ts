@@ -122,7 +122,7 @@ export class ContactProvider {
     }
   }
 
-  sendFriendRequest(newContact: PublicUser): any {
+  public sendFriendRequest(newContact: PublicUser): any {
     
     let contact: Contact = {
       uid : uuid(),
@@ -132,5 +132,17 @@ export class ContactProvider {
 
     this.connectedUser.contacts.push(contact);
     this.auth.updateUser(this.connectedUser);
+  }
+
+  public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
+    
+    const correspondingContact = this.connectedUser.contacts.find(contact => {
+
+      return contact.contactId == publicUser.uid;
+    });
+
+    if(correspondingContact) {
+      return this.deleteContact(correspondingContact);
+    }
   }
 }

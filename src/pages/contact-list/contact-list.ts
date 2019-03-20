@@ -84,6 +84,6 @@ export class ContactListPage implements OnDestroy {
 
   public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
 
-    return null; // TODO
+    return this.contactProvider.cancelFriendRequest(publicUser);
   }
 }
