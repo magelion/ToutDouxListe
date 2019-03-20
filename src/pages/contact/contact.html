@@ -7,31 +7,24 @@
 </ion-header>
 
 <ion-content>
-  
-  <form (ngSubmit)="searchUsers()" [formGroup]="formValidation">
-    <ion-item>
-      <ion-label floating>Name</ion-label>
-      <ion-input name="userName" type="text" [(ngModel)]="userName" required formControlName="name"></ion-input>
-    </ion-item>
 
-    <button ion-button block type="submit">
-        Search&nbsp;
-        <ion-icon name="search"></ion-icon>
-    </button>
-  </form>
+  <ion-searchbar #input [animated]="true" (ionInput)="searchUsers(input)"></ion-searchbar>
 
   <ion-item *ngIf="searchResult">
 
     <ion-label>Result found : {{ searchResult.length }}</ion-label>
   </ion-item>
 
-  <ion-list *ngIf="searchResult">
-    <ion-item *ngFor="let publicUser of searchResult">
+  <ion-card *ngFor="let contact of searchResult">
+    <ion-item>
+      <ion-avatar item-left>
+        <img [src]="contact.photoURL">
+      </ion-avatar>
+      <h2>{{ contact.displayName}}</h2>
 
-      <contact [contact]="publicUser"></contact>
-      <button ion-button color="secondary" (click)="addContact(publicUser)">
-        <ion-icon name="add"></ion-icon>
+      <button ion-button color="secondary" (click)="addContact(contact)" item-right class="item-right-button">
+        <ion-icon name="person-add"></ion-icon>
       </button>
     </ion-item>
-  </ion-list>
+  </ion-card>
 </ion-content>

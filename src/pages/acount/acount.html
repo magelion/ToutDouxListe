@@ -3,7 +3,7 @@
   <ion-icon name="logo-googleplus"></ion-icon>
   Login with Google
 </button>
-  <ion-item *ngIf="user && publicUser">
+  <ion-item *ngIf="user && publicUser" text-wrap>
     <ion-avatar item-left>
       <img [src]="publicUser.photoURL">
     </ion-avatar>

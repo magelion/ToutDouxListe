@@ -56,7 +56,6 @@ export class AcountPage {
     this.authProvider.signOut()
     .then(()=> {
       console.log('logout complete'); 
-      // this.navController.setRoot(AuthenticationPage);});
       this.app.getRootNav().setRoot(AuthenticationPage);
     });
   }

@@ -35,10 +35,10 @@ $app-direction: ltr;
 
 $colors: (
   primary:    #488aff,
-  secondary:  #32db64,
+  secondary:  #936a60,
   danger:     #f53d3d,
   light:      #f4f4f4,
-  dark:       #222
+  dark:       #4f5263
 );
 
 
@@ -70,7 +70,8 @@ $colors: (
 // so that the above variables are used and Ionic's
 // default are overridden.
 
-@import "ionic.theme.default";
+//@import "ionic.theme.default";
+@import "ionic.theme.dark";
 
 
 // Ionicons
@@ -86,3 +87,7 @@ $colors: (
 
 @import "roboto";
 @import "noto-sans";
+
+// Theme changes 
+$text-color:        map-get($map: $colors, $key: light);
+$background-color:  map-get($map: $colors, $key: dark);

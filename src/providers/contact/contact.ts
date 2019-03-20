@@ -1,8 +1,9 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, CollectionReference } from 'angularfire2/firestore';
 import { BehaviorSubject, Observable } from 'rxjs';
-import { PublicUser, User } from '../../app/TodoList/model/model';
+import { PublicUser, User, Contact, FriendRequestState } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../authentication/authentication';
+import { v4 as uuid } from 'uuid';
 
 @Injectable()
 export class ContactProvider {
@@ -59,30 +60,39 @@ export class ContactProvider {
     });
   }
 
-  public getContactsOfUser(user: User) : Promise<PublicUser[]> {
+  public getContactsPublicUserOfUser(user: User) : Promise<PublicUser[]> {
 
     var resultPromise : Promise<PublicUser[]>;
     const resultList : PublicUser[] = new Array();
     
     console.log('ContactProvider : getContactsOfUser');
-    user.contacts.forEach(contactPId => {
+    user.contacts.forEach(contact => {
 
       if(!resultPromise) {
-        resultPromise = this.getPublicUser(contactPId).then(publicUser => {
 
-          resultList.push(publicUser);
-          return resultList;
-        });
+        const publicUserPromise = this.getPublicUser(contact.contactId);
+        if(publicUserPromise) {
+
+          resultPromise = publicUserPromise.then(publicUser => {
+
+            resultList.push(publicUser);
+            return resultList;
+          });
+        }
       }
       else {
 
         resultPromise = resultPromise.then(val => {
             
-          return this.getPublicUser(contactPId).then(publicUser => {
-  
-            resultList.push(publicUser);
-            return resultList;
-          });
+          const publicUserPromise = this.getPublicUser(contact.contactId);
+          if(publicUserPromise) {
+ 
+            return publicUserPromise.then(publicUser => {
+    
+              resultList.push(publicUser);
+              return resultList;
+            });
+          }
         });
       }
     });
@@ -99,16 +109,28 @@ export class ContactProvider {
     }).toPromise()
   }
 
-  public deleteContact(contact: PublicUser) : Promise<void> {
+  public deleteContact(contact: Contact) : Promise<void> {
 
     if(this.connectedUser) {
 
-      const contactInd = this.connectedUser.contacts.indexOf(contact.uid);
+      const contactInd = this.connectedUser.contacts.indexOf(contact);
       if(contactInd >= 0) {
 
         this.connectedUser.contacts.splice(contactInd, 1);
         return this.auth.updateUser(this.connectedUser);
       }
     }
+  }
+
+  sendFriendRequest(newContact: PublicUser): any {
+    
+    let contact: Contact = {
+      uid : uuid(),
+      contactId : newContact.uid,
+      state : FriendRequestState.PENDING
+    };
+
+    this.connectedUser.contacts.push(contact);
+    this.auth.updateUser(this.connectedUser);
   }
 }

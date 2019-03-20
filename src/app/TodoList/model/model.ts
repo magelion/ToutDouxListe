@@ -25,9 +25,29 @@ export interface User {
 
   uid : string,
   email : string,
-  contacts : string[],
+
+  // List of Public User Id
+  contacts : Contact[],
 
   // Id of the corresponding PublicUser
   publicUid: string
 
 };
+
+export interface Contact {
+  uid: string,
+  contactId: string,
+  state: FriendRequestState
+}
+
+export enum FriendRequestState {
+  PENDING,
+  ACCEPTED
+}
+
+export interface FriendRequest {
+  uid: string,
+  from: PublicUser,
+  to: PublicUser,
+  state: number
+}

@@ -214,7 +214,9 @@ export class AuthenticationProvider {
 
     if(this.isConnected() && this.userDoc) {
 
-      return this.userDoc.update(user);
+      const result = this.userDoc.update(user);
+      this.userSub$.next(user);
+      return result;
     }
     else {
       return null;
