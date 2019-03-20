@@ -1,22 +1,51 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, CollectionReference } from 'angularfire2/firestore';
-import { BehaviorSubject, Observable } from 'rxjs';
-import { PublicUser, User, Contact, FriendRequestState } from '../../app/TodoList/model/model';
+import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../authentication/authentication';
 import { v4 as uuid } from 'uuid';
+import { map, tap } from 'rxjs/operators';
 
 @Injectable()
 export class ContactProvider {
 
   private contactSearchSub$: BehaviorSubject<PublicUser[]>;
+
+  private contactRequestsObs$: BehaviorSubject<FriendRequest[]>;
   private connectedUser: User;
+
+  private contactRequestSub: Subscription;
 
   constructor(private db: AngularFirestore, private auth: AuthenticationProvider) {
     console.log('Hello ContactProvider Provider');
 
     this.contactSearchSub$ = new BehaviorSubject(new Array());
+    this.contactRequestsObs$ = new BehaviorSubject(new Array());
 
-    this.auth.getUserObs().subscribe(user => this.connectedUser = user );
+    this.auth.getUserObs().subscribe(user => {
+      
+      this.connectedUser = user;
+
+      if(this.contactRequestSub) {
+        this.contactRequestSub.unsubscribe();
+      }
+
+      this.contactRequestSub = this.db.collection('PendingContactRequests', ref => ref.where('to', '==', this.connectedUser.publicUid))
+      .snapshotChanges().pipe(
+
+        map(actions => {
+            
+          return actions.map(action => {
+
+            return action.payload.doc.data() as FriendRequest;
+          });
+        }),
+        tap(requests => console.log('contactProvider : pendingContactRequests=' + JSON.stringify(requests)))
+      ).subscribe(requests => {
+        this.contactRequestsObs$.next(requests);
+      });
+    });
+
   }
 
   public getContactSearchSub() : Observable<PublicUser[]> {
@@ -144,5 +173,9 @@ export class ContactProvider {
     if(correspondingContact) {
       return this.deleteContact(correspondingContact);
     }
+  }
+
+  public getContactRequestsObs() : Observable<FriendRequest[]> {
+    return this.contactRequestsObs$.asObservable();
   }
 }

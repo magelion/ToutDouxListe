@@ -47,7 +47,7 @@ export enum FriendRequestState {
 
 export interface FriendRequest {
   uid: string,
-  from: PublicUser,
-  to: PublicUser,
+  from: string,
+  to: string,
   state: number
 }
