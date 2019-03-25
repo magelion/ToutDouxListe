@@ -1,7 +1,17 @@
-<ion-item-sliding>
-  <button ion-item detail (click)="selectList(list)">
+<ion-item-sliding [class.CompletedList]="isListCompleted(list)">
+
+  <ion-item (click)="selectList(list)">
+
+      <div class="item-text-center" text-wrap>
+          <h2>{{ list.name }} : {{nbUnfinishedItems(list)}}</h2>
+      </div>
+      <div *ngIf="isSharedList(list)" class="item-text-center" text-wrap>
+          <h3>Shared by : {{ getListOwnerName(list) | async }}</h3>
+      </div>
+  </ion-item>
+  <!-- <button ion-item detail (click)="selectList(list)">
     {{ list.name }} : {{nbUnfinishedItems(list)}}
-  </button>
+  </button> -->
   <ion-item-options side="left">
     <button ion-button color="danger" (click)="deleteList(list)" class="sliding-button">
         <ion-icon name="trash"></ion-icon>
