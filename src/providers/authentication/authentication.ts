@@ -19,6 +19,7 @@ export class AuthenticationProvider {
   private isConnectedVar: boolean;
   private userCollection: AngularFirestoreCollection<User>;
   private userDoc: DocumentReference;
+  private connectedPubUser: PublicUser;
 
   constructor(
     private googlePlus: GooglePlus,
@@ -338,6 +339,12 @@ export class AuthenticationProvider {
     console.log("Public User fetched : " + JSON.stringify(publicUser));
 
     if(user) {
+    }
+    if(publicUser) {
+      this.connectedPubUser = publicUser;
+    }
+
+    if(user) {
       this.userSub$.next(user);
     }
     if(publicUser) {
@@ -345,5 +352,9 @@ export class AuthenticationProvider {
     }
     
     return user;
+  }
+
+  public getConnectedPublicUser(): PublicUser {
+    return this.connectedPubUser;
   }
 }

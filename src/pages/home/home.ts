@@ -32,12 +32,12 @@ export class HomePage implements OnInit, OnDestroy {
 
   createListCommand() {
     const prompt = this.alertCtrl.create({
-      title: 'Create List',
-      message: 'Enter list name',
+      title: 'Enter list name',
+      message: '',
       inputs: [
         {
           name : 'name',
-          placeholder : 'My awsome list'
+          placeholder : 'My awsome list',
         },
       ],
       buttons: [
@@ -51,7 +51,16 @@ export class HomePage implements OnInit, OnDestroy {
           text: 'Save',
           handler: data => {
             console.log('Saved clicked');
-            this.createList(data.name);
+            const valid:boolean = this.validateListName(data.name);
+            if(valid) {
+
+              this.createList(data.name);
+              return true;
+            }
+            else {
+              prompt.setMessage('Invalid list name entered');
+              return false;
+            }
           }
         }
       ]
@@ -59,7 +68,17 @@ export class HomePage implements OnInit, OnDestroy {
     prompt.present();
   }
 
-  createList(name: string) {
+  private createList(name: string) {
     this.todoService.createList(name);
+  }
+
+  private validateListName(name: string) : boolean {
+
+    if(name) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 }

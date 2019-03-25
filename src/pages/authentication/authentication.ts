@@ -14,6 +14,7 @@ export class AuthenticationPage {
 
   private userObs: Observable<User>;
   //private imgUrl="assets/icon.png";
+  private connectedUser:User = null;
 
   constructor(
     private authProvider: AuthenticationProvider,
@@ -22,8 +23,13 @@ export class AuthenticationPage {
     this.userObs = this.authProvider.getUserObs();
     this.userObs.subscribe(user => {
       
-      console.log('Authentication : user=' + JSON.stringify(user));
-      if (user !== null){
+      // console.log('Authentication : user=' + JSON.stringify(user));
+      
+      if(user === null) {
+        this.connectedUser = null;
+      }
+      else if (this.connectedUser === null) {
+        this.connectedUser = user;
         this.navController.setRoot(TabsPage);
       }
     });

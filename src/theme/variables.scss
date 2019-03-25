@@ -91,3 +91,5 @@ $colors: (
 // Theme changes 
 $text-color:        map-get($map: $colors, $key: light);
 $background-color:  map-get($map: $colors, $key: dark);
+
+$alert-md-message-text-color:red;

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, CollectionReference } from 'angularfire2/firestore';
-import { BehaviorSubject, Observable, Subscription } from 'rxjs';
+import { AngularFirestore, CollectionReference, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
+import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
 import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../authentication/authentication';
 import { v4 as uuid } from 'uuid';
@@ -9,18 +9,25 @@ import { map, tap } from 'rxjs/operators';
 @Injectable()
 export class ContactProvider {
 
+  private static readonly PENDING_CONTACT_REQUESTS_DB: string = 'PendingContactRequests';
+
   private contactSearchSub$: BehaviorSubject<PublicUser[]>;
 
   private contactRequestsObs$: BehaviorSubject<FriendRequest[]>;
+
   private connectedUser: User;
+  private friendRequests: FriendRequest[] = new Array<FriendRequest>();
 
   private contactRequestSub: Subscription;
+  private allRequestCol: AngularFirestoreCollection<FriendRequest>;
 
   constructor(private db: AngularFirestore, private auth: AuthenticationProvider) {
     console.log('Hello ContactProvider Provider');
 
     this.contactSearchSub$ = new BehaviorSubject(new Array());
     this.contactRequestsObs$ = new BehaviorSubject(new Array());
+
+    this.allRequestCol = this.db.collection(ContactProvider.PENDING_CONTACT_REQUESTS_DB);
 
     this.auth.getUserObs().subscribe(user => {
       
@@ -30,18 +37,42 @@ export class ContactProvider {
         this.contactRequestSub.unsubscribe();
       }
 
-      this.contactRequestSub = this.db.collection('PendingContactRequests', ref => ref.where('to', '==', this.connectedUser.publicUid))
-      .snapshotChanges().pipe(
+      // Get all requests where we are involved
+      const toRequestsObs$:Observable<DocumentChangeAction<{}>[]> = this.db.collection(ContactProvider.PENDING_CONTACT_REQUESTS_DB, ref => ref.where('to', '==', this.connectedUser.publicUid)).snapshotChanges();
+      const fromRequestObs$:Observable<DocumentChangeAction<{}>[]> = this.db.collection(ContactProvider.PENDING_CONTACT_REQUESTS_DB, ref => ref.where('from', '==', this.connectedUser.publicUid)).snapshotChanges();
 
-        map(actions => {
-            
+      const finalObs$:Observable<FriendRequest[]> = combineLatest(toRequestsObs$, fromRequestObs$).pipe(
+        map(data => {
+          
+          //console.log('shared list : ' + JSON.stringify(data[1].map(action => action.payload.doc.data())))
+          const actions = data[0].concat(data[1]);
           return actions.map(action => {
 
             return action.payload.doc.data() as FriendRequest;
           });
         }),
         tap(requests => console.log('contactProvider : pendingContactRequests=' + JSON.stringify(requests)))
-      ).subscribe(requests => {
+      );
+      
+      this.contactRequestSub = finalObs$.subscribe(requests => {
+        
+        // Update contact list of user
+        requests.forEach(request => {
+          
+          const contactList:Contact[] = this.connectedUser.contacts;
+          
+          const existingContact = contactList.find(contact => {
+            return contact.uid === request.from;
+          });
+          
+          // If contact not set, then there has been an error so delete the request
+          if(existingContact === undefined) {
+            // Doesn't work
+            //this.deleteFriendRequest(request.uid);
+          }
+        });
+
+        this.friendRequests = requests;
         this.contactRequestsObs$.next(requests);
       });
     });
@@ -160,7 +191,10 @@ export class ContactProvider {
     };
 
     this.connectedUser.contacts.push(contact);
+
     this.auth.updateUser(this.connectedUser);
+
+    this.createFriendRequest(newContact.uid);
   }
 
   public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
@@ -170,6 +204,12 @@ export class ContactProvider {
       return contact.contactId == publicUser.uid;
     });
 
+    const correspondingRequest = this.friendRequests.find(request => request.to === publicUser.uid);
+    console.log('ContactProvider : cancelFriendRequest : correspondingRequest : ' + JSON.stringify(correspondingRequest));
+    if(correspondingRequest) {
+      this.deleteFriendRequest(correspondingRequest.uid);
+    }
+
     if(correspondingContact) {
       return this.deleteContact(correspondingContact);
     }
@@ -177,5 +217,54 @@ export class ContactProvider {
 
   public getContactRequestsObs() : Observable<FriendRequest[]> {
     return this.contactRequestsObs$.asObservable();
+  }
+
+  public createFriendRequest(toId: string): Promise<FriendRequest> {
+
+    const requestId: string = uuid();
+    const request: FriendRequest = {
+      uid: requestId,
+      from: this.connectedUser.publicUid,
+      to: toId,
+      state: FriendRequestState.PENDING
+    };
+
+    const promise = this.allRequestCol.doc(request.uid).set(request);
+
+    return promise.then(value => {
+      console.log('ContactProvider : createFriendRequets : request created : ' + JSON.stringify(request));
+      return request;
+    }).catch(error => {
+      console.log('ContactProvider : createFriendRequets : request creation error  : ' + JSON.stringify(error));
+      return request;
+    });
+  }
+
+  public deleteFriendRequest(requestId: string): Promise<void> {
+
+    console.log('ContactProvider : deleteFriendRequest : request to delete : ' + requestId);
+    if(requestId) {
+      return this.allRequestCol.doc(requestId).delete();
+    }
+    else {
+      return;
+    }
+  }
+
+  public acceptIncomingFriendRequest(request: FriendRequest) : Promise<void> {
+
+    const contact: Contact = {
+      contactId: request.from,
+      state: FriendRequestState.ACCEPTED,
+      uid: uuid()
+    }
+    this.connectedUser.contacts.push(contact);
+
+    console.log('contactProvider : acceptIncomingFriendRequest : newContact : ' + JSON.stringify(contact) + '; request : ' + JSON.stringify(request));
+
+    this.auth.updateUser(this.connectedUser);
+
+    console.log('ContactProvider : acceptIncomingFriendRequest : request to delete : ' + JSON.stringify(request));
+    return this.deleteFriendRequest(request.uid);
   }
 }

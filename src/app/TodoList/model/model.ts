@@ -26,7 +26,7 @@ export interface User {
   uid : string,
   email : string,
 
-  // List of Public User Id
+  // List of Public User Id which are contacts
   contacts : Contact[],
 
   // Id of the corresponding PublicUser
@@ -49,5 +49,5 @@ export interface FriendRequest {
   uid: string,
   from: string,
   to: string,
-  state: number
+  state: FriendRequestState
 }

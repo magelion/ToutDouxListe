@@ -33,12 +33,22 @@
       </ion-avatar>
       <h2>{{ pubUser.displayName}}</h2>
 
-      <button [disabled]="isFriendRequestSent(pubUser)" ion-button color="secondary" ng-disabled="isFriendRequestSent(pubUser)" (click)="addContact(pubUser)" item-right class="item-right-button">
-        <div [ngSwitch]="isFriendRequestSent(pubUser)">
-          <ion-icon *ngSwitchCase="true" name="send"></ion-icon>
-          <ion-icon *ngSwitchCase="false" name="person-add"></ion-icon>
+      <div [ngSwitch]="isFriendRequestSent(pubUser)" item-right class="item-right-button">
+        
+        <button *ngSwitchCase="true" ion-button color="danger" (click)="cancelFriendRequest(pubUser)">
+          <ion-icon  name="close-circle"></ion-icon>
+        </button>
+
+        <div *ngSwitchCase="false" [ngSwitch]="hasAlreadySentUs(pubUser)">
+          <button *ngSwitchCase="false" ion-button color="secondary" (click)="addContact(pubUser)">
+            <ion-icon name="person-add"></ion-icon>
+          </button>
+          <button *ngSwitchCase="true" ion-button color="secondary" disabled>
+            <ion-icon name="share-alt"></ion-icon>
+          </button>
         </div>
-      </button>
+
+      </div>
     </ion-item>
   </ion-card>
 </ion-content>

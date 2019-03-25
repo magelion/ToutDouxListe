@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { User, PublicUser, FriendRequestState } from '../../app/TodoList/model/model';
+import { User, PublicUser, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
 import { Subscription } from 'rxjs';
 import { AddContactPage } from '../contact/contact';
 
@@ -14,8 +14,14 @@ import { AddContactPage } from '../contact/contact';
 export class ContactListPage implements OnDestroy {
 
   private connectedUser: User;
+  private connectedPubUser: PublicUser;
+
   private connectedUserSubToken: Subscription;
+  private incomingRequestsSubToken: Subscription = null;
   public contactPublicUserList: PublicUser[];
+
+  public incomingRequests: FriendRequest[] = new Array();
+  public incomingContact: PublicUser[] = new Array();
 
   constructor(public navCtrl: NavController, 
     public navParams: NavParams,
@@ -24,8 +30,9 @@ export class ContactListPage implements OnDestroy {
   
     this.connectedUserSubToken = authProvider.getUserObs().subscribe(user => {
 
-      this.contactPublicUserList = [];
+      this.contactPublicUserList = new Array();
       this.connectedUser = user;
+      this.connectedPubUser = authProvider.getConnectedPublicUser();
 
       const publicUserPromise: Promise<PublicUser[]> = this.contactProvider.getContactsPublicUserOfUser(this.connectedUser);
       
@@ -36,6 +43,30 @@ export class ContactListPage implements OnDestroy {
           //console.log("ContactListPage : contact list : " + JSON.stringify(this.contactList));
         });
       }
+
+      if(this.incomingRequestsSubToken) {
+        this.incomingRequestsSubToken.unsubscribe();
+        this.incomingRequestsSubToken = null;
+      }
+
+      this.incomingRequestsSubToken = this.contactProvider.getContactRequestsObs().subscribe(requests => {
+        this.incomingRequests = requests;
+        this.incomingContact = [];
+
+        requests.forEach(request => {
+          
+          if(request.from !== this.connectedPubUser.uid) {
+
+            console.log('contact-list : incoming request : ' + JSON.stringify(request));
+
+            const promise = this.contactProvider.getPublicUser(request.from);
+
+            if(promise) {
+              promise.then(pubUser => this.incomingContact.push(pubUser));
+            }
+          }
+        });
+      })
     });
   }
 
@@ -85,5 +116,30 @@ export class ContactListPage implements OnDestroy {
   public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
 
     return this.contactProvider.cancelFriendRequest(publicUser);
+  }
+
+  public acceptRequest(publicUser: PublicUser): Promise<void> {
+
+    const request: FriendRequest = this.incomingRequests.find(req => req.from === publicUser.uid);
+
+    if(request) {
+      console.log('contact-list : acceptRequest : request : ' + JSON.stringify(request));
+      return this.contactProvider.acceptIncomingFriendRequest(request);
+    }
+    else {
+      return;
+    }
+  }
+
+  public denyRequest(publicUser: PublicUser): Promise<void> {
+
+    const request: FriendRequest = this.incomingRequests.find(req => req.from === publicUser.uid);
+    if(request) {
+
+      return this.contactProvider.deleteFriendRequest(request.uid);
+    }
+    else {
+      return;
+    }
   }
 }

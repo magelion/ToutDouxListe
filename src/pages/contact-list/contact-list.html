@@ -28,6 +28,29 @@
     </ion-item>
   </ion-card>
 
+  <h2 *ngIf="incomingContact.length > 0">Incoming contact requests</h2>
+  <ion-card *ngFor="let newContact of incomingContact">
+
+    <ion-item text-wrap>
+      <ion-avatar item-left>
+        <img [src]="newContact.photoURL">
+      </ion-avatar>
+      <h2>{{ newContact.displayName}}</h2>
+
+      <div item-right class="item-right-button">
+        
+        <button ion-button color="secondary" (click)="acceptRequest(newContact)">
+          <ion-icon name="checkmark"></ion-icon>
+        </button>
+
+        <button ion-button color="danger" (click)="denyRequest(newContact)">
+          <ion-icon name="close-circle"></ion-icon>
+        </button>
+
+      </div>
+    </ion-item>
+  </ion-card>
+
   <ion-fab bottom end fixed>
     <button ion-fab color="secondary" (click)="addContactCommand()">
       <ion-icon name="person-add"></ion-icon>

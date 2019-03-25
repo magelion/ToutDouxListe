@@ -60,6 +60,7 @@ export class TodoServiceProvider {
               // If shared list
               if(todoList.owner !== user.uid) {
                 
+                console.log('todoService-provider : shared list fetched : ' + JSON.stringify(todoList) + '; this.user.uid=' + user.uid);
                 const contact = this.user.contacts.find(cont => {
                   return cont.contactId === todoList.owner;
                 });
@@ -69,6 +70,9 @@ export class TodoServiceProvider {
                 else {
                   return false;
                 }
+              }
+              else {
+                return true;
               }
             })
           }),
@@ -180,9 +184,6 @@ export class TodoServiceProvider {
     if(this.todoListsCol === null) {
       return new Promise<void>(() => {});
     }
-    if(this.todoListsCol === null) {
-      return new Promise<void>(() => {});
-    }
     return this.getTodoListDoc(listKey).delete()
       .then(() => {
         console.log("List deleted " + listKey);
@@ -192,7 +193,7 @@ export class TodoServiceProvider {
 
   public createList(name: string) : Promise<void> {
     
-    if(this.todoListsCol === null) {
+    if(this.todoListsCol === null || !name) {
       return new Promise<void>(() => {});
     }
     const newUuid = uuid();
@@ -200,7 +201,7 @@ export class TodoServiceProvider {
       uuid : newUuid,
       name : name,
       items : new Array(),
-      owner : this.user.publicUid
+      owner : this.user.uid
     } as TodoList;
 
     const promise = this.todoListsCol.doc(newList.uuid).set(newList);

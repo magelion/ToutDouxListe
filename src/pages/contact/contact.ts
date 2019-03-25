@@ -2,9 +2,10 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ContactProvider } from '../../providers/contact/contact';
-import { PublicUser, User, Contact, FriendRequestState } from '../../app/TodoList/model/model';
+import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'page-addContact',
@@ -12,11 +13,12 @@ import { map } from 'rxjs/operators';
 })
 export class AddContactPage {
 
-  // NgModels
   formValidation: FormGroup;
   userName: string;
   searchResult?: PublicUser[]
   user: User;
+  private contactRequests: FriendRequest[];
+  private contactRequestsSubToken : Subscription;
 
   constructor(public navCtrl: NavController, private contactProvider: ContactProvider, private auth: AuthenticationProvider) {
 
@@ -26,7 +28,17 @@ export class AddContactPage {
 
     this.searchResult = [];
     
-    auth.getUserObs().subscribe(user => this.user = user);
+    auth.getUserObs().subscribe(user => {
+      this.user = user
+      if(this.contactRequestsSubToken) {
+        this.contactRequestsSubToken.unsubscribe();
+        this.contactRequestsSubToken = null;
+      }
+
+      this.contactRequestsSubToken = this.contactProvider.getContactRequestsObs().subscribe(request => {
+        this.contactRequests = request;
+      })
+    });
 
     // Filter users already in contact
     contactProvider.getContactSearchSub().pipe(
@@ -68,27 +80,41 @@ export class AddContactPage {
 
     this.contactProvider.sendFriendRequest(newPubUserContact);
 
-    if(this.searchResult) {
+    /*if(this.searchResult) {
 
       const userInd: number = this.searchResult.indexOf(newPubUserContact);
       this.searchResult.splice(userInd, 1);
-    }
+    }*/
   }
 
   public isFriendRequestSent(pubUser: PublicUser) {
 
-    console.log('isFriendRequestSent : pubUser=' + JSON.stringify(pubUser));
+    //console.log('isFriendRequestSent : pubUser=' + JSON.stringify(pubUser));
     const contact = this.user.contacts.find(contact => {
       return contact.contactId === pubUser.uid;
     });
 
     if(contact) {
-      console.log('contact found : state=' + contact.state);
+      //console.log('contact found : state=' + contact.state);
       return contact.state === FriendRequestState.PENDING;
     }
     else {
-      console.log('else : false');
+      //console.log('else : false');
       return false;
     }
+  }
+
+  public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
+
+    return this.contactProvider.cancelFriendRequest(publicUser);
+  }
+
+  public hasAlreadySentUs(pubUser: PublicUser): boolean{
+
+    const request: FriendRequest = this.contactRequests.find(request => {
+      return request.from === pubUser.uid;
+    });
+
+    return request !== undefined;
   }
 }
