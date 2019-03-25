@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges, ChangeDetectorRef } from '@angular/core';
-import { PublicUser } from '../../app/TodoList/model/model';
+import { PublicUser } from '../../app/model/model';
 
 @Component({
   selector: 'contact',

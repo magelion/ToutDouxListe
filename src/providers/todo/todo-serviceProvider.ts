@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
+import {TodoItem, TodoList, User} from "../../app/model/model";
 import {Observable, BehaviorSubject, combineLatest, Subscription} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';

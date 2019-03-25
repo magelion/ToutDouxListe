@@ -3,7 +3,7 @@ import { IonicPage, NavController } from 'ionic-angular';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { Observable } from 'rxjs';
 import { TabsPage } from '../tabs/tabs';
-import { User } from '../../app/TodoList/model/model';
+import { User } from '../../app/model/model';
 
 @IonicPage()
 @Component({

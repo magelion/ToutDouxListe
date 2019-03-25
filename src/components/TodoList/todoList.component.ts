@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core'
-import { TodoList } from "../../app/TodoList/model/model";
+import { TodoList } from "../../app/model/model";
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";

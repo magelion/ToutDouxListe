@@ -3,7 +3,7 @@ import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import {Constants} from "../../app/utilities/Constants";
 import { TodoListItemCreationPage } from '../todo-list-item-creation/todo-list-item-creation';
 import { Subscription } from 'rxjs';
-import { TodoList } from '../../app/TodoList/model/model';
+import { TodoList } from '../../app/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { ShareListPage } from '../share-list/share-list';
 

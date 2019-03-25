@@ -40,3 +40,13 @@
     min-width: 50px;
     min-height: 80%;
 }
+
+.alert-md .alert-wrapper{
+    // Theme changes 
+    color:        map-get($map: $colors, $key: light);
+    background-color:  map-get($map: $colors, $key: dark);
+}
+
+.alert-md .alert-message{
+    color:        map-get($map: $colors, $key: light);
+}

@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { PublicUser, User, TodoList } from '../../app/TodoList/model/model';
+import { PublicUser, User, TodoList } from '../../app/model/model';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';

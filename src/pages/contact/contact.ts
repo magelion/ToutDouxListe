@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ContactProvider } from '../../providers/contact/contact';
-import { PublicUser, User, Contact } from '../../app/TodoList/model/model';
+import { PublicUser, User, Contact } from '../../app/model/model';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { map } from 'rxjs/operators';
 
