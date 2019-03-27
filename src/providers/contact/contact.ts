@@ -308,8 +308,9 @@ export class ContactProvider {
 
       this.connectedUser.contacts[contactInd] = contact;
 
-      await this.auth.updateUser(this.connectedUser);
-      await this.deleteFriendRequest(request.uid);
+      return this.deleteFriendRequest(request.uid).then(value => {
+        return this.auth.updateUser(this.connectedUser);
+      });
     }
   }
 
@@ -319,8 +320,9 @@ export class ContactProvider {
     if(contactInd >= 0) {
       this.connectedUser.contacts.splice(contactInd, 1);
 
-      await this.auth.updateUser(this.connectedUser);
-      await this.deleteFriendRequest(request.uid);
+      return this.deleteFriendRequest(request.uid).then(value => {
+        return this.auth.updateUser(this.connectedUser);
+      });
     }
   }
 }
