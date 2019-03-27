@@ -54,7 +54,7 @@ export class ContactListPage implements OnDestroy {
 
         requests.forEach(request => {
           
-          if(request.from !== this.connectedPubUser.uid) {
+          if(request.from !== this.connectedPubUser.uid && request.state === FriendRequestState.PENDING) {
 
             console.log('contact-list : incoming request : ' + JSON.stringify(request));
 
@@ -117,13 +117,14 @@ export class ContactListPage implements OnDestroy {
     return this.contactProvider.cancelFriendRequest(publicUser);
   }
 
-  public acceptRequest(publicUser: PublicUser): Promise<void> {
+  public acceptRequest(publicUser: PublicUser) {
 
     const request: FriendRequest = this.incomingRequests.find(req => req.from === publicUser.uid);
 
     if(request) {
       console.log('contact-list : acceptRequest : request : ' + JSON.stringify(request));
-      return this.contactProvider.acceptIncomingFriendRequest(request);
+      this.contactProvider.acceptIncomingFriendRequest(request);
+      return true;
     }
     else {
       return;

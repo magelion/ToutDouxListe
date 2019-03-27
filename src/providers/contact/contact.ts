@@ -70,12 +70,6 @@ export class ContactProvider {
           const existingContact = contactList.find(contact => {
             return contact.uid === request.from;
           });
-          
-          // If contact not set, then there has been an error so delete the request
-          if(existingContact === undefined) {
-            // Doesn't work
-            //this.deleteFriendRequest(request.uid);
-          }
         });
 
         this.friendRequests = requests;
@@ -93,6 +87,9 @@ export class ContactProvider {
           
           if(request.state === FriendRequestState.ACCEPTED && request.from === this.connectedUser.publicUid) {
             this.confirmRequestAcceptance(request);
+          }
+          else if(request.state === FriendRequestState.DELETED && request.to === this.connectedUser.publicUid) {
+            this.requestContactDelete(request);
           }
         });
       });
@@ -141,6 +138,9 @@ export class ContactProvider {
 
   public getContactsPublicUserOfUser(user: User) : Promise<PublicUser[]> {
 
+    if(!user) {
+      return null;
+    }
     var resultPromise : Promise<PublicUser[]>;
     const resultList : PublicUser[] = new Array();
     
@@ -265,7 +265,9 @@ export class ContactProvider {
 
     console.log('ContactProvider : deleteFriendRequest : request to delete : ' + requestId);
     if(requestId) {
-      return this.allRequestCol.doc(requestId).delete();
+      const doc = this.allRequestCol.doc(requestId);
+      console.log('ContactProvider : deleteFriendRequest : request to doc : ' + requestId);
+      return doc.delete();
     }
     else {
       return;
@@ -297,7 +299,7 @@ export class ContactProvider {
     return this.db.collection(ContactProvider.PENDING_CONTACT_REQUESTS_DB).doc(request.uid).set(request);
   }
 
-  private confirmRequestAcceptance(request: FriendRequest) : Promise<void> {
+  private async confirmRequestAcceptance(request: FriendRequest) : Promise<void> {
 
     const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.to);
     if(contactInd >= 0) {
@@ -306,9 +308,19 @@ export class ContactProvider {
 
       this.connectedUser.contacts[contactInd] = contact;
 
-      this.auth.updateUser(this.connectedUser);
+      await this.auth.updateUser(this.connectedUser);
+      await this.deleteFriendRequest(request.uid);
+    }
+  }
 
-      return this.deleteFriendRequest(request.uid);
+  private async requestContactDelete(request: FriendRequest) : Promise<void> {
+
+    const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.to);
+    if(contactInd >= 0) {
+      this.connectedUser.contacts.splice(contactInd, 1);
+
+      await this.auth.updateUser(this.connectedUser);
+      await this.deleteFriendRequest(request.uid);
     }
   }
 }

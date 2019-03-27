@@ -43,7 +43,8 @@ export interface Contact {
 
 export enum FriendRequestState {
   PENDING,
-  ACCEPTED
+  ACCEPTED,
+  DELETED
 }
 
 export interface FriendRequest {
