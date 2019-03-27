@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ContactProvider } from '../../providers/contact/contact';
-import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
+import { PublicUser, User, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -20,7 +20,7 @@ export class AddContactPage {
   private contactRequests: FriendRequest[];
   private contactRequestsSubToken : Subscription;
 
-  constructor(public navCtrl: NavController, private contactProvider: ContactProvider, private auth: AuthenticationProvider) {
+  constructor(public navCtrl: NavController, private contactProvider: ContactProvider, auth: AuthenticationProvider) {
 
     this.formValidation = new FormGroup(({
       name: new FormControl('', Validators.required),

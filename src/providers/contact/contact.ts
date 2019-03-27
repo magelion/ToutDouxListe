@@ -10,6 +10,7 @@ import { map, tap } from 'rxjs/operators';
 export class ContactProvider {
 
   private static readonly PENDING_CONTACT_REQUESTS_DB: string = 'PendingContactRequests';
+  private static readonly PUBLIC_USER_DB: string = 'PublicUsers';
 
   private contactSearchSub$: BehaviorSubject<PublicUser[]>;
 
@@ -35,6 +36,11 @@ export class ContactProvider {
 
       if(this.contactRequestSub) {
         this.contactRequestSub.unsubscribe();
+        this.contactRequestSub = null;
+      }
+
+      if(!user) {
+        return;
       }
 
       // Get all requests where we are involved
@@ -163,10 +169,12 @@ export class ContactProvider {
   public getPublicUser(uid: string) : Promise<PublicUser> {
 
     if(!uid) return null;
-    return this.db.collection('PublicUsers').doc(uid).get().map(doc => {
+    return this.db.doc(ContactProvider.PUBLIC_USER_DB + '/' + uid).get().map(doc => {
 
-      return doc.data() as PublicUser;
-    }).toPromise()
+      const pubUser:PublicUser = doc.data() as PublicUser;
+      console.log('contact : getPublicUser : map : pubUser=' + JSON.stringify(pubUser));
+      return pubUser;
+    }).toPromise();
   }
 
   public deleteContact(contact: Contact) : Promise<void> {

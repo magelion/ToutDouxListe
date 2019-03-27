@@ -2,7 +2,8 @@ export interface TodoList {
   uuid : string,
   name : string,
   items : TodoItem[],
-  owner : string
+  owner : string, // TODO : get rid of this for security
+  publicOwner : string,
   // Public uid to share this list with
   sharedTo : string[]
 };

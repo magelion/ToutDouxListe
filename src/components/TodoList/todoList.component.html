@@ -6,7 +6,7 @@
           <h2>{{ list.name }} : {{nbUnfinishedItems(list)}}</h2>
       </div>
       <div *ngIf="isSharedList(list)" class="item-text-center" text-wrap>
-          <h3>Shared by : {{ getListOwnerName(list) | async }}</h3>
+          <h3>Shared by : {{ ownerName }}</h3>
       </div>
   </ion-item>
   <!-- <button ion-item detail (click)="selectList(list)">

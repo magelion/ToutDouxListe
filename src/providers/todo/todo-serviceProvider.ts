@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {TodoItem, TodoList, User, FriendRequestState} from "../../app/TodoList/model/model";
+import {TodoItem, TodoList, User} from "../../app/TodoList/model/model";
 import {Observable, BehaviorSubject, combineLatest, Subscription} from "rxjs";
 import 'rxjs/Rx';
 import { v4 as uuid } from 'uuid';
@@ -55,7 +55,7 @@ export class TodoServiceProvider {
             });
           }),
           // Hide any list shared by non accepted contact (should not happen normally)
-          map(lists => {
+          /*map(lists => {
             return lists.filter(todoList => {
               // If shared list
               if(todoList.owner !== user.uid) {
@@ -75,17 +75,25 @@ export class TodoServiceProvider {
                 return true;
               }
             })
-          }),
+          }),*/
           tap(lists => console.log("Lists fetched : " + JSON.stringify(lists)))
         );
     
         if(this._subToken) {
           this._subToken.unsubscribe();
+          this._subToken = null;
         }
 
         this._subToken = finalObs$.subscribe( (tdl: TodoList[]) => {
           this.todoListsSub$.next( tdl );
         });
+      }
+      else {
+
+        if(this._subToken) {
+          this._subToken.unsubscribe();
+          this._subToken = null;
+        }
       }
     });
   }
@@ -201,7 +209,8 @@ export class TodoServiceProvider {
       uuid : newUuid,
       name : name,
       items : new Array(),
-      owner : this.user.uid
+      owner : this.user.uid,
+      publicOwner : this.user.publicUid
     } as TodoList;
 
     const promise = this.todoListsCol.doc(newList.uuid).set(newList);
