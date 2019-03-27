@@ -5,7 +5,7 @@ import { AngularFireAuth } from 'angularfire2/auth';
 import { Observable, BehaviorSubject } from 'rxjs';
 import firebase from 'firebase';
 import { AngularFirestore, AngularFirestoreCollection, DocumentReference } from 'angularfire2/firestore';
-import { User, PublicUser } from '../../app/TodoList/model/model';
+import { User, PublicUser } from '../../app/model/model';
 import { map, take } from 'rxjs/operators';
 import { v4 as uuid } from 'uuid';
 import { Facebook } from '@ionic-native/facebook/ngx'

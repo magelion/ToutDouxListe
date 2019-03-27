@@ -1,6 +1,6 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Subscription } from 'rxjs';
-import { TodoList } from '../../app/TodoList/model/model';
+import { TodoList } from '../../app/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { AlertController } from 'ionic-angular';
 

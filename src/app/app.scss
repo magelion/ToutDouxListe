@@ -26,9 +26,31 @@
 .fab-button {
     max-width: 50px;
 }
-.vertical-align-content > *
+.vertical-align-content-center > *
 {
-     display: flex!important;
-     align-content: center!important;
-     align-items: center!important;
+     display: flex;
+     align-content: center;
+     align-items: center;
+}
+
+.vertical-align-content-top > *
+{
+     display: flex;
+     align-content: start;
+     align-items: start;
+}
+
+.item-right-button {
+    min-width: 50px;
+    min-height: 80%;
+}
+
+.alert-md .alert-wrapper{
+    // Theme changes 
+    color:        map-get($map: $colors, $key: light);
+    background-color:  map-get($map: $colors, $key: dark);
+}
+
+.alert-md .alert-message{
+    color:        map-get($map: $colors, $key: light);
 }

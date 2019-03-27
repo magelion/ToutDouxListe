@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavParams } from 'ionic-angular';
-import { PublicUser, User, TodoList, FriendRequestState } from '../../app/TodoList/model/model';
+import { PublicUser, User, TodoList, FriendRequestState } from '../../app/model/model';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
@@ -42,6 +42,7 @@ export class ShareListPage {
       const userContactsPromise = this.contactProvider.getContactsPublicUserOfUser(this.user);
       if(userContactsPromise) {
         userContactsPromise.then(contacts => {
+
           this.contactList = this.getAvailableContacts(contacts);
         });
       }
@@ -50,8 +51,23 @@ export class ShareListPage {
 
   private getAvailableContacts(pubUsers : PublicUser[]) : PublicUser[]{
 
-    // Return all to be able to cancel share
-    return pubUsers;
+    // Display only confirmed contacts and contact other than the owner
+    const filteredUsers = pubUsers.filter(pubUser => {
+            
+      const correpsondingContact = this.user.contacts.find(contact => {
+        return contact.contactId === pubUser.uid;
+      });
+      if(correpsondingContact && correpsondingContact.state === FriendRequestState.ACCEPTED) {
+        
+        if(this.todoList.publicOwner !== this.user.publicUid) {
+          return correpsondingContact.contactId !== this.todoList.publicOwner;
+        }
+      }
+      else {
+        return false;
+      }
+    });
+    return filteredUsers;
   }
 
   public shareListTo(publicUser: PublicUser) {

@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { TodoItem } from '../../app/TodoList/model/model';
+import { TodoItem } from '../../app/model/model';
 import { FormControl, Validators } from '@angular/forms';
 
 

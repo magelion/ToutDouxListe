@@ -7,18 +7,7 @@
 </ion-header>
 
 <ion-content>
-  
-  <!-- <form (ngSubmit)="searchUsers()" [formGroup]="formValidation">
-    <ion-item>
-      <ion-label floating>Name</ion-label>
-      <ion-input (ionChange)="searchUsers()" name="userName" type="text" [(ngModel)]="userName" required formControlName="name"></ion-input>
-    </ion-item>
 
-    <button ion-button block type="submit">
-        Search&nbsp;
-        <ion-icon name="search"></ion-icon>
-    </button>
-  </form> -->
   <ion-searchbar #input [animated]="true" (ionInput)="searchUsers(input)"></ion-searchbar>
 
   <ion-item *ngIf="searchResult">

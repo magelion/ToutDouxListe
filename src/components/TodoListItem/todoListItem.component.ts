@@ -1,5 +1,5 @@
 import {Component, Input} from '@angular/core';
-import { TodoList, TodoItem } from '../../app/TodoList/model/model';
+import { TodoList, TodoItem } from '../../app/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { NavController } from 'ionic-angular';
 import { TodoItemEditPage } from '../../pages/todo-item-edit/todo-item-edit';
@@ -28,25 +28,6 @@ export class TodoListItem {
       this.todoService.deleteTodo(this.list.uuid, this.item.uuid);
     }
   }
-
-  /*private dataChanged($event) {
-
-    if (!this.list || !this.item) return;
-
-    console.log('changed : ' + JSON.stringify(this.item));
-
-    this.todoService.editTodo(this.list.uuid, this.item);
-  }*/
-
-  /*updateList() {
-
-
-    console.log('This todoListId=' + this.todoListId);
-    if(this.todoListId !== null && this.todoListId !== undefined) {
-
-      this.list$ = this.todoService.getList(this.todoListId);
-    }
-  }*/
 
   public editItem(): void {
 

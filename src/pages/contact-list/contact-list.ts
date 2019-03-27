@@ -2,7 +2,7 @@ import { Component, OnDestroy } from '@angular/core';
 import { IonicPage, NavController, NavParams } from 'ionic-angular';
 import { ContactProvider } from '../../providers/contact/contact';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { User, PublicUser, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
+import { User, PublicUser, FriendRequestState, FriendRequest } from '../../app/model/model';
 import { Subscription } from 'rxjs';
 import { AddContactPage } from '../contact/contact';
 
@@ -40,7 +40,6 @@ export class ContactListPage implements OnDestroy {
         publicUserPromise.then(publicUser => {
   
           this.contactPublicUserList = publicUser;
-          //console.log("ContactListPage : contact list : " + JSON.stringify(this.contactList));
         });
       }
 

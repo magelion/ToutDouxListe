@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFirestore, CollectionReference, AngularFirestoreCollection, DocumentChangeAction } from 'angularfire2/firestore';
 import { BehaviorSubject, Observable, Subscription, combineLatest } from 'rxjs';
-import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
+import { PublicUser, User, Contact, FriendRequestState, FriendRequest } from '../../app/model/model';
 import { AuthenticationProvider } from '../authentication/authentication';
 import { v4 as uuid } from 'uuid';
 import { map, tap } from 'rxjs/operators';

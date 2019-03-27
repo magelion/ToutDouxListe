@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { NavController } from 'ionic-angular';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { ContactProvider } from '../../providers/contact/contact';
-import { PublicUser, User, FriendRequestState, FriendRequest } from '../../app/TodoList/model/model';
+import { PublicUser, User, FriendRequest, FriendRequestState } from '../../app/model/model';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
 import { map } from 'rxjs/operators';
 import { Subscription } from 'rxjs';
@@ -51,7 +51,6 @@ export class AddContactPage {
             return this.user.contacts.find(contact => {
               return contact.contactId === value.uid && contact.state === FriendRequestState.ACCEPTED;
             }) === undefined;
-            //return this.user.contacts.indexOf(value.uid) === -1
           });
         }
       })
@@ -79,27 +78,18 @@ export class AddContactPage {
   public addContact(newPubUserContact: PublicUser) {
 
     this.contactProvider.sendFriendRequest(newPubUserContact);
-
-    /*if(this.searchResult) {
-
-      const userInd: number = this.searchResult.indexOf(newPubUserContact);
-      this.searchResult.splice(userInd, 1);
-    }*/
   }
 
   public isFriendRequestSent(pubUser: PublicUser) {
 
-    //console.log('isFriendRequestSent : pubUser=' + JSON.stringify(pubUser));
     const contact = this.user.contacts.find(contact => {
       return contact.contactId === pubUser.uid;
     });
 
     if(contact) {
-      //console.log('contact found : state=' + contact.state);
       return contact.state === FriendRequestState.PENDING;
     }
     else {
-      //console.log('else : false');
       return false;
     }
   }

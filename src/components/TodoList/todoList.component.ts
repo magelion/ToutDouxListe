@@ -1,5 +1,5 @@
 import { Component, Input, OnChanges, SimpleChanges } from '@angular/core'
-import { TodoList, User, PublicUser } from "../../app/TodoList/model/model";
+import { TodoList, User } from "../../app/model/model";
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider'
 import { NavController, AlertController } from "ionic-angular";
 import { TodoItemsPage } from "../../pages/todo-items/todo-items";
@@ -121,16 +121,5 @@ export class TodoComponent implements OnChanges{
         return null;
       }
     });
-    // const promise: Promise<PublicUser>  = this.contactProvider.getPublicUser(list.owner); 
-    // console.log('todoListComponent : getListOwnerName : list.owner=' + list.owner);
-    // if(promise) {
-    //   const pubUser: PublicUser = await promise;
-    //   if(pubUser) {
-    //     console.log('todoListComponent : getListOwnerName : pubUserName=' + pubUser.displayName);
-    //     return pubUser.displayName;
-    //   }
-    // }
-    // console.log('todoListComponent : getListOwnerName : null!!!');
-    // return null;
   }
 }

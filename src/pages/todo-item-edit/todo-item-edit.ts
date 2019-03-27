@@ -1,6 +1,6 @@
 import { Component } from '@angular/core';
 import { IonicPage, NavController, NavParams, ViewController } from 'ionic-angular';
-import { TodoItem } from '../../app/TodoList/model/model';
+import { TodoItem } from '../../app/model/model';
 import { TodoServiceProvider } from '../../providers/todo/todo-serviceProvider';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 
@@ -44,17 +44,6 @@ export class TodoItemEditPage {
 
       this.item = await this.todoService.getTodoItem(this.listId,this.itemId);
 
-      /*const subToken = this.todoService.getList(this.todoListId).subscribe(
-        value => {
-          this.list = value;
-          console.log("Item edit page : list get : " + JSON.stringify(this.list));
-          subToken.unsubscribe();
-        },
-        err => {
-          console.log("Item edit page : error on getting list : " + err);
-          subToken.unsubscribe();
-        }
-      );*/
     }
   }
 

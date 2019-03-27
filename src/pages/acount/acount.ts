@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { IonicPage, App } from 'ionic-angular';
 import { Observable } from 'rxjs';
 import { AuthenticationProvider } from '../../providers/authentication/authentication';
-import { User, PublicUser } from '../../app/TodoList/model/model';
+import { User, PublicUser } from '../../app/model/model';
 import { AuthenticationPage } from '../authentication/authentication';
 
 @IonicPage()
@@ -56,7 +56,6 @@ export class AcountPage {
     this.authProvider.signOut()
     .then(()=> {
       console.log('logout complete'); 
-      // this.navController.setRoot(AuthenticationPage);});
       this.app.getRootNav().setRoot(AuthenticationPage);
     });
   }
