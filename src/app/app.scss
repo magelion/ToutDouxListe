@@ -47,10 +47,18 @@
 
 .alert-md .alert-wrapper{
     // Theme changes 
-    color:        map-get($map: $colors, $key: light);
-    background-color:  map-get($map: $colors, $key: dark);
+    color: map-get($map: $colors, $key: light);
+    background-color: map-get($map: $colors, $key: dark);
+}
+
+.alert-md .alert-input {
+    color: map-get($map: $colors, $key: light);
+}
+
+.alert-md .alert-input::placeholder {
+    color: map-get($map: $colors, $key: light);
 }
 
 .alert-md .alert-message{
-    color:        map-get($map: $colors, $key: light);
+    color: map-get($map: $colors, $key: light);
 }
