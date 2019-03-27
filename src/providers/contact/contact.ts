@@ -20,6 +20,7 @@ export class ContactProvider {
   private friendRequests: FriendRequest[] = new Array<FriendRequest>();
 
   private contactRequestSub: Subscription;
+  private thisRequestObsSub: Subscription;
   private allRequestCol: AngularFirestoreCollection<FriendRequest>;
 
   constructor(private db: AngularFirestore, private auth: AuthenticationProvider) {
@@ -80,8 +81,22 @@ export class ContactProvider {
         this.friendRequests = requests;
         this.contactRequestsObs$.next(requests);
       });
-    });
 
+      if(this.thisRequestObsSub) {
+        this.thisRequestObsSub.unsubscribe();
+        this.thisRequestObsSub = null;
+      }
+
+      this.thisRequestObsSub = this.contactRequestsObs$.subscribe(requests => {
+
+        requests.forEach(request => {
+          
+          if(request.state === FriendRequestState.ACCEPTED && request.from === this.connectedUser.publicUid) {
+            this.confirmRequestAcceptance(request);
+          }
+        });
+      });
+    });
   }
 
   public getContactSearchSub() : Observable<PublicUser[]> {
@@ -270,7 +285,30 @@ export class ContactProvider {
 
     this.auth.updateUser(this.connectedUser);
 
-    console.log('ContactProvider : acceptIncomingFriendRequest : request to delete : ' + JSON.stringify(request));
-    return this.deleteFriendRequest(request.uid);
+    request.state = FriendRequestState.ACCEPTED;
+    return this.updateFriendRequest(request);
+
+    // console.log('ContactProvider : acceptIncomingFriendRequest : request to delete : ' + JSON.stringify(request));
+    // return this.deleteFriendRequest(request.uid);
+  }
+
+  private updateFriendRequest(request: FriendRequest) : Promise<void> {
+
+    return this.db.collection(ContactProvider.PENDING_CONTACT_REQUESTS_DB).doc(request.uid).set(request);
+  }
+
+  private confirmRequestAcceptance(request: FriendRequest) : Promise<void> {
+
+    const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.to);
+    if(contactInd >= 0) {
+      const contact: Contact = this.connectedUser.contacts[contactInd];
+      contact.state = FriendRequestState.ACCEPTED;
+
+      this.connectedUser.contacts[contactInd] = contact;
+
+      this.auth.updateUser(this.connectedUser);
+
+      return this.deleteFriendRequest(request.uid);
+    }
   }
 }

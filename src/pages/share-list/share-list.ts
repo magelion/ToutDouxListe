@@ -39,7 +39,9 @@ export class ShareListPage {
       if(userContactsPromise) {
         userContactsPromise.then(contacts => {
 
+          console.log('ShareListPage : contacts=' + JSON.stringify(contacts));
           this.contactList = this.getAvailableContacts(contacts);
+          console.log('ShareListPage : filteredContacts=' + JSON.stringify(this.contactList));
         });
       }
     }
@@ -53,13 +55,21 @@ export class ShareListPage {
       const correpsondingContact = this.user.contacts.find(contact => {
         return contact.contactId === pubUser.uid;
       });
+      
       if(correpsondingContact && correpsondingContact.state === FriendRequestState.ACCEPTED) {
         
+        console.log('ShareListPage : getAvailableContacts : contact=' + JSON.stringify(correpsondingContact));
         if(this.todoList.publicOwner !== this.user.publicUid) {
+
+          console.log('ShareListPage : getAvailableContacts : sharedList : contact=Id' + correpsondingContact.contactId + '; publicOwner=' + this.todoList.publicOwner);
           return correpsondingContact.contactId !== this.todoList.publicOwner;
+        }
+        else {
+          return pubUser;
         }
       }
       else {
+        console.log('ShareListPage : getAvailableContacts : contactNotFoundOrnotAccepted=' + JSON.stringify(pubUser));
         return false;
       }
     });
