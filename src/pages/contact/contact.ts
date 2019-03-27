@@ -69,8 +69,6 @@ export class AddContactPage {
 
       const value = input.value;
       console.log('searching ' + value);
-
-      //this.searchResult = [];
       this.contactProvider.searchOtherUser(value);
     }
   }

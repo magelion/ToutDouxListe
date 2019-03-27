@@ -35,10 +35,6 @@ export class ShareListPage {
 
       console.log('ShareListPage : user=' + JSON.stringify(this.user));
 
-      const contactList = this.user.contacts.filter(contact => {
-        return contact.state === FriendRequestState.ACCEPTED;
-      });
-
       const userContactsPromise = this.contactProvider.getContactsPublicUserOfUser(this.user);
       if(userContactsPromise) {
         userContactsPromise.then(contacts => {

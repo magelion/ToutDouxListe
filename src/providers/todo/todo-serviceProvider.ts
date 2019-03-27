@@ -31,10 +31,6 @@ export class TodoServiceProvider {
         console.log('TodoService : user = ' + JSON.stringify(user));
 
         this.todoListsCol = null;
-        /*this.todoListsCol = afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, 
-        ref => ref.where('owner', '==', user.uid));
-
-        console.log('updateList called');*/
 
         this.todoListsCol = this.afs.collection(TodoServiceProvider.TODO_LISTS_DB_NAME, ref => ref.where('owner', '==', this.user.uid));
 
@@ -47,7 +43,6 @@ export class TodoServiceProvider {
           
           map(data => {
           
-            //console.log('shared list : ' + JSON.stringify(data[1].map(action => action.payload.doc.data())))
             const actions = data[0].concat(data[1]);
             return actions.map(action => {
 
@@ -55,6 +50,7 @@ export class TodoServiceProvider {
             });
           }),
           // Hide any list shared by non accepted contact (should not happen normally)
+          // TODO : fix this
           /*map(lists => {
             return lists.filter(todoList => {
               // If shared list
@@ -134,7 +130,6 @@ export class TodoServiceProvider {
     if(this.todoListsCol === null) {
       return null;
     }
-    //return this.afs.doc(TodoServiceProvider.TODO_LISTS_DB_NAME + '/' + listKey);
     return this.todoListsCol.doc(listKey);
   }
 

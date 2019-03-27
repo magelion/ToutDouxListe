@@ -50,7 +50,6 @@ export class ContactProvider {
       const finalObs$:Observable<FriendRequest[]> = combineLatest(toRequestsObs$, fromRequestObs$).pipe(
         map(data => {
           
-          //console.log('shared list : ' + JSON.stringify(data[1].map(action => action.payload.doc.data())))
           const actions = data[0].concat(data[1]);
           return actions.map(action => {
 
@@ -104,7 +103,6 @@ export class ContactProvider {
         const searchResult: PublicUser[] = new Array();
         result.forEach((doc) => {
 
-          //console.log('SearchOtherUser : docId=' + JSON.stringify(doc.id) + ", data=" + JSON.stringify(doc.data) + ', doc.get(uid)=' + doc.get('uid'));
           const publicUser: PublicUser = {
 
             uid: doc.get('uid'),

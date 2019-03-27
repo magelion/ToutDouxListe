@@ -13,11 +13,7 @@ import { User } from '../../app/model/model';
 export class AuthenticationPage {
 
   private userObs: Observable<User>;
-<<<<<<< HEAD
-  //private imgUrl="assets/icon.png";
   private connectedUser:User = null;
-=======
->>>>>>> maxence
 
   constructor(
     private authProvider: AuthenticationProvider,
