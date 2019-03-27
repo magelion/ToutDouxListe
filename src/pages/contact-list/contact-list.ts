@@ -119,11 +119,15 @@ export class ContactListPage implements OnDestroy {
 
   public acceptRequest(publicUser: PublicUser) {
 
-    const request: FriendRequest = this.incomingRequests.find(req => req.from === publicUser.uid);
+    const requestInd = this.incomingRequests.findIndex(req => req.from === publicUser.uid);
+    
+    if(requestInd) {
 
-    if(request) {
+      const request: FriendRequest = this.incomingRequests[requestInd];
       console.log('contact-list : acceptRequest : request : ' + JSON.stringify(request));
       this.contactProvider.acceptIncomingFriendRequest(request);
+
+      this.incomingRequests.splice(requestInd, 1);
       return true;
     }
     else {

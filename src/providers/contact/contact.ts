@@ -61,16 +61,6 @@ export class ContactProvider {
       );
       
       this.contactRequestSub = finalObs$.subscribe(requests => {
-        
-        // Update contact list of user
-        requests.forEach(request => {
-          
-          const contactList:Contact[] = this.connectedUser.contacts;
-          
-          const existingContact = contactList.find(contact => {
-            return contact.uid === request.from;
-          });
-        });
 
         this.friendRequests = requests;
         this.contactRequestsObs$.next(requests);
@@ -89,6 +79,7 @@ export class ContactProvider {
             this.confirmRequestAcceptance(request);
           }
           else if(request.state === FriendRequestState.DELETED && request.to === this.connectedUser.publicUid) {
+            console.log('contactProvider : requestToDelete : ' + JSON.stringify(request));
             this.requestContactDelete(request);
           }
         });
@@ -161,7 +152,7 @@ export class ContactProvider {
       }
       else {
 
-        resultPromise = resultPromise.then(val => {
+        resultPromise = resultPromise.then(() => {
             
           const publicUserPromise = this.getPublicUser(contact.contactId);
           if(publicUserPromise) {
@@ -192,15 +183,18 @@ export class ContactProvider {
 
   public deleteContact(contact: Contact) : Promise<void> {
 
-    if(this.connectedUser) {
+    return this.createFriendRequest(contact.contactId, FriendRequestState.DELETED).then(() => {
 
-      const contactInd = this.connectedUser.contacts.indexOf(contact);
-      if(contactInd >= 0) {
+      if(this.connectedUser) {
 
-        this.connectedUser.contacts.splice(contactInd, 1);
-        return this.auth.updateUser(this.connectedUser);
+        const contactInd = this.connectedUser.contacts.indexOf(contact);
+        if(contactInd >= 0) {
+  
+          this.connectedUser.contacts.splice(contactInd, 1);
+          return this.auth.updateUser(this.connectedUser);
+        }
       }
-    }
+    });
   }
 
   public sendFriendRequest(newContact: PublicUser): any {
@@ -215,7 +209,7 @@ export class ContactProvider {
 
     this.auth.updateUser(this.connectedUser);
 
-    this.createFriendRequest(newContact.uid);
+    this.createFriendRequest(newContact.uid, FriendRequestState.PENDING);
   }
 
   public cancelFriendRequest(publicUser: PublicUser): Promise<void> {
@@ -240,19 +234,19 @@ export class ContactProvider {
     return this.contactRequestsObs$.asObservable();
   }
 
-  public createFriendRequest(toId: string): Promise<FriendRequest> {
+  public createFriendRequest(toId: string, state:FriendRequestState): Promise<FriendRequest> {
 
     const requestId: string = uuid();
     const request: FriendRequest = {
       uid: requestId,
       from: this.connectedUser.publicUid,
       to: toId,
-      state: FriendRequestState.PENDING
+      state: state
     };
 
     const promise = this.allRequestCol.doc(request.uid).set(request);
 
-    return promise.then(value => {
+    return promise.then(() => {
       console.log('ContactProvider : createFriendRequets : request created : ' + JSON.stringify(request));
       return request;
     }).catch(error => {
@@ -285,10 +279,12 @@ export class ContactProvider {
 
     console.log('contactProvider : acceptIncomingFriendRequest : newContact : ' + JSON.stringify(contact) + '; request : ' + JSON.stringify(request));
 
-    this.auth.updateUser(this.connectedUser);
+    return this.auth.updateUser(this.connectedUser).then(() => {
 
-    request.state = FriendRequestState.ACCEPTED;
-    return this.updateFriendRequest(request);
+      request.state = FriendRequestState.ACCEPTED;
+      return this.updateFriendRequest(request);
+    });
+
 
     // console.log('ContactProvider : acceptIncomingFriendRequest : request to delete : ' + JSON.stringify(request));
     // return this.deleteFriendRequest(request.uid);
@@ -308,7 +304,7 @@ export class ContactProvider {
 
       this.connectedUser.contacts[contactInd] = contact;
 
-      return this.deleteFriendRequest(request.uid).then(value => {
+      return this.deleteFriendRequest(request.uid).then(() => {
         return this.auth.updateUser(this.connectedUser);
       });
     }
@@ -316,11 +312,11 @@ export class ContactProvider {
 
   private async requestContactDelete(request: FriendRequest) : Promise<void> {
 
-    const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.to);
+    const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.from);
     if(contactInd >= 0) {
       this.connectedUser.contacts.splice(contactInd, 1);
 
-      return this.deleteFriendRequest(request.uid).then(value => {
+      return this.deleteFriendRequest(request.uid).then(() => {
         return this.auth.updateUser(this.connectedUser);
       });
     }
