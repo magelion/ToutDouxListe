@@ -85,15 +85,15 @@
     <plugin name="cordova-plugin-ionic-keyboard" spec="^2.0.5" />
     <allow-navigation href="http://192.168.1.112:8100" sessionid="51431147" />
     <plugin name="cordova-plugin-console" spec="~1.1.0" />
-    <plugin name="cordova-plugin-googleplus" spec="7.0.0">
-        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.262426639490-aqfv29tluv9n32qnbglf5gmbu762knfi" />
-        <variable name="PLAY_SERVICES_VERSION" value="11.8.0" />
-    </plugin>
     <plugin name="cordova-plugin-facebook4" spec="^4.1.0">
         <variable name="APP_ID" value="307918099858578" />
         <variable name="APP_NAME" value="ToutDouxListe" />
         <variable name="FACEBOOK_HYBRID_APP_EVENTS" value="false" />
         <variable name="FACEBOOK_ANDROID_SDK_VERSION" value="4.38.1" />
+    </plugin>
+    <plugin name="cordova-plugin-googleplus" spec="7.0.0">
+        <variable name="REVERSED_CLIENT_ID" value="com.googleusercontent.apps.262426639490-aqfv29tluv9n32qnbglf5gmbu762knfi" />
+        <variable name="PLAY_SERVICES_VERSION" value="11.8.0" />
     </plugin>
     <engine name="android" spec="7.1.4" />
 </widget>

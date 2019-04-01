@@ -36,3 +36,6 @@ UserInterfaceState.xcuserstate
 
 .swp
 .swo
+
+*.lock
+package-lock.json

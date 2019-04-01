@@ -25,7 +25,7 @@ Liste des fonctionalités implémentées :
 * Gestion des contact : demande d'ajout de contact, acceptation/refus, suppréssion contact
 * Connexion SSO Google
 * Partage de liste avec un ou des contacts (choisis)
-* Déconnection
+* Déconnexion
 * Création de liste
 * Création d'item (nom + description)
 * Modification de liste
@@ -33,12 +33,12 @@ Liste des fonctionalités implémentées :
 * Suppréssion d'item
 * Suppréssion de liste
 
-Liste des fonctionnalités échouées :
+Liste des fonctionalités échouées :
 
-* SSO Facebook : les informations de connexion renvoyés par Facebook sont erronnées
-* Suppréssion du compte : manque de temps
-* Suppréssion de contact : certains scénario ne sont pas pris en compte + suppréssion des listes paratagées avec le contact
-* Blockage de contact : manque de temps
+* SSO Facebook : les informations de connexion renvoyés par Facebook sont erronées
+* Suppression du compte : manque de temps
+* Suppression de contact : certains scénario ne sont pas pris en compte + suppréssion des listes partagées avec le contact
+* Blocage de contact : manque de temps
 * Gestion des différents droits lors du partage : manque de temps
 
 ============================
@@ -51,7 +51,7 @@ ionic serve -scl
 Déploiement
 -----------
 
-ionic cordova android run
+ionic cordova run android
 
 Export des règles firebase
 --------------------------
@@ -106,4 +106,9 @@ service cloud.firestore {
 
   }
 }
+
+------------------------
+
+APK : apk/debug/app-debug.apk
+IPA : indisponible : pas d'appareil capable de compiler
 
