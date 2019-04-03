@@ -75,7 +75,9 @@ export class ContactProvider {
 
         requests.forEach(request => {
           
+          console.log('contactPRovider : request=' + JSON.stringify(request));
           if(request.state === FriendRequestState.ACCEPTED && request.from === this.connectedUser.publicUid) {
+            console.log('contactPRovider : confirm');
             this.confirmRequestAcceptance(request);
           }
           else if(request.state === FriendRequestState.DELETED && request.to === this.connectedUser.publicUid) {
@@ -298,6 +300,7 @@ export class ContactProvider {
   private async confirmRequestAcceptance(request: FriendRequest) : Promise<void> {
 
     const contactInd = this.connectedUser.contacts.findIndex(contact => contact.contactId === request.to);
+    console.log('contactProvider : confirmRequestAcceptance : contactInc=' + contactInd);
     if(contactInd >= 0) {
       const contact: Contact = this.connectedUser.contacts[contactInd];
       contact.state = FriendRequestState.ACCEPTED;
@@ -305,6 +308,8 @@ export class ContactProvider {
       this.connectedUser.contacts[contactInd] = contact;
 
       return this.deleteFriendRequest(request.uid).then(() => {
+
+        console.log('contactProvider : confirmRequestAcceptance : pendingRequest deleted');
         return this.auth.updateUser(this.connectedUser);
       });
     }

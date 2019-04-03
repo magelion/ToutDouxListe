@@ -121,7 +121,8 @@ export class ContactListPage implements OnDestroy {
 
     const requestInd = this.incomingRequests.findIndex(req => req.from === publicUser.uid);
     
-    if(requestInd) {
+    console.log('contact-list : acceptRequest : publicUser=' + JSON.stringify(publicUser));
+    if(requestInd >= 0) {
 
       const request: FriendRequest = this.incomingRequests[requestInd];
       console.log('contact-list : acceptRequest : request : ' + JSON.stringify(request));
